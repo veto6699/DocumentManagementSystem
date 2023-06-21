@@ -1,0 +1,31 @@
+﻿@page "/viewing/{Code}"
+@using DocumentManagementSystem.Shared;
+@inject HttpClient client;
+
+<PageTitle>Просмотр</PageTitle>
+
+@if (document == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h1>@document.Info.Title</h1>
+    <h4>@document.Info.Description</h4>
+}
+
+@code {
+    [Parameter]
+    public string? Code { get; set; }
+
+
+
+    public OpenAPIRoot? document;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Code)) return;
+
+        document = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document/{Code}");
+    }
+}
