@@ -1,0 +1,75 @@
+﻿body {
+    font-family: sans-serif;
+}
+
+.version {
+    font-family: sans-serif;
+    color: #fff;
+    font-size: 14px;
+    background: #7d8492;
+    position: relative;
+    top: -5px;
+    margin: 0 0 0 5px;
+    padding: 2px 4px;
+    vertical-align: super;
+    border-radius: 57px;
+}
+
+.info {
+    margin: 20px 0;
+}
+
+.description {
+    font-size: 14px;
+    color: #3b4151;
+    margin: 1em auto;
+}
+
+.server-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.servers {
+    font-size: 12px;
+    margin: 5px 15px 0 0;
+    color: #3b4151;
+    font-weight: 700;
+}
+
+.scheme-container {
+    margin: 0 0 20px;
+    background: #fff;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0 0 20px;
+}
+
+.wrapper {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.controller-header {
+    font-size: 24px;
+    margin: 10px 0 5px 0;
+    color: #3b4151;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(59,65,81,.3);
+}
+
+    .controller-header svg {
+        height: 20px;
+        width: 20px
+    }
+
+    .controller-header button {
+        background: none;
+        border: none;
+        float:right;
+    }

@@ -1,5 +1,7 @@
 ﻿@page "/viewing/{Code}"
 @using DocumentManagementSystem.Shared;
+@using System.Text;
+@using Microsoft.AspNetCore.Components.Rendering;
 @inject HttpClient client;
 
 <PageTitle>Просмотр</PageTitle>
@@ -10,22 +12,111 @@
 }
 else
 {
-    <h1>@document.Info.Title</h1>
-    <h4>@document.Info.Description</h4>
+    <div class="info">
+        <div class="title">
+            @if (!string.IsNullOrWhiteSpace(document.Info.Title))
+            {
+                @document.Info.Title
+
+                @if (!string.IsNullOrWhiteSpace(document.Info.Version))
+                {
+                    <span class="version">@document.Info.Version</span>
+                }
+            }
+        </div>
+        @if (!(document.Info.Description is null))
+        {
+            <div class="description">
+                @{
+                    ParseDescription(__builder, document.Info.Description);
+                }
+            </div>
+        }
+    </div>
+    <div class="scheme-container">
+        @if (!(document.Servers is null) && document.Servers.Count > 0)
+        {
+
+            <span class="server-title">Сервера</span>
+            <div class="servers">
+                <select name="select">
+                    @foreach (var server in document.Servers)
+                    {
+                        <option value="@server.URL">@server.URL</option>
+                    }
+                </select>
+            </div>
+
+        }
+        <hr style="width:100vw;margin-left:-2rem">
+    </div>
+    @if (!(APIs is null))
+    {
+        @foreach (var api in APIs)
+        {
+            <div class="wrapper">
+                <h4 class="controller-header">
+                    <span>@api.Key</span>
+                    <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0,512) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                                <path d="M1432 4737 c-56 -56 -102 -107 -102 -112 0 -6 462 -472 1027 -1037 l1028 -1028 -1028 -1028 c-565 -565 -1027 -1032 -1027 -1037 0 -6 46 -56 103 -113 l102 -102 1140 1140 1140 1140 -1140 1140 -1140 1140 -103 -103z" />
+                            </g>
+                        </svg>
+                    </button>
+                </h4>
+
+            </div>
+        }
+    }
 }
 
 @code {
     [Parameter]
     public string? Code { get; set; }
 
-
-
     public OpenAPIRoot? document;
+
+    public Dictionary<string, Dictionary<string, PathItem>>? APIs;
 
     protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrWhiteSpace(Code)) return;
 
-        document = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document/{Code}");
+        var doc = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document?Code={Code}");
+
+        if (!(doc.Paths is null) && doc.Paths.Count > 0)
+        {
+            APIs = new Dictionary<string, Dictionary<string, PathItem>>();
+
+            foreach (var path in doc.Paths)
+            {
+                if (!APIs.ContainsKey(path.Value.Post.Tags[0])) APIs.Add(path.Value.Post.Tags[0], new Dictionary<string, PathItem>());
+
+                if (!APIs[path.Value.Post.Tags[0]].ContainsKey(path.Key)) APIs[path.Value.Post.Tags[0]].Add(path.Key, path.Value);
+            }
+        }
+
+        document = doc;
+    }
+
+    void ParseDescription(RenderTreeBuilder __builder, string str)
+    {
+        if (string.IsNullOrWhiteSpace(str)) return;
+        var paragraphs = str.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var paragraph in paragraphs)
+        {
+            if (string.IsNullOrEmpty(paragraph)) continue;
+
+            if (paragraph[0] == '-')
+            {
+                <li>@paragraph[1..]</li>
+            }
+            else
+            {
+                <p>@paragraph</p>
+            }
+        }
     }
 }

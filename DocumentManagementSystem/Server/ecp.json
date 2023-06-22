@@ -1,0 +1,1551 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ECP MIS API",
+    "description": "Ниже описаны API, необходимые для осуществления логики взаимодействия между системами МИС и ЭКФ, описанные в [памятке](https://www.ecp.umkb.com/mis) по интеграции.\r\n\r\nДомен для запросов [https://service.socmedica.com:9004](https://service.socmedica.com:9004).\r\n\r\nВсе запросы должны быть отправлены методом POST. Все ответы приходят в формате JSON. Для запросов и ответов используется один и тот же формат передачи данных.\r\n\r\nВнимание:\r\n- приведённые ниже примеры описывают лишь структуру ожидаемых данных,\r\n- формат зависит от используемых для передачи запросов технологий,\r\n- во всех запросах должен присутствовать параметр key (ключ доступа),\r\n- параметры, указанные в каждом API ниже рекомендуемы к заполнению,\r\n- параметры, помеченные красной * - обязательные.\r\n\r\n",
+    "version": "2.0.2.0"
+  },
+  "servers": [
+    {
+      "url": "https://service.socmedica.com:9004"
+    }
+  ],
+  "paths": {
+    "/Mis/NewTherapy": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "(Основное) Проверка и назначение пациенту новой фармакотерапии c отменой всех предыдущих назначений",
+        "description": "Данный API предназначен для проверки и назначения пациенту новой фармакотерапии c заменой актуальных назначений указанным. Т.е. все ЛС которые были ранее назначены будут заменены ЛС из запроса. API в ответ возвращает итоговое значение максимального уровня опасности (параметр danger) и URL-ссылку, по которой можно запросить результат проверки листа назначения в web-интерфейсе ЭКФ.\r\n\r\nДля каждого запроса в ответе будет уникальная ссылка, при открытии которой всегда будут отображаться одиниковые данные, которые не меняются с течением времени или при запросах на другие API.\r\n\r\nПо данному запросу система ЭКФ анализирует лист назначения и данные пациента, формирует предупреждения и соответствующие рекомендации.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\nВ поле disease_classifier указывается:\r\n- null или string.Empty - поиск по именам во всех классификаторах,\r\n- mkb10 - Поиск именам МКБ10,\r\n- mkb10code - Поиск кодам МКБ10,\r\n- mkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений).\r\n\r\nПример запроса с диагнозом по коду МКБ-10, параметр key надо заполнить.\r\nВ поле disease/co-disease указывается код заболевания по МКБ-10\r\n\r\n    POST /NewTherapy\r\n    {\r\n        \"key\": \"ВВЕДИТЕ ВАШ КЛЮЧ!!!\",\r\n        \"clinic\": \"Clinic56\",\r\n        \"clinic_name\": \"Test Clinic\",\r\n        \"department\": \"Department976\",\r\n        \"department_name\": \"Test Department\",\r\n        \"doctor\": \"Doctor26\",\r\n        \"doctor_name\": \"Test Doctor\",\r\n        \"patient\": {\r\n            \"code\": \"TestPat398\",\r\n            \"clinical_case\": \"АБ22/5366293\",\r\n            \"lastname\": \"Patient\",\r\n            \"firstname\": \"Test\",\r\n            \"patronymic\": \"MKB10\",\r\n            \"snils\": \"123-456-789 00\",\r\n            \"email\": \"test@email.net\",\r\n            \"birthdate\": 1050095200000,\r\n            \"sex\": \"m\",\r\n            \"growth\": 190,\r\n            \"weight\": 80,\r\n            \"disease\": [\r\n                \"J11.1\"\r\n            ],\r\n            \"co_disease\": [\r\n                \"I15.2\"\r\n            ],\r\n            \"disease_classifier\": \"mkb10code\",\r\n            \"allergy\": [\r\n                \"йод\"\r\n            ],\r\n            \"alcohol\": true,\r\n            \"driving\": true\r\n        },\r\n        \"drugs\": [\r\n            {\r\n                \"name\": \"Парацетамол\",\r\n                \"type\": \"TN\",\r\n                \"form\": \"таблетка\",\r\n                \"method\": \"в/в\",\r\n                \"dosage\": [\r\n                    2.5\r\n                 ],\r\n                \"dosage_unit\": \"мг\",\r\n                \"use_calc\": 1,\r\n                \"use_calc_unit\": \"г\",\r\n                \"schedule\": {\r\n                    \"dateStart\": 1661904000000,\r\n                    \"duration\": \"ежедневно\",\r\n                    \"sequence\": \"1 раз в день\"\r\n                },\r\n                \"fp_form\": \"блистер\",\r\n                \"fp_dosage\": 10,\r\n                \"fp_dosage_unit\": \"штука\",\r\n                \"specials\": \"после еды\"\r\n            }\r\n        ],\r\n        \"parsedrugs\": [\r\n            \"Умифеновир 10 мг 3 раза в день по 0,5 г до отмены\"\r\n        ],\r\n        \"lang\": \"ru\"\r\n    }\r\n    \r\n\r\n\r\nПример запроса с диагнозом строкой, параметр key надо заполнить\r\n\r\n    POST /NewTherapy\r\n    \r\n    {\r\n        \"key\": \"ВВЕДИТЕ ВАШ КЛЮЧ!!!\",\r\n        \"lang\": \"ru\",\r\n        \"clinical_case\": \"АБ22/5366293\",\r\n        \"clinic\": \"test\",\r\n        \"clinic_name\": \"test\",\r\n        \"department\": \"1\",\r\n        \"department_name\": \"Clinic department\",\r\n        \"doctor\": \"6\",\r\n        \"doctor_name\": \"Testovy Vrach\",\r\n        \"patient\": {\r\n            \"name\": \"Test Pat\",\r\n            \"code\": \"398\",\r\n            \"birthdate\": 1050095200000,\r\n            \"snils\": \"123-456-789 00\",\r\n            \"sex\": \"male\",\r\n            \"disease\": [\r\n                \"Influenza\"\r\n            ],\r\n            \"co_disease\": [],\r\n            \"allergy\": [],\r\n            \"pregnancy\": false,\r\n            \"lactation\": false,\r\n            \"alcohol\": false,\r\n            \"driving\": false,\r\n            \"disease_classifier\": null\r\n        },\r\n        \"parsedrugs\": [\r\n            \"Arbidol\"\r\n        ],\r\n        \"drugs\": [\r\n            {\r\n                \"name\": \"Arbidol\",\r\n                \"type\": \"DV\",\r\n                \"form\": \"tablet\",\r\n                \"schedule\": {\r\n                    \"dateStart\": 1012803200000\r\n                },\r\n                \"dosage\": [],\r\n                \"dosage_unit\": \"\",\r\n                \"use_dosage\": [],\r\n                \"use_dosage_unit\": \"\",\r\n                \"use_calc\": 0,\r\n                \"use_calc_unit\": \"\",\r\n                \"use_duration\": 0,\r\n                \"use_duration_unit\": \"\"\r\n            }\r\n        ]\r\n    }",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisNewTherapyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisNewTherapyReponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/Check": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "(Основное) Проверка назначения (без актуальной терапии) пациенту без сохранения или изменения чего либо",
+        "description": "Получение максимального значения опасности фармакотерапии(параметр danger 0-1), без учёта предыдущих актуальных назначений.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\nВ поле disease_classifier указывается:\r\n- null или string.Empty - поиск по именам во всех классификаторах,\r\n- mkb10 - Поиск именам МКБ10,\r\n- mkb10code - Поиск кодам МКБ10,\r\n- mkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisCheckReponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/ActualTherapy": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "Получение актуальной фармакотерапии пациента (по коду)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisPatientCodeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisPatientCodeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/ActualNewTherapy": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "(Дополнительное) Проверка и назначение пациенту новой фармакотерапии c отменой всех предыдущих назначений",
+        "description": "Данный API предназначен для проверки и назначения пациенту новой фармакотерапии c заменой актуальных назначений указанным. Т.е. все ЛС которые были ранее назначены будут заменены ЛС из запроса. API в ответ возвращает итоговое значение максимального уровня опасности (параметр danger) и URL-ссылку, по которой можно запросить результат проверки листа назначения в web-интерфейсе ЭКФ.\r\n\r\nДля всех запросов в ответе будет одинаковая ссылка, при открытии которой будет отображаться актульная фармакотерапия и противопоказания по ней.\r\n\r\nПротивопоказания и ЛС отображаемые при открытии ссылки будут меняться с течением времени, если у ЛС была указана дата окончания приема. При запросе на /Mis/ActualAddTherapy фармакотерапия будет дополняться. При запросах на /Mis/ActualNewTherapy или /Mis/NewTherapy фармакотерапия будет заменяться.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisTherapyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisTherapyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/ActualAddTherapy": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "(Дополнительное) Проверка и назначение пациенту новой фармакотерапии с учетом актуальных назначений",
+        "description": "Данный API предназначен для проверки и назначения пациенту новой фармакотерапии добавляя к указанной фармакотерапии, актульную фармакотерапию. \r\nТ.е. к ЛС из запроса, добавятся ЛС из прошлых назначений, которые по расписанию пациент еще принимает.\r\n\r\nДля всех запросов в ответе будет одинаковая ссылка, при открытии которой будет отображаться актульная фармакотерапия и противопоказания по ней.\r\n\r\nПротивопоказания и ЛС отображаемые при открытии ссылки будут меняться с течением времени, если у ЛС была указана дата окончания приема. \r\nПри запросе на /Mis/ActualAddTherapy фармакотерапия будет дополняться. \r\nПри запросах на /Mis/ActualNewTherapy или /Mis/NewTherapy фармакотерапия будет заменяться.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisTherapyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisTherapyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/ActualCheck": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "(Дополнительное) Проверка назначения (c актуальной терапией) пациенту без сохранения или изменения чего либо",
+        "description": "Получение максимального значения опасности фармакотерапии(параметр danger 0-1), с учётом предыдущих актуальных назначений.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\nВ поле disease_classifier указывается:\r\n- null или string.Empty - поиск по именам во всех классификаторах,\r\n- mkb10 - Поиск именам МКБ10,\r\n- mkb10code - Поиск кодам МКБ10,\r\n- mkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisCheckReponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Pharm/V2/Check": {
+      "post": {
+        "tags": [
+          "V2"
+        ],
+        "summary": "(Основное) Проверка назначения (без актуальной терапии) пациенту без сохранения или изменения чего либо",
+        "description": "Получение максимального значения опасности фармакотерапии(параметр danger 0-1), без учёта предыдущих актуальных назначений.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\nВ поле disease_classifier указывается:\r\n- null или string.Empty - поиск по именам во всех классификаторах,\r\n- mkb10 - Поиск именам МКБ10,\r\n- mkb10code - Поиск кодам МКБ10,\r\n- mkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisCheckReponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Pharm/V2/NewTherapy": {
+      "post": {
+        "tags": [
+          "V2"
+        ],
+        "summary": "(Основное) Проверка и назначение пациенту новой фармакотерапии c отменой всех предыдущих назначений",
+        "description": "Данный API предназначен для проверки и назначения пациенту новой фармакотерапии c заменой актуальных назначений указанным. \r\nТ.е. все ЛС которые были ранее назначены будут заменены ЛС из запроса.\r\nAPI в ответ возвращает итоговое значение максимального уровня опасности (параметр danger) и URL-ссылку, по которой можно запросить результат проверки листа назначения в web-интерфейсе ЭКФ.\r\n\r\nДля каждого запроса в ответе будет уникальная ссылка, при открытии которой всегда будут отображаться одиниковые данные, которые не меняются с течением времени или при запросах на другие API.\r\n\r\nПо данному запросу система ЭКФ анализирует лист назначения и данные пациента, формирует предупреждения и соответствующие рекомендации.\r\n\r\nДля правильной работы API с растворами есть несколько правил:\r\n- сам раствор добавляется в запрос как отдельный объект \"MisDrug\" в \"drugs\", с \"type\": \"LQ\",\r\n- компоненты раствора добавляются как отдельные объекты \"MisDrug\" в \"drugs\",\r\n- у раствора и его компонентов должен быть одинаковый \"group\", он должен быть заполнен и не равен 0,\r\n- у компонентов раствора \"schedule\" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из \"schedule\" раствора,\r\n- \"method\" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,\r\n- все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,\r\n- для расчета скорости введения раствора нужно указать \"use_duration\" и \"use_duration_unit\", по умолчанию \"use_duration\" - 1, \"use_duration_unit\" - минута.\r\n\r\nВ поле disease_classifier указывается:\r\n- null или string.Empty - поиск по именам во всех классификаторах,\r\n- mkb10 - Поиск именам МКБ10,\r\n- mkb10code - Поиск кодам МКБ10,\r\n- mkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisNewTherapyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisNewTherapyReponseQMS"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/ConvertUnit": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "Конвертация значений из одних единиц измерения в другие.\r\nПока только в рамках основных единиц измерения (т.е. миллиграммы в микрограммы, миллилитры в литры и т.д.)",
+        "description": "Пример запроса, параметр key надо заполнить\r\n\r\n    POST /ConvertUnit\r\n    {\r\n        \"key\": \"\",\r\n        \"lang\": \"ru\",\r\n        \"value\": 350,\r\n        \"originalunit\": \"мкг\",\r\n        \"targetunit\": \"мг\"\r\n    }",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisConvertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisConvertResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Mis/ParseDrugs": {
+      "post": {
+        "tags": [
+          "Mis"
+        ],
+        "summary": "Парсинг МИС-ЛС из списка строк",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MisParseDrugsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisParseDrugsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Alert": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionCode": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "level": {
+            "type": "string",
+            "nullable": true
+          },
+          "sticky": {
+            "type": "boolean"
+          }
+        },
+        "description": "Статус обработки запроса",
+        "additionalProperties": false
+      },
+      "MisCaution": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Текст заголовка списка противопоказаний",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {},
+            "description": "Список текстов обнаруженных противопоказаний",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Тексты заголовка и списка обнаруженных противопоказаний"
+      },
+      "MisConvertRequest": {
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "value": {
+            "type": "number",
+            "description": "Значение, которое необходимо конвертировать (например 10)",
+            "format": "double",
+            "nullable": true
+          },
+          "originalunit": {
+            "type": "string",
+            "description": "Единица измерения значения (например мг)",
+            "nullable": true
+          },
+          "targetunit": {
+            "type": "string",
+            "description": "Единица измерения, куда необходимо конвертировать значение (например мкг)",
+            "nullable": true
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisConvertResponse": {
+        "type": "object",
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          },
+          "originalvalue": {
+            "type": "number",
+            "description": "Исходное значение (например 10)",
+            "format": "double",
+            "nullable": true
+          },
+          "originalunit": {
+            "type": "string",
+            "description": "Единица измерения исходного значения (микрограмм)",
+            "nullable": true
+          },
+          "originalunitshort": {
+            "type": "string",
+            "description": "Единица измерения исходного значения (мкг)",
+            "nullable": true
+          },
+          "basevalue": {
+            "type": "number",
+            "description": "Базовое значения (например 0.00001)",
+            "format": "double",
+            "nullable": true
+          },
+          "baseunit": {
+            "type": "string",
+            "description": "Единица измерения исходного значения (грамм)",
+            "nullable": true
+          },
+          "baseunitshort": {
+            "type": "string",
+            "description": "Единица измерения исходного значения (г)",
+            "nullable": true
+          },
+          "targetvalue": {
+            "type": "number",
+            "description": "Необходимое значение ()",
+            "format": "double",
+            "nullable": true
+          },
+          "targetunit": {
+            "type": "string",
+            "description": "Единица измерения необходимого значения (миллиграмм)",
+            "nullable": true
+          },
+          "targetunitshort": {
+            "type": "string",
+            "description": "Единица измерения необходимого значения (мг)",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisDrug": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Наименование ЛС",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Тип ЛС (Действующее вещество(DV)/торговое наименование(TN)/раствор(LQ)). LQ указывается когда раствор делается из ДВ или ТН, для растворов в упаковке производителя нужно указывать TN. У раствора и ЛС входящих в него, параметр group должен быть одинаковый",
+            "nullable": true
+          },
+          "group": {
+            "type": "integer",
+            "description": "Номер группы раствора (или DV/TN в составе раствора). Null или 0 - не входит в раствор, указывается только для ЛС входящих в раствор",
+            "format": "int32",
+            "nullable": true
+          },
+          "form": {
+            "type": "string",
+            "description": "Лекарственная форма ЛС, например: таблетки, таб, драже, држ, раствор, р-р, капсулы, капс, мазь, крем, порошок, пор, спрей, гель, настойка, н-ка",
+            "nullable": true
+          },
+          "method": {
+            "type": "string",
+            "description": "Метод применения ЛС, например: в/в, внутривенное введение, в/м, внутримышечное введение, подкожно, назально, интраназально, внутрь, сублингвально, суббуккально, субарахноидально,  эпидурально, ушные капли, транстимпальное введение, глазные капли, ингаляционно",
+            "nullable": true
+          },
+          "dosage": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Дозировка/концентрация(например, в случаях раствора) фармпрепарата",
+            "nullable": true
+          },
+          "dosage_unit": {
+            "type": "string",
+            "description": "Единица измерения дозировки/характеристики(концентрации, например, в случаях раствора) фармпрепарата",
+            "nullable": true
+          },
+          "use_calc": {
+            "type": "number",
+            "description": "Количество доз/вещества за 1 приём. Например: 2(г), 20(мл), 300(мг)",
+            "format": "double",
+            "nullable": true
+          },
+          "use_calc_unit": {
+            "type": "string",
+            "description": "Единица измерения количества доз/вещества, нужно указывать грамм, миллиграмм, литр, миллилитр, т.е. точные единицы измерения",
+            "nullable": true
+          },
+          "use_duration": {
+            "type": "number",
+            "description": "Время за которое надо ввести раствор (капельница), указывается только для растворов",
+            "format": "double",
+            "nullable": true
+          },
+          "use_duration_unit": {
+            "type": "string",
+            "description": "Единица времени введения раствора, указывается только для растворов",
+            "nullable": true
+          },
+          "parsedosage": {
+            "type": "string",
+            "description": "Дозировка ФП - используется в случае сложностей при самостоятельном формировании dosage и dosage_unit.\r\n(ДВК/растворы/и т.д. Например: \"2.18г+350мг+109мг/5мл\")",
+            "nullable": true
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/MisSchedule"
+          },
+          "fp_form": {
+            "type": "string",
+            "description": "Форма фармпрепарата (первичная упаковка) - ампулы, флакон, блистер, упаковка",
+            "nullable": true
+          },
+          "fp_dosage": {
+            "type": "number",
+            "description": "Дозировка ФП - 500 (мл), 10(шт) и т.д.",
+            "format": "double",
+            "nullable": true
+          },
+          "fp_dosage_unit": {
+            "type": "string",
+            "description": "Единица измерения дозировки фармпрепарата",
+            "nullable": true
+          },
+          "specials": {
+            "type": "string",
+            "description": "Комментарий к ЛС",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisDrugResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Наименование ЛС",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Тип ЛС (Действующее вещество(DV)/торговое наименование(TN)/раствор(LQ)). LQ указывается когда раствор делается из ДВ или ТН, для растворов в упаковке производителя нужно указывать TN. У раствора и ЛС входящих в него, параметр group должен быть одинаковый",
+            "nullable": true
+          },
+          "group": {
+            "type": "integer",
+            "description": "Номер группы раствора (или DV/TN в составе раствора). Null или 0 - не входит в раствор, указывается только для ЛС входящих в раствор",
+            "format": "int32",
+            "nullable": true
+          },
+          "form": {
+            "type": "string",
+            "description": "Лекарственная форма ЛС, например: таблетки, таб, драже, држ, раствор, р-р, капсулы, капс, мазь, крем, порошок, пор, спрей, гель, настойка, н-ка",
+            "nullable": true
+          },
+          "method": {
+            "type": "string",
+            "description": "Метод применения ЛС, например: в/в, внутривенное введение, в/м, внутримышечное введение, подкожно, назально, интраназально, внутрь, сублингвально, суббуккально, субарахноидально,  эпидурально, ушные капли, транстимпальное введение, глазные капли, ингаляционно",
+            "nullable": true
+          },
+          "clinic_code": {
+            "type": "string",
+            "description": "Код клиники, в которой назначили ЛС",
+            "nullable": true
+          },
+          "dep_code": {
+            "type": "string",
+            "description": "Код отделения,  в котором назначили ЛС",
+            "nullable": true
+          },
+          "doctor_code": {
+            "type": "string",
+            "description": "Код врача, назначившего ЛС",
+            "nullable": true
+          },
+          "date": {
+            "type": "integer",
+            "description": "Дата (UNIXTime) времени назначения",
+            "format": "int64"
+          },
+          "dosage": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Дозировка/концентрация(например, в случаях раствора) фармпрепарата",
+            "nullable": true
+          },
+          "dosage_unit": {
+            "type": "string",
+            "description": "Единица измерения дозировки/характеристики(концентрации, например, в случаях раствора) фармпрепарата",
+            "nullable": true
+          },
+          "use_dosage": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Дозировка(кол-ва вещества ЛС) приёма ЛС (1 доза)",
+            "nullable": true
+          },
+          "use_dosage_unit": {
+            "type": "string",
+            "description": "Единица измерения приёма ЛС",
+            "nullable": true
+          },
+          "use_calc": {
+            "type": "number",
+            "description": "Количество доз/вещества за 1 приём. Например: 2(таб), 20(мл), 300(г)",
+            "format": "double",
+            "nullable": true
+          },
+          "use_calc_unit": {
+            "type": "string",
+            "description": "Единица измерения количества доз/вещества",
+            "nullable": true
+          },
+          "use_duration": {
+            "type": "number",
+            "description": "Время за которое надо ввести раствор (капельница), указывается только для растворов",
+            "format": "double",
+            "nullable": true
+          },
+          "use_duration_unit": {
+            "type": "string",
+            "description": "Единица времени введения раствора, указывается только для растворов",
+            "nullable": true
+          },
+          "parsedosage": {
+            "type": "string",
+            "description": "Дозировка ФП - используется в случае сложностей при самостоятельном формировании dosage и dosage_unit.\r\n(ДВК/растворы/и т.д. Например: \"2.18г+350мг+109мг/5мл\")",
+            "nullable": true
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/MisSchedule"
+          },
+          "fp_form": {
+            "type": "string",
+            "description": "Форма фармпрепарата (первичная упаковка) - ампулы, флакон, блистер, упаковка",
+            "nullable": true
+          },
+          "fp_dosage": {
+            "type": "number",
+            "description": "Дозировка ФП - 500 (мл), 10(шт) и т.д.",
+            "format": "double",
+            "nullable": true
+          },
+          "fp_dosage_unit": {
+            "type": "string",
+            "description": "Единица измерения дозировки фармпрепарата",
+            "nullable": true
+          },
+          "specials": {
+            "type": "string",
+            "description": "Комментарий к ЛС",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisCheckRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "clinic",
+          "doctor",
+          "patient"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача. Обязательное поле",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "patient": {
+            "$ref": "#/components/schemas/MisPatient"
+          },
+          "drugs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisDrug"
+            },
+            "description": "Список формализованных ЛС. Более предпочтительное поле при обмене информацией. Если одно ЛС будет указано здесь и в parsedrugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "parsedrugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Список ЛС свободным текстом, используется только в случае, если нет возможности передать ЛС в формализованном виде. Если одно ЛС будет указано здесь и в drugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "duplicate_drugs_allow": {
+            "type": "boolean",
+            "description": "Разрешить добавление дубликатов ЛС. По умолчанию false.\r\nИспользуется при учёте предыдущей фармакотерапии.\r\nМеханизм: если добавляется копия уже назначенного ЛС (с такой же лекарственной формой и способом применения), то ЛС предыдущего назначения отменяется.\r\nНе касается самодельных растворов.\r\n\r\nЭто булевой параметр, который включает и отключает возможность дублирования назначения препаратов. \r\nНапример, если ранее пациенту был назначен Ибупрофен с дозировкой 200мг, то при отправке повторного запроса, \r\nсодержащего Ибупрофен с дозировкой 200мг, система будет считать, что это - дублирующее назначение и, при условии, что параметр \r\nduplicate_drugs_allow передан как false, не будет добавлять ещё один Ибупрофен с дозировкой 200мг. В случае же, если параметр передан как true, \r\nпроверка на дубли не производится и в итоговой фармакотерапии будет два препарата Ибупрофен с дозировкой 200мг.\r\nНеобходимо учитывать, что, исходя из логики работы этого параметра, он актуален только для изменения уже существующей фармакотерапии"
+          },
+          "return_subjects": {
+            "type": "boolean",
+            "description": "Флаг того, что необходимо вернуть всю актуальную фармакотерапию, true - для тестирования и отладки, false - для штатной работы"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "description": "Формат приема данных от МИС"
+      },
+      "MisCheckReponse": {
+        "type": "object",
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          },
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Ссылка на результаты назначения конкретной фармакотерапии, только если указан код клиники, доктора, пациента",
+            "nullable": true
+          },
+          "danger": {
+            "type": "number",
+            "description": "Степень максимальной опасности лекарственного назначения",
+            "format": "double",
+            "nullable": true
+          },
+          "caution": {
+            "$ref": "#/components/schemas/MisCaution"
+          },
+          "duplicate_drugs_allow": {
+            "type": "boolean",
+            "description": "Разрешить добавление дубликатов ЛС. По умолчанию false.\r\nИспользуется при учёте предыдущей фармакотерапии.\r\nМеханизм: если добавляется копия уже назначенного ЛС (с такой же лекарственной формой и способом применения), то ЛС предыдущего назначения отменяется.\r\nНе касается самодельных растворов.\r\n\r\nЭто булевой параметр, который включает и отключает возможность дублирования назначения препаратов. \r\nНапример, если ранее пациенту был назначен Ибупрофен с дозировкой 200мг, то при отправке повторного запроса, \r\nсодержащего Ибупрофен с дозировкой 200мг, система будет считать, что это - дублирующее назначение и, при условии, что параметр \r\nduplicate_drugs_allow передан как false, не будет добавлять ещё один Ибупрофен с дозировкой 200мг. В случае же, если параметр передан как true, \r\nпроверка на дубли не производится и в итоговой фармакотерапии будет два препарата Ибупрофен с дозировкой 200мг.\r\nНеобходимо учитывать, что, исходя из логики работы этого параметра, он актуален только для изменения уже существующей фармакотерапии"
+          },
+          "return_subjects": {
+            "type": "boolean",
+            "description": "Флаг того, что необходимо вернуть всю актуальную фармакотерапию, true - для тестирования и отладки, false - для штатной работы"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ (по умолчанию \"ru\")",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Формат передачи данных при работе с МИС-ами"
+      },
+      "MisNewTherapyRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "clinic",
+          "doctor",
+          "patient"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача. Обязательное поле",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "patient": {
+            "$ref": "#/components/schemas/MisPatient"
+          },
+          "drugs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisDrug"
+            },
+            "description": "Список формализованных ЛС. Более предпочтительное поле при обмене информацией. Если одно ЛС будет указано здесь и в parsedrugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "parsedrugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Список ЛС свободным текстом, используется только в случае, если нет возможности передать ЛС в формализованном виде. Если одно ЛС будет указано здесь и в drugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "description": "Формат приема данных от МИС"
+      },
+      "MisNewTherapyReponse": {
+        "type": "object",
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          },
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Ссылка на результаты назначения конкретной фармакотерапии, только если указан код клиники, доктора, пациента",
+            "nullable": true
+          },
+          "danger": {
+            "type": "number",
+            "description": "Степень максимальной опасности лекарственного назначения",
+            "format": "double",
+            "nullable": true
+          },
+          "caution": {
+            "$ref": "#/components/schemas/MisCaution"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ (по умолчанию \"ru\")",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Формат передачи данных при работе с МИС-ами"
+      },
+      "MisParseDrugsRequest": {
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ клиента",
+            "nullable": true
+          },
+          "texts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Список ЛС, в свободной форме, которые необходимо формализовать",
+            "nullable": true
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisParseDrugsResponse": {
+        "type": "object",
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          },
+          "drugs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisDrug"
+            },
+            "description": "Список ЛС",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisPatient": {
+        "type": "object",
+        "required": [
+          "code",
+          "clinical_case"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Идентификатор(код) пациента. Обязательное поле",
+            "nullable": true
+          },
+          "clinical_case": {
+            "type": "string",
+            "description": "№ истории болезни/эпизода. Обязательное поле",
+            "nullable": true
+          },
+          "lastname": {
+            "type": "string",
+            "description": "Фамилия пациента",
+            "nullable": true
+          },
+          "firstname": {
+            "type": "string",
+            "description": "Имя пациента",
+            "nullable": true
+          },
+          "patronymic": {
+            "type": "string",
+            "description": "Отчество пациента",
+            "nullable": true
+          },
+          "snils": {
+            "type": "string",
+            "description": "СНИЛС",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "Email пациента",
+            "nullable": true
+          },
+          "birthdate": {
+            "type": "integer",
+            "description": "День рождения пациента (UnixTime мс)\r\nпри рождении до 00:00:00 UTC 1 января 1970 года - отрицательное число.",
+            "format": "int64",
+            "nullable": true
+          },
+          "sex": {
+            "type": "string",
+            "description": "Пол: man/woman, male/femail, m/f",
+            "nullable": true
+          },
+          "growth": {
+            "type": "number",
+            "description": "Рост (в см)",
+            "format": "double",
+            "nullable": true
+          },
+          "weight": {
+            "type": "number",
+            "description": "Вес (в кг)",
+            "format": "double",
+            "nullable": true
+          },
+          "disease": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Основные заболевания, при заполнении обратить внимание на параметр disease_classifier",
+            "nullable": true
+          },
+          "co_disease": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Сопутствующие заболевания, при заполнении обратить внимание на параметр disease_classifier",
+            "nullable": true
+          },
+          "disease_classifier": {
+            "type": "string",
+            "description": "Классификатор болезней (mkb10, mkb11, SNOMED и т.д.) - определение конкретного классификатора нозологий (по умолчанию null)\r\nВ данный момент список работающих тегов:\r\nnull или string.Empty - поиск по именам во всех классификаторах\r\nmkb10 - Поиск именам МКБ10\r\nmkb10code - Поиск кодам МКБ10\r\nmkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений)",
+            "nullable": true
+          },
+          "allergy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Аллергия",
+            "nullable": true
+          },
+          "pregnancy": {
+            "type": "boolean",
+            "description": "Флаг беременности"
+          },
+          "trimester": {
+            "type": "integer",
+            "description": "Триместер беременности",
+            "format": "int32",
+            "nullable": true
+          },
+          "gestation": {
+            "type": "integer",
+            "description": "Неделя беременности",
+            "format": "int32",
+            "nullable": true
+          },
+          "lactation": {
+            "type": "boolean",
+            "description": "Флаг кормления грудью"
+          },
+          "alcohol": {
+            "type": "boolean",
+            "description": "Флаг употребления алкоголя (включение проверки на алкоголь)"
+          },
+          "driving": {
+            "type": "boolean",
+            "description": "Флаг вождения"
+          },
+          "name": {
+            "type": "string",
+            "description": "ФИО пациента (не рекомендуется к использованию т.к. устаревшее, при заполнении firstname, lastname и patronymic (необязательно) будет заменяться их содержимым)",
+            "nullable": true,
+            "deprecated": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Данные пациента"
+      },
+      "MisPatientCodeRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "clinical_case",
+          "clinic_code",
+          "doctor_code",
+          "patient_code"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Постоянный ключ авторизации",
+            "nullable": true
+          },
+          "clinic_code": {
+            "type": "string",
+            "description": "Код клиники. Обязательное поле",
+            "nullable": true
+          },
+          "doctor_code": {
+            "type": "string",
+            "description": "Код врача. Обязательное поле",
+            "nullable": true
+          },
+          "patient_code": {
+            "type": "string",
+            "description": "Код пациента. Обязательное поле",
+            "nullable": true
+          },
+          "clinical_case": {
+            "type": "string",
+            "description": "№ истории болезни/эпизода. Обязательное поле",
+            "nullable": true
+          },
+          "active_language": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MisPatientCodeResponse": {
+        "type": "object",
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          },
+          "patient": {
+            "$ref": "#/components/schemas/MisPatient"
+          },
+          "drugs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisDrugResponse"
+            },
+            "description": "Список ЛС",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Ссылка на ЭКФ для получения и проверки всей актуальной фармакотерапии пациента",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Формат передачи данных при работе с МИС-ами"
+      },
+      "MisTherapyRequest": {
+        "type": "object",
+        "required": [
+          "key",
+          "clinic",
+          "doctor",
+          "patient"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача. Обязательное поле",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "patient": {
+            "$ref": "#/components/schemas/MisPatient"
+          },
+          "drugs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisDrug"
+            },
+            "description": "Список формализованных ЛС. Более предпочтительное поле при обмене информацией. Если одно ЛС будет указано здесь и в parsedrugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "parsedrugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Список ЛС свободным текстом, используется только в случае, если нет возможности передать ЛС в формализованном виде. Если одно ЛС будет указано здесь и в drugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "duplicate_drugs_allow": {
+            "type": "boolean",
+            "description": "Разрешить добавление дубликатов ЛС. По умолчанию false.\r\nИспользуется при учёте предыдущей фармакотерапии.\r\nМеханизм: если добавляется копия уже назначенного ЛС (с такой же лекарственной формой и способом применения), то ЛС предыдущего назначения отменяется.\r\nНе касается самодельных растворов.\r\n\r\nЭто булевой параметр, который включает и отключает возможность дублирования назначения препаратов. \r\nНапример, если ранее пациенту был назначен Ибупрофен с дозировкой 200мг, то при отправке повторного запроса, \r\nсодержащего Ибупрофен с дозировкой 200мг, система будет считать, что это - дублирующее назначение и, при условии, что параметр \r\nduplicate_drugs_allow передан как false, не будет добавлять ещё один Ибупрофен с дозировкой 200мг. В случае же, если параметр передан как true, \r\nпроверка на дубли не производится и в итоговой фармакотерапии будет два препарата Ибупрофен с дозировкой 200мг.\r\nНеобходимо учитывать, что, исходя из логики работы этого параметра, он актуален только для изменения уже существующей фармакотерапии"
+          },
+          "return_subjects": {
+            "type": "boolean",
+            "description": "Флаг того, что необходимо вернуть всю актуальную фармакотерапию, true - для тестирования и отладки, false - для штатной работы"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ (по умолчанию \"ru\")",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "description": "Формат приема данных от МИС"
+      },
+      "MisTherapyResponse": {
+        "type": "object",
+        "properties": {
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          },
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача. Обязательное поле",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "patient": {
+            "$ref": "#/components/schemas/MisPatient"
+          },
+          "drugs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisDrugResponse"
+            },
+            "description": "Список формализованных ЛС. Более предпочтительное поле при обмене информацией. Если одно ЛС будет указано здесь и в parsedrugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "parsedrugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Список ЛС свободным текстом, используется только в случае, если нет возможности передать ЛС в формализованном виде. Если одно ЛС будет указано здесь и в drugs, то в назначении будут оба",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Ссылка на ЭКФ для получения и проверки всей актуальной фармакотерапии пациента, а не на результаты проверки результаты проверки",
+            "nullable": true
+          },
+          "danger": {
+            "type": "number",
+            "description": "Степень максимальной опасности лекарственного назначения, диапазон 0.0-1.0 показывает опасность назначения, если значение меньше 0, то это рациональное сочетание",
+            "format": "double",
+            "nullable": true
+          },
+          "caution": {
+            "$ref": "#/components/schemas/MisCaution"
+          },
+          "duplicate_drugs_allow": {
+            "type": "boolean",
+            "description": "Разрешить добавление дубликатов ЛС. По умолчанию false.\r\nИспользуется при учёте предыдущей фармакотерапии.\r\nМеханизм: если добавляется копия уже назначенного ЛС (с такой же лекарственной формой и способом применения), то ЛС предыдущего назначения отменяется.\r\nНе касается самодельных растворов.\r\n\r\nЭто булевой параметр, который включает и отключает возможность дублирования назначения препаратов. \r\nНапример, если ранее пациенту был назначен Ибупрофен с дозировкой 200мг, то при отправке повторного запроса, \r\nсодержащего Ибупрофен с дозировкой 200мг, система будет считать, что это - дублирующее назначение и, при условии, что параметр \r\nduplicate_drugs_allow передан как false, не будет добавлять ещё один Ибупрофен с дозировкой 200мг. В случае же, если параметр передан как true, \r\nпроверка на дубли не производится и в итоговой фармакотерапии будет два препарата Ибупрофен с дозировкой 200мг.\r\nНеобходимо учитывать, что, исходя из логики работы этого параметра, он актуален только для изменения уже существующей фармакотерапии"
+          },
+          "return_subjects": {
+            "type": "boolean",
+            "description": "Флаг того, что необходимо вернуть всю актуальную фармакотерапию, true - для тестирования и отладки, false - для штатной работы"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ (по умолчанию \"ru\")",
+            "nullable": true,
+            "default": "ru"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Формат ответа на запрос МИС"
+      },
+      "MisSchedule": {
+        "type": "object",
+        "properties": {
+          "appointmentСalendar": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisAppointmentCalendar"
+            },
+            "description": "Расписание приёма ЛС",
+            "nullable": true
+          },
+          "duration": {
+            "type": "string",
+            "description": "Продолжительность приёма, если заполнено dateFinish будет пересчитано для соответствия например: \"5 дней\"",
+            "nullable": true
+          },
+          "sequence": {
+            "type": "string",
+            "description": "Кратность приёма ЛС, например: \r\n\"1 раз в день\", \"2 раза в день\", \"2 р\\д\", \"3 раза в день\", \"4 раза в день\", \"5 раз в день\", \r\n\"каждые 30 мин\", \"каждый час\", \"каждые 2 часа\", \"каждые 3 часа\", \"каждые 4 часа\", \r\n\"1 раз в 2 дня\", \"1 раз в 3 дня\", \"1 раз в 4 дня\", \"1 раз в 5 дней\", \"1 раз в 10 дней\", \r\n\"1 раз в неделю\", \"1 раз в 2 недели\", \"1 раз в 3 недели\", \r\n\"1 раз в месяц\", \"1 раз в 2 месяца\", \"1 раз в 3 месяца\", \"1 раз в полгода\", \"1 раз в год\"",
+            "nullable": true
+          },
+          "dateStart": {
+            "type": "integer",
+            "description": "Дата начала приёма ЛС (unixtime в мс)",
+            "format": "int64",
+            "nullable": true
+          },
+          "dateFinish": {
+            "type": "integer",
+            "description": "Дата окончания приёма (unixtime в мс)",
+            "format": "int64",
+            "nullable": true
+          },
+          "finishAlternate": {
+            "type": "string",
+            "description": "Условия окончания приёма (не дата), например: \"до отмены\"",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Расписание приёма"
+      },
+      "MisAppointmentCalendar": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "integer",
+            "description": "Дата приёма (unixtime в мс)",
+            "format": "int64",
+            "nullable": true
+          },
+          "timeReceipt": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisAppointmentCalendarItem"
+            },
+            "description": "Время приема и дозировка",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Календарь приема ЛС"
+      },
+      "MisAppointmentCalendarItem": {
+        "type": "object",
+        "properties": {
+          "hours": {
+            "type": "integer",
+            "description": "Часы",
+            "format": "int32"
+          },
+          "minutes": {
+            "type": "integer",
+            "description": "Минуты",
+            "format": "int32"
+          },
+          "count": {
+            "type": "number",
+            "description": "Дозировка, указывается в ЕИ use_calc_unit",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Время приема и дозировка"
+      },
+      "MisNewTherapyReponseQMS": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Лицензионный ключ",
+            "nullable": true
+          },
+          "authkey": {
+            "type": "string",
+            "description": "Сгенерированный биллингом токен",
+            "nullable": true
+          },
+          "clinic": {
+            "type": "string",
+            "description": "Индентификатор(код) клиники. Обязательное поле",
+            "nullable": true
+          },
+          "clinic_name": {
+            "type": "string",
+            "description": "Наименование клиники",
+            "nullable": true
+          },
+          "department": {
+            "type": "string",
+            "description": "Индентификатор(код) отделения",
+            "nullable": true
+          },
+          "department_name": {
+            "type": "string",
+            "description": "Наименование отделения",
+            "nullable": true
+          },
+          "doctor": {
+            "type": "string",
+            "description": "Индентификатор(код) врача. Обязательное поле",
+            "nullable": true
+          },
+          "doctor_name": {
+            "type": "string",
+            "description": "Имя врача",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Ссылка на фронт ЭКФ на результаты назначения конкретной фармакотерапии, только если указан код клиники, доктора, пациента",
+            "nullable": true
+          },
+          "danger": {
+            "type": "number",
+            "description": "Степень максимальной опасности лекарственного назначения",
+            "format": "double",
+            "nullable": true
+          },
+          "caution": {
+            "$ref": "#/components/schemas/MisCaution"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Язык, на котором будет восприниматься запрос и формироваться ответ",
+            "default": "ru",
+            "nullable": true
+          },
+          "alert": {
+            "$ref": "#/components/schemas/Alert"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Формат передачи данных при работе с МИС-ами"
+      }
+    }
+  }
+}
