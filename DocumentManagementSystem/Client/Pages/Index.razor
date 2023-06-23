@@ -1,26 +1,33 @@
 ﻿@page "/"
 @using DocumentManagementSystem.Shared
 @inject NavigationManager Navigation
+@inject HttpClient client;
 
 <PageTitle>Все проекты</PageTitle>
-
-@foreach (var document in documents)
+@if (documents == null)
 {
-    <NavLink class="nav-link">
-        <h3 class="opblock-tag" @onclick="()=>NavigateToViewingComponent(document.Code)">
-            <div>
-                <span style="font-size: 24px">@document.Name</span>
-                <p>@document.Description</p>
-            </div>
-            <button aria-expanded="true" class="expand-operation">
-                <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-                    <g transform="translate(0,512) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
-                        <path d="M1432 4737 c-56 -56 -102 -107 -102 -112 0 -6 462 -472 1027 -1037 l1028 -1028 -1028 -1028 c-565 -565 -1027 -1032 -1027 -1037 0 -6 46 -56 103 -113 l102 -102 1140 1140 1140 1140 -1140 1140 -1140 1140 -103 -103z" />
-                    </g>
-                </svg>
-            </button>
-        </h3>
-    </NavLink>
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @foreach (var document in documents)
+    {
+        <NavLink class="nav-link">
+            <h3 class="opblock-tag" @onclick="()=>NavigateToViewingComponent(document.Code)">
+                <div>
+                    <span style="font-size: 24px">@document.Name</span>
+                    <p>@document.Description</p>
+                </div>
+                <button aria-expanded="true" class="expand-operation">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+                        <g transform="translate(0,512) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                            <path d="M1432 4737 c-56 -56 -102 -107 -102 -112 0 -6 462 -472 1027 -1037 l1028 -1028 -1028 -1028 c-565 -565 -1027 -1032 -1027 -1037 0 -6 46 -56 103 -113 l102 -102 1140 1140 1140 1140 -1140 1140 -1140 1140 -103 -103z" />
+                        </g>
+                    </svg>
+                </button>
+            </h3>
+        </NavLink>
+    }
 }
 
 @code {
@@ -29,28 +36,12 @@
         Navigation.NavigateTo($"/viewing/{code}");
     }
 
-    List<ShortDescriptionDocumentation> documents = new()
+    List<ShortDescriptionDocumentation>? documents;
+
+    protected override async Task OnInitializedAsync()
     {
-        new ShortDescriptionDocumentation()
-        {
-            Id = Guid.NewGuid(),
-            Code = "ECP",
-            Name = "Электронный клинический фармаколог",
-            Description = "«Электронный Клинический Фармаколог» – ассистент врача, помогающий минимизировать риск врачебных ошибок и подобрать персонализированную фармакотерапию пациенту. " +
-            "ЭКФ способствует снижению рисков врачебных ошибок и осложнений в клинической практике, а также сопровождает врача в условиях повышенной ответственности и нагрузки. ​" +
-            "При использовании ЭКФ  уменьшается количество побочных эффектов от применения лекарственных средств, сокращается время приема пациента, повышается качество оказания медицинской помощи, " +
-            "снижаются затраты медицинской организации на закупку медикаментов за счет более рациональных назначений врача. Программа интегрируется в МИС, " +
-            "в фоновом режиме отслеживает лекарственные назначения и выдает рекомендации на автоматизированных рабочих местах врачей."
-        },
-        new ShortDescriptionDocumentation()
-        {
-            Id = Guid.NewGuid(),
-            Code = "FT",
-            Name = "PharmTAXI",
-            Description = "ФАРМТАКСИ – СИСТЕМА ЭЛЕКТРОННЫХ РЕЦЕПТОВСистема осуществляет передачу списка лекарственных назначений от врача к пациенту и от пациента в аптеку. " +
-            "Это глобальная сеть обмена электронными рецептами, оснащенная специальной интеллектуальной системой, которая устраняет ошибки и повышает безопасность использования лекарственных средств на всех этапах: назначения, отпуска, применения"
-        }
-    };
+        var doc = await client.GetFromJsonAsync<List<ShortDescriptionDocumentation>>($"/ShortDescription");
 
-
+        documents = doc;
+    }
 }
