@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentManagementSystem.Server", "DocumentManagementSystem\Server\DocumentManagementSystem.Server.csproj", "{53CC4EF8-6311-418D-8CBF-81B8AFF358F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagementSystem.Server", "DocumentManagementSystem\Server\DocumentManagementSystem.Server.csproj", "{53CC4EF8-6311-418D-8CBF-81B8AFF358F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentManagementSystem.Client", "DocumentManagementSystem\Client\DocumentManagementSystem.Client.csproj", "{C1FE1CA1-31DD-49C3-8901-5C185AA66380}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagementSystem.Client", "DocumentManagementSystem\Client\DocumentManagementSystem.Client.csproj", "{C1FE1CA1-31DD-49C3-8901-5C185AA66380}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentManagementSystem.Shared", "DocumentManagementSystem\Shared\DocumentManagementSystem.Shared.csproj", "{E770EE0E-3D9C-4F4E-9029-E8BC4D843CF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagementSystem.Shared", "DocumentManagementSystem\Shared\DocumentManagementSystem.Shared.csproj", "{E770EE0E-3D9C-4F4E-9029-E8BC4D843CF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

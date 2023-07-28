@@ -1,0 +1,151 @@
+﻿@using DocumentManagementSystem.Shared
+@using System.Text.RegularExpressions;
+@using Microsoft.AspNetCore.Components.Rendering;
+
+
+@if (Info is not null)
+{
+    <div class="info">
+        <hgroup class="main">
+            <h2 class="title">
+                @if (!string.IsNullOrWhiteSpace(Info.Title))
+                {
+                    @Info.Title
+
+                    <span>
+                        @if (!string.IsNullOrWhiteSpace(Info.Version))
+                        {
+                            <small>
+                                <pre class="version">@Info.Version</pre>
+                            </small>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(OpenAPI))
+                        {
+                            <small class="version-stamp">
+                                <pre class="version">OAS @OpenAPI</pre>
+                            </small>
+                        }
+                    </span>
+                }
+            </h2>
+        </hgroup>
+        @if (!string.IsNullOrWhiteSpace(Info?.Description))
+        {
+            <div class="description">
+                <div class="renderedMarkdown">
+                    @{
+                        ParseDescription(__builder, Info.Description);
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public Info? Info { get; set; }
+    [Parameter] public string? OpenAPI { get; set; }
+
+
+    Regex regexTextAndURL = new Regex(@"\[[^\]]*\]\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    Regex regexText = new Regex(@"\[[^\]]*\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    Regex regexURL = new Regex(@"\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrWhiteSpace(OpenAPI))
+        {
+            var openAPIVersion = OpenAPI.Split('.', StringSplitOptions.RemoveEmptyEntries);
+
+            if (openAPIVersion.Length > 0)
+                OpenAPI = openAPIVersion[0];
+            if (openAPIVersion.Length > 1)
+                OpenAPI += "." + openAPIVersion[1];
+        }
+
+    }
+
+    void ParseDescription(RenderTreeBuilder __builder, string description)
+    {
+        if (string.IsNullOrWhiteSpace(description)) return;
+        var paragraphs = description.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+
+        bool list = false;
+
+        foreach (var paragraph in paragraphs)
+        {
+            if (paragraph[0] == '-')
+            {
+                MatchCollection matches = regexTextAndURL.Matches(paragraph);
+                if (matches.Count > 0)
+                {
+                    foreach (Match math in matches)
+                    {
+                        string mathString = math.ToString();
+                        var texts = paragraph.Split(mathString, StringSplitOptions.RemoveEmptyEntries);
+
+                        MatchCollection textMatch = regexText.Matches(mathString);
+                        MatchCollection URLMatch = regexURL.Matches(mathString);
+
+                        if (!list) { }
+
+                        <li>
+                            @if (texts.Length > 0)
+                                @texts[0]
+
+
+
+
+                                <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
+
+                                @if (texts.Length > 1)
+                                @texts[1]
+
+
+
+                            </li>
+                    }
+                }
+                else
+                {
+                    <li>@paragraph[1..]</li>
+                }
+            }
+            else
+            {
+                MatchCollection matches = regexTextAndURL.Matches(paragraph);
+                if (matches.Count > 0)
+                {
+                    foreach (Match math in matches)
+                    {
+                        string mathString = math.ToString();
+                        var texts = paragraph.Split(mathString, StringSplitOptions.RemoveEmptyEntries);
+
+                        MatchCollection textMatch = regexText.Matches(mathString);
+                        MatchCollection URLMatch = regexURL.Matches(mathString);
+
+                        <p>
+                            @if (texts.Length > 0)
+                                @texts[0]
+
+
+
+
+                                <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
+
+                                @if (texts.Length > 1)
+                                @texts[1]
+
+
+
+                            </p>
+                    }
+                }
+                else
+                {
+                    <p>@paragraph</p>
+                }
+            }
+        }
+    }
+}

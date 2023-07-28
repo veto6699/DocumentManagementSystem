@@ -1,0 +1,906 @@
+﻿@page "/viewingOld/{Code}"
+@using DocumentManagementSystem.Shared;
+@using System.Text;
+@using Microsoft.AspNetCore.Components.Rendering;
+@inject HttpClient client;
+@using System.Text.RegularExpressions;
+@using DocumentManagementSystem.Shared.OpenApi;
+
+<PageTitle>Просмотр</PageTitle>
+
+@if (document == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <div class="information-container wrapper">
+            <section class="block col-12">
+                <div>
+                    <div class="info">
+                        <hgroup class="main">
+                            <h2 class="title">
+                                @if (!string.IsNullOrWhiteSpace(document.Info.Title))
+                                {
+                                    @document.Info.Title
+
+                                    @if (!string.IsNullOrWhiteSpace(document.Info.Version) || !string.IsNullOrWhiteSpace(document.OpenAPI))
+                                    {
+                                        <span>
+                                            @if (!string.IsNullOrWhiteSpace(document.Info.Version))
+                                            {
+                                                <small>
+                                                    <pre class="version">@document.Info.Version</pre>
+                                                </small>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(document.OpenAPI))
+                                            {
+                                                <small class="version-stamp">
+                                                    <pre class="version">OAS @document.OpenAPI</pre>
+                                                </small>
+                                            }
+                                        </span>
+                                    }
+                                }
+                            </h2>
+                        </hgroup>
+                        @if (!string.IsNullOrWhiteSpace(document.Info.Description))
+                        {
+                            <div class="description">
+                                <div class="renderedMarkdown">
+                                    @{
+                                        ParseDescription(__builder, document.Info.Description);
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        </div>
+        @if (!(document.Servers is null) && document.Servers.Count > 0)
+        {
+            <div class="scheme-container">
+                <section class="schemes wrapper block col-12">
+                    <div>
+                        <span class="servers-title">Сервера</span>
+                        <div class="servers">
+                            <label for="servers">
+                                <select>
+                                    @foreach (var server in document.Servers)
+                                    {
+                                        <option value="@server.URL">@server.URL.TrimEnd('/')</option>
+                                    }
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        }
+        <div class="wrapper">
+            <section class="block col-12 block-desktop col-12-desktop">
+                <div>
+                    @foreach (var tag in APIs)
+                    {
+                        <div class="opblock-tag-section is-open">
+                            <h4 class="opblock-tag no-desc" id="operations-tag-Mis" data-tag="Mis" data-is-open="true">
+                                <a class="nostyle" href="#/Mis">
+                                    <span>@tag.Key</span>
+                                </a>
+                                <button class="expand-operation" title="Collapse operation">
+                                    <svg class="arrow" width="20" height="20">
+                                        <path d="M17.418 6.109c.272-.268.709-.268.979 0s.271.701 0 .969l-7.908 7.83c-.27.268-.707.268-.979 0l-7.908-7.83c-.27-.268-.27-.701 0-.969.271-.268.709-.268.979 0L10 13.25l7.418-7.141z" />
+                                    </svg>
+                                </button>
+                            </h4>
+                            <div class="no-margin">
+                                <div class="operation-tag-content">
+                                    <div class="opblock opblock-post is-open" id="operations-Mis-post_Mis_NewTherapy">
+                                        <div class="opblock-summary opblock-summary-post">
+                                            <span class="opblock-summary-method">POST</span>
+                                            <span class="opblock-summary-path" data-path="/Mis/NewTherapy">
+                                                <a class="nostyle" href="#/Mis/post_Mis_NewTherapy">
+                                                    <span>&ZeroWidthSpace;/Mis&ZeroWidthSpace;/NewTherapy</span>
+                                                </a>
+                                            </span>
+                                            <div class="opblock-summary-description">(Основное) Проверка и назначение пациенту новой фармакотерапии c отменой всех предыдущих назначений</div>
+                                        </div>
+                                        <div class="no-margin">
+                                            <div class="opblock-body">
+                                                <div class="opblock-description-wrapper">
+                                                    <div class="opblock-description">
+                                                        <div class="renderedMarkdown">
+                                                            <p>
+                                                                Данный API предназначен для проверки и назначения пациенту новой фармакотерапии c заменой актуальных назначений указанным.
+                                                                Т.е. все ЛС которые были ранее назначены будут заменены ЛС из запроса.
+                                                                API в ответ возвращает итоговое значение максимального уровня опасности (параметр danger) и URL-ссылку, по которой можно запросить результат проверки листа назначения в web-интерфейсе ЭКФ.
+                                                            </p>
+                                                            <p>Для каждого запроса в ответе будет уникальная ссылка, при открытии которой всегда будут отображаться одиниковые данные, которые не меняются с течением времени или при запросах на другие API.</p>
+                                                            <p>По данному запросу система ЭКФ анализирует лист назначения и данные пациента, формирует предупреждения и соответствующие рекомендации.</p>
+                                                            <p>Для правильной работы API с растворами есть несколько правил:</p>
+                                                            <ul>
+                                                                <li>сам раствор добавляется в запрос как отдельный объект "MisDrug" в "drugs", с "type": "LQ",</li>
+                                                                <li>компоненты раствора добавляются как отдельные объекты "MisDrug" в "drugs",</li>
+                                                                <li>у раствора и его компонентов должен быть одинаковый "group", он должен быть заполнен и не равен 0,</li>
+                                                                <li>у компонентов раствора "schedule" не нужно заполнять, данные будут сохранены, но в расчетах участвовать не будут, будут использованы данные из "schedule" раствора,</li>
+                                                                <li>"method" нужно указывать только для раствора, у компонентов раствора это будет проигнорировано,</li>
+                                                                <li>все дозировки нужно указывать у компонентов раствора, для раствора все дозировки считаются по дозировкам компонентов,</li>
+                                                                <li>для расчета скорости введения раствора нужно указать "use_duration" и "use_duration_unit", по умолчанию "use_duration" - 1, "use_duration_unit" - минута.</li>
+                                                            </ul>
+                                                            <p>В поле disease_classifier указывается:</p>
+                                                            <ul>
+                                                                <li>null или string.Empty - поиск по именам во всех классификаторах,</li>
+                                                                <li>mkb10 - Поиск именам МКБ10,</li>
+                                                                <li>mkb10code - Поиск кодам МКБ10,</li>
+                                                                <li>mkb10multi - Поиск в МКБ10 и по именам и по кодам (не нежелательно - в редких случаях возможны неоднозначности в случае равноценных совпадений).</li>
+                                                            </ul>
+                                                            <p>
+                                                                Пример запроса с диагнозом по коду МКБ-10, параметр key надо заполнить.
+                                                                В поле disease/co-disease указывается код заболевания по МКБ-10
+                                                            </p>
+                                                            <pre>
+                                                            <code>POST /NewTherapy
+                                                {
+                                                    "key": "ВВЕДИТЕ ВАШ КЛЮЧ!!!",
+                                                    "clinic": "Clinic56",
+                                                    "clinic_name": "Test Clinic",
+                                                    "department": "Department976",
+                                                    "department_name": "Test Department",
+                                                    "doctor": "Doctor26",
+                                                    "doctor_name": "Test Doctor",
+                                                    "patient": {
+                                                        "code": "TestPat398",
+                                                        "clinical_case": "АБ22/5366293",
+                                                        "lastname": "Patient",
+                                                        "firstname": "Test",
+                                                        "patronymic": "MKB10",
+                                                        "snils": "123-456-789 00",
+                                                        "email": "test@email.net",
+                                                        "birthdate": 1050095200000,
+                                                        "sex": "m",
+                                                        "growth": 190,
+                                                        "weight": 80,
+                                                        "disease": [
+                                                            "J11.1"
+                                                        ],
+                                                        "co_disease": [
+                                                            "I15.2"
+                                                        ],
+                                                        "disease_classifier": "mkb10code",
+                                                        "allergy": [
+                                                            "йод"
+                                                        ],
+                                                        "alcohol": true,
+                                                        "driving": true
+                                                    },
+                                                    "drugs": [
+                                                        {
+                                                            "name": "Парацетамол",
+                                                            "type": "TN",
+                                                            "form": "таблетка",
+                                                            "method": "в/в",
+                                                            "dosage": [
+                                                                2.5
+                                                                ],
+                                                            "dosage_unit": "мг",
+                                                            "use_calc": 1,
+                                                            "use_calc_unit": "г",
+                                                            "schedule": {
+                                                                "dateStart": 1661904000000,
+                                                                "duration": "ежедневно",
+                                                                "sequence": "1 раз в день"
+                                                            },
+                                                            "fp_form": "блистер",
+                                                            "fp_dosage": 10,
+                                                            "fp_dosage_unit": "штука",
+                                                            "specials": "после еды"
+                                                        }
+                                                    ],
+                                                    "parsedrugs": [
+                                                        "Умифеновир 10 мг 3 раза в день по 0,5 г до отмены"
+                                                    ],
+                                                    "lang": "ru"
+                                                }
+                                                </code>
+                                                                                                                                                            </pre>
+                                                            <p>Пример запроса с диагнозом строкой, параметр key надо заполнить</p>
+                                                            <pre>
+                                                            <code>POST /NewTherapy
+                                                {
+                                                    "key": "ВВЕДИТЕ ВАШ КЛЮЧ!!!",
+                                                    "lang": "ru",
+                                                    "clinical_case": "АБ22/5366293",
+                                                    "clinic": "test",
+                                                    "clinic_name": "test",
+                                                    "department": "1",
+                                                    "department_name": "Clinic department",
+                                                    "doctor": "6",
+                                                    "doctor_name": "Testovy Vrach",
+                                                    "patient": {
+                                                        "name": "Test Pat",
+                                                        "code": "398",
+                                                        "birthdate": 1050095200000,
+                                                        "snils": "123-456-789 00",
+                                                        "sex": "male",
+                                                        "disease": [
+                                                            "Influenza"
+                                                        ],
+                                                        "co_disease": [],
+                                                        "allergy": [],
+                                                        "pregnancy": false,
+                                                        "lactation": false,
+                                                        "alcohol": false,
+                                                        "driving": false,
+                                                        "disease_classifier": null
+                                                    },
+                                                    "parsedrugs": [
+                                                        "Arbidol"
+                                                    ],
+                                                    "drugs": [
+                                                        {
+                                                            "name": "Arbidol",
+                                                            "type": "DV",
+                                                            "form": "tablet",
+                                                            "schedule": {
+                                                                "dateStart": 1012803200000
+                                                            },
+                                                            "dosage": [],
+                                                            "dosage_unit": "",
+                                                            "use_dosage": [],
+                                                            "use_dosage_unit": "",
+                                                            "use_calc": 0,
+                                                            "use_calc_unit": "",
+                                                            "use_duration": 0,
+                                                            "use_duration_unit": ""
+                                                        }
+                                                    ]
+                                                }
+                                                </code>
+                                                                                                                                                            </pre>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="opblock-section">
+                                                    <div class="opblock-section-header">
+                                                        <div class="tab-header">
+                                                            <div class="tab-item active">
+                                                                <h4 class="opblock-title">
+                                                                    <span>Parameters</span>
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class="try-out">
+                                                            <button class="btn try-out__btn">Try it out </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="parameters-container">
+                                                        <div class="opblock-description-wrapper"><p>No parameters</p></div>
+                                                    </div>
+                                                    <div class="opblock-section opblock-section-request-body">
+                                                        <div class="opblock-section-header">
+                                                            <h4 class="opblock-title parameter__name undefined">Request body</h4>
+                                                            <label>
+                                                                <div class="content-type-wrapper body-param-content-type">
+                                                                    <select class="content-type">
+                                                                        <option value="application/json">application/json</option>
+                                                                    </select>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                        <div class="opblock-description-wrapper">
+                                                            <div>
+                                                                <div class="model-example">
+                                                                    <ul class="tab">
+                                                                        <li class="tabitem active">
+                                                                            <a class="tablinks" data-name="example">Example Value</a>
+                                                                        </li>
+                                                                        <li class="tabitem">
+                                                                            <a class="tablinks" data-name="model">Schema</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                    <div>
+                                                                        <div class="highlight-code">
+                                                                            <pre class="body-param__example microlight" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(51, 51, 51); color: white;">
+                                                                            <code style="white-space: pre;">
+                                                                            <span>{</span><span></span>
+                                                                            <span class="hljs-attr">"key"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"clinic"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"clinic_name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"department"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"department_name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"doctor"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"doctor_name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"patient"</span><span>: {</span><span></span>
+                                                                            <span class="hljs-attr">"code"</span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"clinical_case"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"lastname"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"firstname"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"patronymic"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"snils"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"email"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"birthdate"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"sex"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"growth"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"weight"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"disease"</span><span>: [</span>
+                                                                            <span></span><span style="color: rgb(162, 252, 162);">"string"</span>
+                                                                            <span></span>],<span></span>
+                                                                            <span class="hljs-attr">"co_disease"</span><span>: [</span><span></span>
+                                                                            <span style="color: rgb(162, 252, 162);">"string"</span>
+                                                                            <span></span>],<span></span>
+                                                                            <span class="hljs-attr">"disease_classifier"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"allergy"</span><span>: [</span><span></span>
+                                                                            <span style="color: rgb(162, 252, 162);">"string"</span>
+                                                                            <span></span>],<span></span>
+                                                                            <span class="hljs-attr">"pregnancy"</span><span>: </span><span style="color: rgb(252, 194, 140);">true</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"trimester"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"gestation"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"lactation"</span><span>: </span><span style="color: rgb(252, 194, 140);">true</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"alcohol"</span><span>: </span><span style="color: rgb(252, 194, 140);">true</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"driving"</span><span>: </span><span style="color: rgb(252, 194, 140);">true</span>
+                                                                            <span></span>},<span></span>
+                                                                            <span class="hljs-attr">"drugs"</span><span>: [</span>
+                                                                                                                                {<span></span>
+                                                                            <span class="hljs-attr">"name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"type"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"group"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"form"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"method"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"dosage"</span><span>: [</span><span></span>
+                                                                            <span style="color: rgb(211, 99, 99);">0</span>
+                                                                            <span></span>],<span></span>
+                                                                            <span class="hljs-attr">"dosage_unit"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"use_calc"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"use_calc_unit"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"use_duration"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"use_duration_unit"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"parsedosage"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"schedule"</span><span>: {</span><span></span>
+                                                                            <span class="hljs-attr">"appointmentСalendar"</span><span>: [</span>
+                                                                                                                                {<span></span>
+                                                                            <span class="hljs-attr">"date"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"timeReceipt"</span><span>: [</span>
+                                                                                                                                {<span></span>
+                                                                            <span class="hljs-attr">"hours"</span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"minutes"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"count"</span><span style="color: rgb(211, 99, 99);">0</span><span></span>
+                                                                                                                                }]
+                                                                                                                                }],<span></span>
+                                                                            <span class="hljs-attr">"duration"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"sequence"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"dateStart"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"dateFinish"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"finishAlternate"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span></span>
+                                                                                                                                },<span></span>
+                                                                            <span class="hljs-attr">"fp_form"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"fp_dosage"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"fp_dosage_unit"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,</span><span></span>
+                                                                            <span class="hljs-attr">"specials"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span></span>
+                                                                                                                                }],<span></span>
+                                                                            <span class="hljs-attr">"parsedrugs"</span><span>: [</span><span></span>
+                                                                            <span style="color: rgb(162, 252, 162);">"string"</span>
+                                                                            <span></span>],<span></span>
+                                                                            <span class="hljs-attr">"lang"</span><span>: </span><span style="color: rgb(162, 252, 162);">"ru"</span>
+                                                                            <span></span>}
+                                                                                                                                                            </code>
+                                                                                                                                                            </pre>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div><div class="execute-wrapper"></div><div class="responses-wrapper">
+                                                    <div class="opblock-section-header">
+                                                        <h4>Responses</h4>
+                                                    </div>
+                                                    <div class="responses-inner">
+                                                        <table class="responses-table">
+                                                            <thead>
+                                                                <tr class="responses-header">
+                                                                    <td class="col_header response-col_status">Code</td>
+                                                                    <td class="col_header response-col_description">Description</td>
+                                                                    <td class="col col_header response-col_links">Links</td>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr class="response " data-code="200">
+                                                                    <td class="response-col_status">200</td>
+                                                                    <td class="response-col_description">
+                                                                        <div class="response-col_description__inner">
+                                                                            <div class="renderedMarkdown">
+                                                                                <p>Success</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <section class="response-controls">
+                                                                            <div class="response-control-media-type response-control-media-type--accept-controller">
+                                                                                <small class="response-control-media-type__title">Media type</small>
+                                                                                <div class="content-type-wrapper ">
+                                                                                    <select class="content-type">
+                                                                                        <option value="text/plain">text/plain</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                                <small class="response-control-media-type__accept-message">Controls <code>Accept</code> header.</small>
+                                                                            </div>
+                                                                        </section>
+                                                                        <div class="model-example">
+                                                                            <ul class="tab">
+                                                                                <li class="tabitem active">
+                                                                                    <a class="tablinks" data-name="example">Example Value</a>
+                                                                                </li>
+                                                                                <li class="tabitem">
+                                                                                    <a class="tablinks" data-name="model">Schema</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                            <div>
+                                                                                <div>
+                                                                                    <div class="highlight-code">
+                                                                                        <pre class="example microlight" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(51, 51, 51); color: white;">
+                                                                                        <code style="white-space: pre;"><span>{
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"alert"</span><span>: {
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"code"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"actionCode"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"title"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"message"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"level"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"sticky"</span><span>: </span><span style="color: rgb(252, 194, 140);">true</span><span>
+                                                                                                                                                            </span>},
+                                                                                        <span></span><span class="hljs-attr">"key"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"clinic"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"clinic_name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"department"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"department_name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"doctor"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"doctor_name"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"url"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"danger"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"caution"</span><span>: {
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"title"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
+                                                                                                                                                            </span><span></span><span class="hljs-attr">"items"</span><span>: [
+                                                                                                                                                            </span><span></span><span style="color: rgb(252, 194, 140);">null</span><span>
+                                                                                                                                                            </span>]},
+                                                                                        <span></span><span class="hljs-attr">"lang"</span><span>: </span><span style="color: rgb(162, 252, 162);">"ru"</span><span>
+                                                                                                                                                            </span>}
+                                                                                                                                                            </code>
+                                                                                                                                                            </pre>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="response-col_links">
+                                                                        <i>No links</i>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+        <div class="wrapper">
+            <section class="block col-12 block-desktop col-12-desktop">
+                <section class="models is-open">
+                    <h4>
+                        <span>Schemas</span>
+                        <svg width="20" height="20">
+                            <use xlink:href="#large-arrow-down"></use>
+                        </svg>
+                    </h4>
+                    <div class="no-margin">
+                        <div id="model-Alert" class="model-container" data-name="Alert">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">Alert</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisCaution" class="model-container" data-name="MisCaution">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisCaution</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisConvertRequest" class="model-container" data-name="MisConvertRequest">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisConvertRequest</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisConvertResponse" class="model-container" data-name="MisConvertResponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisConvertResponse</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"> </span>
+                            </span>
+                        </div>
+                        <div id="model-MisDrug" class="model-container" data-name="MisDrug">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisDrug</span>
+                                    </span>
+                                </span>
+                                <span class="pointer"><span class="model-toggle collapsed"></span></span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisDrugResponse" class="model-container" data-name="MisDrugResponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisDrugResponse</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisCheckRequest" class="model-container" data-name="MisCheckRequest">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisCheckRequest</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisCheckReponse" class="model-container" data-name="MisCheckReponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisCheckReponse</span>
+                                    </span>
+                                </span><span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisNewTherapyRequest" class="model-container" data-name="MisNewTherapyRequest">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisNewTherapyRequest</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisNewTherapyReponse" class="model-container" data-name="MisNewTherapyReponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisNewTherapyReponse</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisParseDrugsRequest" class="model-container" data-name="MisParseDrugsRequest">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisParseDrugsRequest</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisParseDrugsResponse" class="model-container" data-name="MisParseDrugsResponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisParseDrugsResponse</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisPatient" class="model-container" data-name="MisPatient">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisPatient</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisPatientCodeRequest" class="model-container" data-name="MisPatientCodeRequest">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisPatientCodeRequest</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"> </span>
+                            </span>
+                        </div>
+                        <div id="model-MisPatientCodeResponse" class="model-container" data-name="MisPatientCodeResponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisPatientCodeResponse</span>
+                                    </span>
+                                </span>
+                                <span class="pointer"><span class="model-toggle collapsed"></span></span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisTherapyRequest" class="model-container" data-name="MisTherapyRequest">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisTherapyRequest</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisTherapyResponse" class="model-container" data-name="MisTherapyResponse">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisTherapyResponse</span>
+                                    </span>
+                                </span>
+                                <span class="pointer"><span class="model-toggle collapsed"></span></span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisSchedule" class="model-container" data-name="MisSchedule">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisSchedule</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisAppointmentCalendar" class="model-container" data-name="MisAppointmentCalendar">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisAppointmentCalendar</span>
+                                    </span>
+                                </span>
+                                <span class="pointer"><span class="model-toggle collapsed"></span></span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisAppointmentCalendarItem" class="model-container" data-name="MisAppointmentCalendarItem">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisAppointmentCalendarItem</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                        <div id="model-MisNewTherapyReponseQMS" class="model-container" data-name="MisNewTherapyReponseQMS">
+                            <span class="models-jump-to-path"></span>
+                            <span class="model-box">
+                                <span class="pointer">
+                                    <span class="model-box">
+                                        <span class="model model-title">MisNewTherapyReponseQMS</span>
+                                    </span>
+                                </span>
+                                <span class="pointer">
+                                    <span class="model-toggle collapsed"></span>
+                                </span>
+                                <span class="pointer"></span>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Code { get; set; }
+
+    public OpenAPIRoot? document;
+
+    public Dictionary<string, Dictionary<string, PathItem>>? APIs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Code)) return;
+
+        var doc = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document?Code={Code}");
+
+        if (!(doc.Paths is null))
+        {
+            if (!string.IsNullOrWhiteSpace(doc.OpenAPI))
+            {
+                var openAPIVersion = doc.OpenAPI.Split('.', StringSplitOptions.RemoveEmptyEntries);
+
+                if (openAPIVersion.Length > 0)
+                    doc.OpenAPI = openAPIVersion[0];
+                if (openAPIVersion.Length > 1)
+                    doc.OpenAPI += "." + openAPIVersion[1];
+            }
+
+            if (doc.Paths.Count > 0)
+            {
+                APIs = new Dictionary<string, Dictionary<string, PathItem>>();
+
+                foreach (var path in doc.Paths)
+                {
+                    if (!APIs.ContainsKey(path.Value.Post.Tags[0])) APIs.Add(path.Value.Post.Tags[0], new Dictionary<string, PathItem>());
+
+                    if (!APIs[path.Value.Post.Tags[0]].ContainsKey(path.Key)) APIs[path.Value.Post.Tags[0]].Add(path.Key, path.Value);
+                }
+            }
+        }
+
+        document = doc;
+    }
+
+    Regex regexTextAndURL = new Regex(@"\[[^\]]*\]\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    Regex regexText = new Regex(@"\[[^\]]*\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    Regex regexURL = new Regex(@"\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    void ParseDescription(RenderTreeBuilder __builder, string description)
+    {
+        if (string.IsNullOrWhiteSpace(description)) return;
+        var paragraphs = description.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+
+        bool list = false;
+
+        foreach (var paragraph in paragraphs)
+        {
+            if (paragraph[0] == '-')
+            {
+                MatchCollection matches = regexTextAndURL.Matches(paragraph);
+                if (matches.Count > 0)
+                {
+                    foreach (var math in matches)
+                    {
+                        string mathString = math.ToString();
+                        var texts = paragraph.Split(mathString, StringSplitOptions.RemoveEmptyEntries);
+
+                        MatchCollection textMatch = regexText.Matches(mathString);
+                        MatchCollection URLMatch = regexURL.Matches(mathString);
+
+                        if(!list) {  }
+
+                        <li>
+                            @if (texts.Length > 0) @texts[0]
+
+                            <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
+
+                            @if (texts.Length > 1) @texts[1]
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li>@paragraph[1..]</li>
+                }
+            }
+            else
+            {
+                MatchCollection matches = regexTextAndURL.Matches(paragraph);
+                if (matches.Count > 0)
+                {
+                    foreach (var math in matches)
+                    {
+                        string mathString = math.ToString();
+                        var texts = paragraph.Split(mathString, StringSplitOptions.RemoveEmptyEntries);
+
+                        MatchCollection textMatch = regexText.Matches(mathString);
+                        MatchCollection URLMatch = regexURL.Matches(mathString);
+
+                        <p>
+                            @if (texts.Length > 0) @texts[0]
+
+                            <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
+
+                            @if (texts.Length > 1) @texts[1]
+                        </p>
+                    }
+                }
+                else
+                {
+                    <p>@paragraph</p>
+                }
+            }
+        }
+    }
+}

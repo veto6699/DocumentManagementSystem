@@ -1,0 +1,19 @@
+﻿@using DocumentManagementSystem.Shared.OpenApi;
+
+<div>
+    @if (Document is not null)
+    {
+        <div class="information-container wrapper">
+            <UIInfo Info="@Document.Info" OpenAPI="@Document.OpenAPI" />
+        </div>
+        <UIServers Servers="@Document.Servers" />
+        <div class="wrapper">
+            <UIPaths Paths="@Document.Paths" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public OpenAPIRoot? Document { get; set; }
+    string? OpenAPIVersion;
+}

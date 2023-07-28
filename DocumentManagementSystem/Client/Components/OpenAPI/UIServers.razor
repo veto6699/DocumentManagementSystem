@@ -1,0 +1,26 @@
+﻿@using DocumentManagementSystem.Shared.OpenApi;
+
+@if (Servers is not null)
+{
+    <div class="scheme-container">
+        <section class="schemes wrapper block col-12">
+            <div>
+                <span class="servers-title">Сервера</span>
+                <div class="servers">
+                    <label for="servers">
+                        <select>
+                            @foreach (var server in Servers)
+                            {
+                                <option value="@server.URL">@server.URL.TrimEnd('/')</option>
+                            }
+                        </select>
+                    </label>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    [Parameter] public IList<Server>? Servers { get; set; }
+}
