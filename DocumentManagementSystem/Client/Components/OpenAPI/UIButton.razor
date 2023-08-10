@@ -5,9 +5,10 @@
 </button>
 
 @code {
-    [Parameter] public uint Rotate { get; set; }
+    [Parameter] public ushort Rotate { get; set; }
     [Parameter] public bool IsOpen { get; set; }
-    uint rotate;
+
+    ushort rotate;
 
     protected override void OnInitialized()
     {
