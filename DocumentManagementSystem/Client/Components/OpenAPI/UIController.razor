@@ -1,0 +1,43 @@
+﻿@using DocumentManagementSystem.Client.Models;
+
+<span>
+    <div class="opblock-tag-section">
+        <h3 class="opblock-tag no-desc" @onclick="ButtonRotate">
+            <a class="nostyle">
+                <span>@Controller.Name</span>
+            </a>
+            <small />
+            <button class="expand-operation">
+                <UISVGRotate Rotate="@rotate" />
+            </button>
+        </h3>
+        @if (isOpen)
+        {
+            <div class="no-margin">
+                <div class="operation-tag-content">
+                @foreach (var action in Controller.Actions)
+                {
+                    <UIAction Action="action" />
+                }
+                </div>
+            </div>
+        }
+    </div>
+</span>
+
+@code {
+    [Parameter] public Controller Controller { get; set; }
+
+    bool isOpen { get; set; } = true;
+    short rotate { get; set; } = 180;
+
+    void ButtonRotate()
+    {
+        if (isOpen)
+            rotate -= 180;
+        else
+            rotate += 180;
+
+        isOpen = !isOpen;
+    }
+}

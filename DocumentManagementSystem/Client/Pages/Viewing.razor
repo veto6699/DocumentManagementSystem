@@ -6,19 +6,20 @@
 
 <PageTitle>Просмотр</PageTitle>
 
-<div>
-    <UIRoot Document="@Document" />
-</div>
+<UIRoot Document="@Document" URL="@url"/>
 
 
 @code {
     [Parameter] public string? Code { get; set; }
 
     OpenAPIRoot? Document { get; set; }
+    string url;
 
     protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrWhiteSpace(Code)) Navigation.NavigateTo("/");
+
+        url = client.BaseAddress + $"Document?Code={Code}";
 
         Document = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document?Code={Code}");
     }

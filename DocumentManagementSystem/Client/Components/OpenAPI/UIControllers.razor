@@ -1,0 +1,193 @@
+﻿@using DocumentManagementSystem.Shared.OpenApi;
+@using DocumentManagementSystem.Client.Models;
+
+<div class="wrapper">
+    <section class="block col-12 block-desktop col-12-desktop">
+        <div>
+            @if (APIs is not null)
+            {
+                @foreach (var controller in APIs)
+                {
+                    <UIController Controller="controller" />
+                }
+            }
+        </div>
+    </section>
+</div>
+
+@code {
+    [Parameter] public Dictionary<string, PathItem>? Paths { get; set; }
+    List<Controller> APIs = new();
+
+    protected override void OnInitialized()
+    {
+        if (Paths is not null && Paths.Count > 0)
+        {
+            Dictionary<string, int> DictionaryAPIs = new();
+
+            foreach (var path in Paths)
+            {
+                #region Post
+                if (path.Value.Post is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Post.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Post.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Post.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Post.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Get
+                if (path.Value.Get is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Get.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Get.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Get.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Get.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Put
+                if (path.Value.Put is not null)
+                {
+
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Put.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Put.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Put.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Put.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Delete
+                if (path.Value.Delete is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Delete.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Delete.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Delete.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Delete.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Options
+                if (path.Value.Options is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Options.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Options.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Options.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Options.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Head
+                if (path.Value.Head is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Head.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Head.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Head.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Head.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Trace
+                if (path.Value.Trace is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Trace.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Trace.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Trace.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Trace.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+
+                #region Patch
+                if (path.Value.Patch is not null)
+                {
+                    if (!DictionaryAPIs.ContainsKey(path.Value.Patch.Tags[0]))
+                    {
+                        var controller = new Controller(path.Value.Patch.Tags[0]);
+                        controller.Actions.Add(new(path.Value, path.Key));
+                        APIs.Add(controller);
+
+                        DictionaryAPIs.Add(path.Value.Patch.Tags[0], APIs.Count - 1);
+                        continue;
+                    }
+                    else
+                    {
+                        int index = DictionaryAPIs[path.Value.Patch.Tags[0]];
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                    }
+                }
+                #endregion
+            }
+        }
+    }
+}

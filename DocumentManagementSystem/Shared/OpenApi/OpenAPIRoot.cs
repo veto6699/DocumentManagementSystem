@@ -16,7 +16,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public Components Components { get; set; }
         public Dictionary<string, PathItem> WebHooks { get; set; }
         public IList<Dictionary<string, IList<string>>> Security { get; set; }
-        public IList<string> Tags { get; set; }
+        public IList<Tag> Tags { get; set; }
         public object ExternalDocs { get; set; }
     }
 }

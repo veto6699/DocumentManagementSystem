@@ -13,7 +13,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public string Summary { get; set; }
         public string Version { get; set; }
         public Uri TermsOfService { get; set; }
-        public ICollection<Contact> Contact { get; set; }
-        public ICollection<License> License { get; set; }
+        public Contact Contact { get; set; }
+        public License License { get; set; }
     }
 }

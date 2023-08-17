@@ -1,9 +1,12 @@
 ﻿@page "/"
 @using DocumentManagementSystem.Shared
+@using DocumentManagementSystem.Client.Components.OpenAPI;
 @inject NavigationManager Navigation
 @inject HttpClient client;
 
 <PageTitle>Все проекты</PageTitle>
+
+<div class="wrapper menu">
 @if (documents == null)
 {
     <p><em>Loading...</em></p>
@@ -13,22 +16,20 @@ else
     @foreach (var document in documents)
     {
         <NavLink class="nav-link">
-            <h3 class="opblock-tag" @onclick="()=>NavigateToViewingComponent(document.Code)">
+            <div class="menuItem" @onclick="()=>NavigateToViewingComponent(document.Code)">
                 <div>
-                    <span style="font-size: 24px">@document.Name</span>
+                    <span>@document.Name</span>
                     <p>@document.Description</p>
                 </div>
-                <button aria-expanded="true" class="expand-operation">
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
-                        <g transform="translate(0,512) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
-                            <path d="M1432 4737 c-56 -56 -102 -107 -102 -112 0 -6 462 -472 1027 -1037 l1028 -1028 -1028 -1028 c-565 -565 -1027 -1032 -1027 -1037 0 -6 46 -56 103 -113 l102 -102 1140 1140 1140 1140 -1140 1140 -1140 1140 -103 -103z" />
-                        </g>
-                    </svg>
+                <small/>
+                <button class="expand-operation">
+                    <UISVGRotate Rotate="-90"/>
                 </button>
-            </h3>
+            </div>
         </NavLink>
     }
 }
+</div>
 
 @code {
     private void NavigateToViewingComponent(string code)

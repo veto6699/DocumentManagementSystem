@@ -1,25 +1,52 @@
-﻿<div class="opblock opblock-post">
-    <div class="opblock-summary opblock-summary-post">
-        <button aria-label="post &ZeroWidthSpace;/AI&ZeroWidthSpace;/CG" aria-expanded="false" class="opblock-summary-control">
-            <span class="opblock-summary-method">POST</span>
-            <span class="opblock-summary-path" data-path="/AI/CG">
-                <a class="nostyle">
-                    <span>/AI<wbr>/CG</span>
-                </a>
-            </span>
-            <div class="opblock-summary-description">Клинические рекомендации - рекомендуемая фармакотерапия.</div>
-            <svg class="arrow" width="20" height="20" aria-hidden="true" focusable="false">
-                <use href="#large-arrow-down" xlink:href="#large-arrow-down"></use>
-            </svg>
-        </button>
-        <div class="view-line-link copy-to-clipboard" title="Copy to clipboard">
-            <svg width="15" height="16">
-                <use href="#copy" xlink:href="#copy"></use>
-            </svg>
+﻿@using DocumentManagementSystem.Client;
+
+<span>
+    <div class="opblock opblock-@method @isOpenString">
+        <div class="opblock-summary opblock-summary-@method">
+            <button class="opblock-summary-control expand-operation" @onclick="ButtonRotate">
+                <span class="opblock-summary-method">@Action.Method</span>
+                <span class="opblock-summary-path" data-path="@Action.Path">
+                    <a class="nostyle">
+                        <span>@Action.Path</span>
+                    </a>
+                </span>
+                <div class="opblock-summary-description">@Action.Summary</div>
+                <small />
+                <UISVGRotate Rotate="@rotate" />
+            </button>
         </div>
-    </div><noscript></noscript>
-</div>
+        @if (isOpen)
+        {
+            <UIActionBody Action="@Action" />
+        }
+    </div>
+</span>
 
 @code {
+    [Parameter] public Models.Action Action { get; set; }
+    string method;
+    string? isOpenString;
+    short rotate = 0;
+    bool isOpen = false;
 
+    protected override void OnInitialized()
+    {
+        method = Action.Method.ToLower();
+    }
+
+    void ButtonRotate()
+    {
+        if (isOpen)
+        {
+            rotate -= 180;
+            isOpenString = null;
+        }
+        else
+        {
+            rotate += 180;
+            isOpenString = "is-open";
+        }
+
+        isOpen = !isOpen;
+    }
 }

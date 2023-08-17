@@ -19,30 +19,34 @@ namespace DocumentManagementSystem.Server.Controllers
 
 
         [HttpGet]
-        public async Task<string> Get(string? Code)
+        public async Task<string> Get(string? code)
         {
-            if (Code == "ECP")
+            code = code.ToLower();
+            string fileName = string.Empty;
+
+            switch(code)
             {
-                using (var fs = new FileStream("ecp.json", FileMode.Open)) 
-                {
-                    byte[] buffer = new byte[fs.Length];
-
-                    await fs.ReadAsync(buffer, 0, buffer.Length);
-
-                    return Encoding.Default.GetString(buffer);
-                }
+                case "ecp":
+                    fileName = "ecp.json";
+                    break;
+                case "ecpf":
+                    fileName = "ecpFull.json";
+                    break;
+                case "ft":
+                    fileName = "ft.json";
+                    break;
+                case "ps":
+                    fileName = "ps.json";
+                    break;
             }
 
-            if (Code == "FT")
+            using (var fs = new FileStream(fileName, FileMode.Open))
             {
-                using (var fs = new FileStream("ft.json", FileMode.Open))
-                {
-                    byte[] buffer = new byte[fs.Length];
+                byte[] buffer = new byte[fs.Length];
 
-                    await fs.ReadAsync(buffer, 0, buffer.Length);
+                await fs.ReadAsync(buffer, 0, buffer.Length);
 
-                    return Encoding.Default.GetString(buffer);
-                }
+                return Encoding.Default.GetString(buffer);
             }
 
             return string.Empty;

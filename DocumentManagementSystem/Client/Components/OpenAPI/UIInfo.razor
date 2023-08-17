@@ -5,46 +5,53 @@
 
 @if (Info is not null)
 {
-    <div class="info">
-        <hgroup class="main">
-            <h2 class="title">
-                @if (!string.IsNullOrWhiteSpace(Info.Title))
-                {
-                    @Info.Title
+    <div class="information-container wrapper">
+        <div class="info">
+            <hgroup class="main">
+                <h2 class="title">
+                    @if (!string.IsNullOrWhiteSpace(Info.Title))
+                    {
+                        @Info.Title
 
-                    <span>
-                        @if (!string.IsNullOrWhiteSpace(Info.Version))
-                        {
-                            <small>
-                                <pre class="version">@Info.Version</pre>
-                            </small>
-                        }
-                        @if (!string.IsNullOrWhiteSpace(OpenAPI))
-                        {
-                            <small class="version-stamp">
-                                <pre class="version">OAS @OpenAPI</pre>
-                            </small>
-                        }
-                    </span>
-                }
-            </h2>
-        </hgroup>
-        @if (!string.IsNullOrWhiteSpace(Info?.Description))
-        {
-            <div class="description">
-                <div class="renderedMarkdown">
-                    @{
-                        ParseDescription(__builder, Info.Description);
+                        <span>
+                            @if (!string.IsNullOrWhiteSpace(Info.Version))
+                            {
+                                <small>
+                                    <pre class="version">@Info.Version</pre>
+                                </small>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(openAPI))
+                            {
+                                <small class="version-stamp">
+                                    <pre class="version">@openAPI</pre>
+                                </small>
+                            }
+                        </span>
                     }
+                </h2>
+                <a target="_blank" href="@URL" rel="noopener noreferrer" class="link">
+                    <span class="url">@URL</span>
+                </a>
+            </hgroup>
+            @if (!string.IsNullOrWhiteSpace(Info?.Description))
+            {
+                <div class="description">
+                    <div class="renderedMarkdown">
+                        @{
+                            ParseDescription(__builder, Info.Description);
+                        }
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 }
 
 @code {
     [Parameter] public Info? Info { get; set; }
     [Parameter] public string? OpenAPI { get; set; }
+    [Parameter] public string URL { get; set; }
+    string openAPI;
 
 
     Regex regexTextAndURL = new Regex(@"\[[^\]]*\]\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -58,9 +65,9 @@
             var openAPIVersion = OpenAPI.Split('.', StringSplitOptions.RemoveEmptyEntries);
 
             if (openAPIVersion.Length > 0)
-                OpenAPI = openAPIVersion[0];
-            if (openAPIVersion.Length > 1)
-                OpenAPI += "." + openAPIVersion[1];
+                openAPI = "OAS" + openAPIVersion[0];
+            if (openAPIVersion.Length > 1 && openAPIVersion[1] != "0")
+                openAPI += "." + openAPIVersion[1];
         }
 
     }
@@ -69,8 +76,6 @@
     {
         if (string.IsNullOrWhiteSpace(description)) return;
         var paragraphs = description.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-
-        bool list = false;
 
         foreach (var paragraph in paragraphs)
         {
@@ -87,11 +92,11 @@
                         MatchCollection textMatch = regexText.Matches(mathString);
                         MatchCollection URLMatch = regexURL.Matches(mathString);
 
-                        if (!list) { }
-
                         <li>
                             @if (texts.Length > 0)
                                 @texts[0]
+
+
 
 
 
@@ -100,6 +105,8 @@
 
                                 @if (texts.Length > 1)
                                 @texts[1]
+
+
 
 
 
@@ -131,10 +138,14 @@
 
 
 
+
+
                                 <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
 
                                 @if (texts.Length > 1)
                                 @texts[1]
+
+
 
 
 

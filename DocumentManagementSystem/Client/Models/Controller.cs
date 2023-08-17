@@ -1,16 +1,13 @@
-﻿using DocumentManagementSystem.Client.Components.OpenAPI;
-using DocumentManagementSystem.Shared.OpenApi;
-using Microsoft.AspNetCore.Components;
+﻿using DocumentManagementSystem.Shared.OpenApi;
 
 namespace DocumentManagementSystem.Client.Models
 {
     public struct Controller
     {
-        public Controller(string name, PathItem pathItem)
+        public Controller(string name)
         {
             Name = name;
-            IsOpen = true;
-            Actions = new() { pathItem };
+            Actions = new();
         }
 
         /// <summary>
@@ -18,12 +15,8 @@ namespace DocumentManagementSystem.Client.Models
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// Флаг, инфа о контроллере открыта
-        /// </summary>
-        public bool IsOpen { get; set; }
-        /// <summary>
         /// Список действий
         /// </summary>
-        public List<PathItem> Actions { get; set; }
+        public List<Action> Actions { get; set; }
     }
 }

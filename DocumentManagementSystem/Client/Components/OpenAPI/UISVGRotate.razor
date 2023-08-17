@@ -1,0 +1,10 @@
+﻿@using DocumentManagementSystem.Client.Models;
+
+
+<svg class="arrow" transform="rotate(@Rotate)">
+    <path d="M17.418 6.109c.272-.268.709-.268.979 0s.271.701 0 .969l-7.908 7.83c-.27.268-.707.268-.979 0l-7.908-7.83c-.27-.268-.27-.701 0-.969.271-.268.709-.268.979 0L10 13.25l7.418-7.141z" />
+</svg>
+
+@code {
+    [Parameter] public short Rotate { get; set; }
+}
