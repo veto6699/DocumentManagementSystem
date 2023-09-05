@@ -1,6 +1,9 @@
-﻿@using DocumentManagementSystem.Shared
+﻿@using DocumentManagementSystem.Client.Models;
+@using DocumentManagementSystem.Shared
 @using System.Text.RegularExpressions;
 @using Microsoft.AspNetCore.Components.Rendering;
+@using Microsoft.AspNetCore.Html;
+
 
 
 @if (Info is not null)
@@ -37,9 +40,7 @@
             {
                 <div class="description">
                     <div class="renderedMarkdown">
-                        @{
-                            ParseDescription(__builder, Info.Description);
-                        }
+                        @((MarkupString)Markdig.Markdown.ToHtml(Info.Description))
                     </div>
                 </div>
             }
@@ -53,11 +54,6 @@
     [Parameter] public string URL { get; set; }
     string openAPI;
 
-
-    Regex regexTextAndURL = new Regex(@"\[[^\]]*\]\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-    Regex regexText = new Regex(@"\[[^\]]*\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-    Regex regexURL = new Regex(@"\((http|http(s)?://)?([\w-]+\.)+[\w-]+[.com|.in|.org]+(\[\?%&=]*)?(:\d{2,})?[\/|\w]*\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
     protected override void OnInitialized()
     {
         if (!string.IsNullOrWhiteSpace(OpenAPI))
@@ -68,95 +64,6 @@
                 openAPI = "OAS" + openAPIVersion[0];
             if (openAPIVersion.Length > 1 && openAPIVersion[1] != "0")
                 openAPI += "." + openAPIVersion[1];
-        }
-
-    }
-
-    void ParseDescription(RenderTreeBuilder __builder, string description)
-    {
-        if (string.IsNullOrWhiteSpace(description)) return;
-        var paragraphs = description.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var paragraph in paragraphs)
-        {
-            if (paragraph[0] == '-')
-            {
-                MatchCollection matches = regexTextAndURL.Matches(paragraph);
-                if (matches.Count > 0)
-                {
-                    foreach (Match math in matches)
-                    {
-                        string mathString = math.ToString();
-                        var texts = paragraph.Split(mathString, StringSplitOptions.RemoveEmptyEntries);
-
-                        MatchCollection textMatch = regexText.Matches(mathString);
-                        MatchCollection URLMatch = regexURL.Matches(mathString);
-
-                        <li>
-                            @if (texts.Length > 0)
-                                @texts[0]
-
-
-
-
-
-
-                                <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
-
-                                @if (texts.Length > 1)
-                                @texts[1]
-
-
-
-
-
-                            </li>
-                    }
-                }
-                else
-                {
-                    <li>@paragraph[1..]</li>
-                }
-            }
-            else
-            {
-                MatchCollection matches = regexTextAndURL.Matches(paragraph);
-                if (matches.Count > 0)
-                {
-                    foreach (Match math in matches)
-                    {
-                        string mathString = math.ToString();
-                        var texts = paragraph.Split(mathString, StringSplitOptions.RemoveEmptyEntries);
-
-                        MatchCollection textMatch = regexText.Matches(mathString);
-                        MatchCollection URLMatch = regexURL.Matches(mathString);
-
-                        <p>
-                            @if (texts.Length > 0)
-                                @texts[0]
-
-
-
-
-
-
-                                <a rel="noopener noreferrer" target="_blank" href="@URLMatch[0].ToString()[1..^1]">@textMatch[0].ToString()[1..^1]</a>
-
-                                @if (texts.Length > 1)
-                                @texts[1]
-
-
-
-
-
-                            </p>
-                    }
-                }
-                else
-                {
-                    <p>@paragraph</p>
-                }
-            }
         }
     }
 }

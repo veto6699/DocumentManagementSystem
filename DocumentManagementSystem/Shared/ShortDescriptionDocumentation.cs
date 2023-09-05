@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DocumentManagementSystem.Shared.OpenApi
+namespace DocumentManagementSystem.Shared
 {
     public class ShortDescriptionDocumentation
     {

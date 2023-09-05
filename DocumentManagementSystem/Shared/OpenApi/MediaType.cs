@@ -8,6 +8,9 @@ namespace DocumentManagementSystem.Shared.OpenApi
 {
     public class MediaType
     {
+        /// <summary>
+        /// Структура типа
+        /// </summary>
         public Schema Schema { get; set; }
         public object Example { get; set; }
         public Example Examples { get; set; }

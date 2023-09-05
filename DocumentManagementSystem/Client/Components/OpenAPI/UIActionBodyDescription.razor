@@ -1,0 +1,13 @@
+﻿
+<div class="opblock-description-wrapper">
+    <div class="opblock-description">
+        <div class="renderedMarkdown">
+            @((MarkupString)Markdig.Markdown.ToHtml(Description))
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Description{ get; set; }
+}

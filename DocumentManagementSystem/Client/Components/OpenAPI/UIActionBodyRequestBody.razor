@@ -1,0 +1,83 @@
+﻿
+<div class="opblock-section opblock-section-request-body">
+    <div class="opblock-section-header">
+        <h4 class="opblock-title parameter__name undefined">Тело запроса</h4>
+        <label>
+            @if (MediaTypes is not null && MediaTypes.Count > 0)
+            {
+                <div class="content-type-wrapper body-param-content-type">
+                    <select class="content-type">
+                        @foreach (var mediaType in MediaTypes)
+                        {
+                            <option value="@mediaType">@mediaType</option>
+                        }
+                    </select>
+                </div>
+            }
+        </label>
+    </div>
+    <div class="opblock-description-wrapper">
+        <div>
+            <div class="model-example">
+                <ul class="tab">
+                    <li class="tabitem active">
+                        <button class="tablinks" @onclick="ExampleValueClick">Пример значения</button>
+                    </li>
+                    <li class="tabitem">
+                        <button class="tablinks" @onclick="SchemaClick">Схема</button>
+                    </li>
+                </ul>
+                @if (exampleValueActivate)
+                {
+                    <div class="highlight-code">
+                        <UIActionBodyRequestBodyExampleValue Schema="@Requests.First().Value" />
+                    </div>
+                }
+                else
+                {
+                    <div class="model-box">
+                        <span class="model">
+                            <span class="">
+                                <button aria-expanded="true" class="model-box-control">
+                                    <span class="pointer">
+                                        <span class="model-title">
+                                            <span class="model-hint">/swagger/v1/swagger.json#/components/schemas/UMKBCoreAPI.Models.Api.Requests.User.RequestAuthorization</span>
+                                            <span class="model-title__text">UMKBCoreAPI.Models.Api.Requests.User.RequestAuthorization</span>
+                                        </span>
+                                    </span>
+                                    <span class="model-toggle"></span>
+                                </button>
+                                <span class="brace-open object">{</span><span class="model-jump-to-path"></span><span class="inner-object"><table class="model"><tbody><tr class="property-row"><td>key</td><td><span class="model"><span class=""><button aria-expanded="false" class="model-box-control"><span class="model-toggle collapsed"></span><span>[...]</span></button></span></span></td></tr><tr class="property-row"><td>service</td><td><span class="model"><span class=""><button aria-expanded="false" class="model-box-control"><span class="model-toggle collapsed"></span><span>[...]</span></button></span></span></td></tr><tr class="property-row"><td>email</td><td><span class="model"><span class=""><button aria-expanded="false" class="model-box-control"><span class="model-toggle collapsed"></span><span>[...]</span></button></span></span></td></tr><tr class="property-row"><td>password</td><td><span class="model"><span class=""><button aria-expanded="false" class="model-box-control"><span class="model-toggle collapsed"></span><span>[...]</span></button></span></span></td></tr><tr class="property-row"><td>device</td><td><span class="model"><span class=""><button aria-expanded="false" class="model-box-control"><span class="pointer"><span class="model-title"><span class="model-hint">/swagger/v1/swagger.json#/components/schemas/UMKBCoreAPI.Models.Api.Requests.Shared.Device</span><span class="model-title__text">UMKBCoreAPI.Models.Api.Requests.Shared.Device</span></span></span><span class="model-toggle collapsed"></span><span><span><span>{</span>...<span>}</span><span class="model-jump-to-path"></span></span></span></button></span></span></td></tr></tbody></table></span><span class="brace-close">}</span>
+                            </span>
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ICollection<string> MediaTypes { get; set; }
+    [Parameter]
+    public Dictionary<string, Schema> Requests { get; set; }
+
+    bool exampleValueActivate = true;
+
+    void ExampleValueClick()
+    {
+        if (exampleValueActivate)
+            return;
+
+        exampleValueActivate = true;
+    }
+
+    void SchemaClick()
+    {
+        if (!exampleValueActivate)
+            return;
+
+        exampleValueActivate = false;
+    }
+}

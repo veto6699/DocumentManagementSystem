@@ -15,6 +15,14 @@ namespace DocumentManagementSystem.Client.Models
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// Описание (может содержать Marcdown)
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// Ссылка на внешнюю документацию
+        /// </summary>
+        public ExternalDoc ExternalDocs { get; set; }
+        /// <summary>
         /// Список действий
         /// </summary>
         public List<Action> Actions { get; set; }

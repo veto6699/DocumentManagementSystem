@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@inject NavigationManager Navigation
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -6,7 +8,17 @@
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <div style="text-align: center;padding: 10px;">
+            <p style="font-size:24px">Страница не найдена</p>
+                <button @onclick="NavigateToMain" style="background: black;color: white;border: black;border-radius: 5px;font-size:18px;height:35px;width:150px">На главную</button>
+            </div>
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private void NavigateToMain()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

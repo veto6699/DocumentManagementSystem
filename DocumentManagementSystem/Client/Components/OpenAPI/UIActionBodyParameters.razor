@@ -1,0 +1,16 @@
+﻿
+
+<div class="parameters-container">
+    <div class="opblock-description-wrapper">
+        @if (Parameters is null || Parameters.Count == 0)
+        {
+            <p>Нет параметров</p>
+        }
+    </div>
+</div>
+    
+
+@code {
+    [Parameter]
+    public ICollection<Parameter>? Parameters { get; set; }
+}

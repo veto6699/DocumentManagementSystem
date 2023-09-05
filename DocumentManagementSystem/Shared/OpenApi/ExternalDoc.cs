@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.OpenApi
 {
-    public class RequestBody
+    public class ExternalDoc
     {
+        /// <summary>
+        /// Описание внешней документации (может содержать Marcdown)
+        /// </summary>
         public string Description { get; set; }
         /// <summary>
-        /// Описание запросов для разных медиа типов
+        /// Ссылка на документацию
         /// </summary>
-        public Dictionary<string, MediaType> Content { get; set; }
-        public bool Required { get; set; }
+        public Uri URL { get; set; }
     }
 }

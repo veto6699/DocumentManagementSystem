@@ -6,7 +6,22 @@
             <a class="nostyle">
                 <span>@Controller.Name</span>
             </a>
-            <small />
+            <small>
+                @if (Controller.Description is not null)
+                {
+                    <div class="markdown">
+                        <p>@((MarkupString)Markdig.Markdown.ToHtml(Controller.Description))</p>
+                    </div>
+                }
+            </small>
+            @if (Controller.ExternalDocs is not null)
+            {
+                <div class="info__externaldocs">
+                    <small>
+                        <a href="@Controller.ExternalDocs.URL" target="_blank" rel="noopener noreferrer" class="link">@((MarkupString)Markdig.Markdown.ToHtml(Controller.ExternalDocs.Description))</a>
+                    </small>
+                </div>
+            }
             <button class="expand-operation">
                 <UISVGRotate Rotate="@rotate" />
             </button>
@@ -15,10 +30,10 @@
         {
             <div class="no-margin">
                 <div class="operation-tag-content">
-                @foreach (var action in Controller.Actions)
-                {
-                    <UIAction Action="action" />
-                }
+                    @foreach (var action in Controller.Actions)
+                    {
+                        <UIAction Action="action" />
+                    }
                 </div>
             </div>
         }

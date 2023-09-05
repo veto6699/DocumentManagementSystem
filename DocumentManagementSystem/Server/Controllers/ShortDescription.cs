@@ -1,4 +1,4 @@
-﻿using DocumentManagementSystem.Shared.OpenApi;
+﻿using DocumentManagementSystem.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;

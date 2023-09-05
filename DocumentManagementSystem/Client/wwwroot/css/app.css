@@ -1,12 +1,7 @@
-{
-    color: #3b4151;
-    font-family: sans-serif
-}
-
 html {
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-    line-height: 1.15
+    font-family: sans-serif
 }
 
 body {
@@ -42,7 +37,6 @@ pre {
 }
 
 a {
-    -webkit-text-decoration-skip: objects;
     background-color: transparent
 }
 

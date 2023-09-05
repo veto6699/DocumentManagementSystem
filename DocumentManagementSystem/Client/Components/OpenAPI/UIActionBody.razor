@@ -1,88 +1,54 @@
 ﻿
 <div class="no-margin">
     <div class="opblock-body">
-        <div class="opblock-description-wrapper">
-            <div class="opblock-description">
-                <div class="renderedMarkdown">
-                    @Action.Description
-                </div>
-            </div>
-        </div>
         <div class="opblock-section">
+            @if (!string.IsNullOrWhiteSpace(Action.Description))
+            {
+                <UIActionBodyDescription Description="@Action.Description" />
+            }
             <div class="opblock-section-header">
                 <div class="tab-header">
                     <div class="tab-item active">
                         <h4 class="opblock-title">
-                            <span>Parameters</span>
+                            <span>Параметры</span>
                         </h4>
                     </div>
                 </div>
                 <div class="try-out">
-                    <button class="btn try-out__btn">Try it out </button>
+                    <button class="btn try-out__btn">Попробовать</button>
                 </div>
             </div>
-            <div class="parameters-container">
-                <div class="opblock-description-wrapper">
-                    <p>No parameters</p>
-                </div>
-            </div><div class="opblock-section opblock-section-request-body">
-                <div class="opblock-section-header">
-                    <h4 class="opblock-title parameter__name undefined">Request body</h4>
-                    <label>
-                        <div class="content-type-wrapper body-param-content-type">
-                            <select aria-label="Request content type" class="content-type">
-                                <option value="application/json">application/json</option>
-                                <option value="text/json">text/json</option>
-                                <option value="application/*+json">application/*+json</option>
-                            </select>
-                        </div>
-                    </label>
-                </div>
-                <div class="opblock-description-wrapper">
-                    <div>
-                        <div class="model-example">
-                            <ul class="tab" role="tablist">
-                                <li class="tabitem active" role="presentation">
-                                    <button aria-controls="+uRq90s=" aria-selected="true" class="tablinks" data-name="example" id="x6stIqE=" role="tab">Example Value</button>
-                                </li>
-                                <li class="tabitem" role="presentation"><button aria-controls="vGwASd4=" aria-selected="false" class="tablinks" data-name="model" id="OJ0hDW8=" role="tab">Schema</button></li>
-                            </ul>
-                            <div aria-hidden="false" aria-labelledby="x6stIqE=" data-name="examplePanel" id="+uRq90s=" role="tabpanel" tabindex="0">
-                                <div class="highlight-code">
-                                    <pre class="body-param__example microlight" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(51, 51, 51); color: white;">
-                                    <code class="language-json" style="white-space: pre;">
-                                    <span>{</span>
-                                    <span>  </span><span class="hljs-attr">"key"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>  </span><span class="hljs-attr">"service"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>  </span><span class="hljs-attr">"email"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>  </span><span class="hljs-attr">"password"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>  </span><span class="hljs-attr">"device"</span><span>: {
-    </span>
-                                    <span>    </span><span class="hljs-attr">"deviceId"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>    </span><span class="hljs-attr">"deviceModel"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>    </span><span class="hljs-attr">"browser"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>,
-    </span>
-                                    <span>    </span><span class="hljs-attr">"ipAddress"</span><span>: </span><span style="color: rgb(162, 252, 162);">"string"</span><span>
-    </span>  }
-    }
-    </code>
-    </pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <UIActionBodyParameters Parameters="Action.Parameters"/>
+            @if (Action.Requests is not null)
+            {
+                <UIActionBodyRequestBody Requests="Action.Requests" MediaTypes="Action.Requests.Keys" />
+            }
+
+
+
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <div class="execute-wrapper"></div>
         <div class="responses-wrapper">
-            <div class="opblock-section-header"><h4>Responses</h4></div>
+            <div class="opblock-section-header">
+                <h4>Ответ</h4>
+            </div>
             <div class="responses-inner">
                 <table aria-live="polite" class="responses-table" id="post_Auth_Authorization_responses" role="region">
                     <thead>
