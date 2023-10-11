@@ -1,0 +1,70 @@
+﻿@using DocumentManagementSystem.Client.Models
+
+<span>{</span>@Environment.NewLine
+@foreach (var property in properties)
+{
+    @if (lastPropertyKey.Equals(property.Key)) { isLastProperty = true; }
+
+    @switch(property.Value.Type)
+    {
+        case null:
+            <PropertyName Name="@property.Key" Space="@internalSpace" /><Properties Components="@Components" SchemaRef="@property.Value.Ref" SpaceCount="@spaceCount" />
+            break;
+        case PropertyTypes.Object:
+            <PropertyName Name="@property.Key" Space="@internalSpace" /><PropertyTypeObject Property="@property.Value" SpaceCount="@spaceCount" LastProperty="@isLastProperty" />
+            break;
+        case PropertyTypes.Array:
+            <PropertyName Name="@property.Key" Space="@internalSpace" /><PropertyTypeArray Components="@Components" Property="@property.Value" SpaceCount="@spaceCount" LastProperty="@isLastProperty" />
+            break;
+        default:
+            <PropertyName Name="@property.Key" Space="@internalSpace" /><PropertyType Type="@property.Value.Type" LastProperty="@isLastProperty" />
+            break;
+    }
+}
+@if(IsRoot)
+{
+    @Environment.NewLine
+    <span>}</span>
+}
+else
+{
+    @externalSpace<span>}</span>
+}
+
+@code {
+    [Parameter]
+    public string SchemaRef { get; set; }
+    [Parameter]
+    public Components Components { get; set; }
+    [Parameter]
+    public uint SpaceCount { get; set; } = 0;
+    [Parameter]
+    public bool IsRoot { get; set; } = false;
+
+    uint spaceCount = 0;
+    string internalSpace, externalSpace;
+
+    string lastPropertyKey { get; set; }
+    bool isLastProperty = false;
+
+    Dictionary<string, Property> properties;
+
+    protected override void OnInitialized()
+    {
+        properties = Components.Schemas[SchemaRef[21..]].Properties;
+
+        spaceCount = SpaceCount;
+        spaceCount++;
+        SpaceAdd();
+
+        lastPropertyKey = properties.Last().Key;
+    }
+
+    void SpaceAdd()
+    {
+        for (uint i = 0; i < spaceCount; i++)
+            internalSpace += Constants.PropertySpace;
+
+        externalSpace = internalSpace[..^Constants.PropertySpace.Length];
+    }
+}

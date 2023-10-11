@@ -1,0 +1,46 @@
+﻿@using DocumentManagementSystem.Client.Models
+
+@if (Property.Items.Ref is not null)
+{
+    <span>[</span>@Environment.NewLine@internalSpace<Properties Components="@Components" SchemaRef="@Property.Items.Ref" SpaceCount="@spaceCount" />@Environment.NewLine@externalSpace<span>]</span>
+}
+else
+{
+    <span>[</span>@Environment.NewLine
+    @internalSpace<PropertyType Type="@Property.Items.Type" LastProperty="true" />
+    @externalSpace<span>]</span>
+}
+@if (!LastProperty)
+{
+    <span>,</span>
+}
+@Environment.NewLine
+
+@code {
+    [Parameter]
+    public Property Property { get; set; }
+    [Parameter]
+    public Components Components { get; set; }
+    [Parameter]
+    public uint SpaceCount { get; set; } = 0;
+    [Parameter]
+    public bool LastProperty { get; set; }
+
+    uint spaceCount = 0;
+    string internalSpace, externalSpace;
+
+    protected override void OnInitialized()
+    {
+        spaceCount = SpaceCount;
+        spaceCount++;
+        SpaceAdd();
+    }
+
+    void SpaceAdd()
+    {
+        for (uint i = 0; i < spaceCount; i++)
+            internalSpace += Constants.PropertySpace;
+
+        externalSpace = internalSpace[..^Constants.PropertySpace.Length];
+    }
+}

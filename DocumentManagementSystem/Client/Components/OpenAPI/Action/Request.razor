@@ -1,13 +1,14 @@
-﻿
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.Example
+
 <div class="opblock-section opblock-section-request-body">
     <div class="opblock-section-header">
         <h4 class="opblock-title parameter__name undefined">Тело запроса</h4>
         <label>
-            @if (MediaTypes is not null && MediaTypes.Count > 0)
+            @if (mediaTypes is not null && mediaTypes.Count > 0)
             {
                 <div class="content-type-wrapper body-param-content-type">
-                    <select class="content-type">
-                        @foreach (var mediaType in MediaTypes)
+                    <select class="content-type" @bind="requestMediaType">
+                        @foreach (var mediaType in mediaTypes)
                         {
                             <option value="@mediaType">@mediaType</option>
                         }
@@ -20,17 +21,35 @@
         <div>
             <div class="model-example">
                 <ul class="tab">
-                    <li class="tabitem active">
-                        <button class="tablinks" @onclick="ExampleValueClick">Пример значения</button>
-                    </li>
-                    <li class="tabitem">
-                        <button class="tablinks" @onclick="SchemaClick">Схема</button>
-                    </li>
+                    @if (exampleValueActivate)
+                    {
+                        <li class="tabitem active" @onclick="ExampleValueClick">
+                            <button class="tablinks">Пример значения</button>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="tabitem" @onclick="ExampleValueClick">
+                            <button class="tablinks">Пример значения</button>
+                        </li>
+                    }
+                    @if (exampleValueActivate)
+                    {
+                        <li class="tabitem" @onclick="SchemaClick">
+                            <button class="tablinks">Схема</button>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="tabitem active" @onclick="SchemaClick">
+                            <button class="tablinks">Схема</button>
+                        </li>
+                    }
                 </ul>
                 @if (exampleValueActivate)
                 {
                     <div class="highlight-code">
-                        <UIActionBodyRequestBodyExampleValue Schema="@Requests.First().Value" />
+                        <Value SchemaRef="@Requests[requestMediaType].Ref" Components="@Components" />
                     </div>
                 }
                 else
@@ -59,11 +78,15 @@
 
 @code {
     [Parameter]
-    public ICollection<string> MediaTypes { get; set; }
-    [Parameter]
     public Dictionary<string, Schema> Requests { get; set; }
+    [Parameter]
+    public Components Components { get; set; }
+
+    ICollection<string> mediaTypes;
+    string requestMediaType;
 
     bool exampleValueActivate = true;
+
 
     void ExampleValueClick()
     {
@@ -79,5 +102,11 @@
             return;
 
         exampleValueActivate = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        mediaTypes = Requests.Keys;
+        requestMediaType = mediaTypes.First();
     }
 }

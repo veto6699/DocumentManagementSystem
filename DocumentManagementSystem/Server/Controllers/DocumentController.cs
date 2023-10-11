@@ -48,8 +48,6 @@ namespace DocumentManagementSystem.Server.Controllers
 
                 return Encoding.Default.GetString(buffer);
             }
-
-            return string.Empty;
         }
     }
 }

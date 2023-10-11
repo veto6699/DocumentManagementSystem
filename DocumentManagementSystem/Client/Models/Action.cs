@@ -1,6 +1,7 @@
 ﻿using DocumentManagementSystem.Shared.OpenApi;
 using openAPI = DocumentManagementSystem.Shared.OpenApi;
 using System.IO;
+using System.ComponentModel;
 
 namespace DocumentManagementSystem.Client.Models
 {
@@ -11,7 +12,7 @@ namespace DocumentManagementSystem.Client.Models
     {
         public Action(PathItem pathItem, string path, openAPI.Components components)
         {
-            if(!string.IsNullOrWhiteSpace(path))
+            if (!string.IsNullOrWhiteSpace(path))
                 Path = path;
 
             if (pathItem.Post is not null)
@@ -59,10 +60,13 @@ namespace DocumentManagementSystem.Client.Models
         /// </summary>
         public ICollection<Parameter> Parameters { get; set; }
         /// <summary>
-        /// Запросы разденные на медиа типы
+        /// Запросы раздленные на медиа типы
         /// </summary>
         public Dictionary<string, Schema> Requests { get; set; }
-
+        /// <summary>
+        /// Ответы раздленные на медиа типы
+        /// </summary>
+        public Dictionary<string, Schema> Response { get; set; }
 
 
 
@@ -79,37 +83,39 @@ namespace DocumentManagementSystem.Client.Models
         {
             Method = method;
 
-            if(operation.Summary is not null)
+            if (operation.Summary is not null)
                 Summary = operation.Summary;
 
             if (operation.Description is not null)
                 Description = operation.Description;
 
-            if(operation.Parameters is not null && operation.Parameters.Count > 0)
+            if (operation.Parameters is not null && operation.Parameters.Count > 0)
                 Parameters = operation.Parameters;
 
             if (operation.RequestBody is not null && operation.RequestBody.Content is not null && operation.RequestBody.Content.Count > 0)
             {
                 foreach (var mediaType in operation.RequestBody.Content)
                 {
-                    string schemaName = null;
+                    //string schemaName = null;
 
-                    if(mediaType.Value is not null)
-                    {
-                        if(mediaType.Value.Schema is not null)
-                        {
-                            if(mediaType.Value.Schema.Ref is not null)
-                            {
-                                if (mediaType.Value.Schema.Ref.Contains("#/components/schemas/"))
-                                    schemaName = mediaType.Value.Schema.Ref.Substring(21);
-                            }
-                        }
-                    }
+                    //if (mediaType.Value is not null)
+                    //{
+                    //    if (mediaType.Value.Schema is not null)
+                    //    {
+                    //        if (mediaType.Value.Schema.Ref is not null)
+                    //        {
+                    //            if (mediaType.Value.Schema.Ref.Contains("#/components/schemas/"))
+                    //                schemaName = mediaType.Value.Schema.Ref.Substring(21);
+                    //        }
+                    //    }
+                    //}
+
+                    //var component = components.Schemas[schemaName];
 
                     if (Requests is null)
                         Requests = new Dictionary<string, Schema>();
 
-                    Requests.Add(mediaType.Key, components.Schemas[schemaName]);
+                    Requests.Add(mediaType.Key, mediaType.Value.Schema);
                 }
             }
         }

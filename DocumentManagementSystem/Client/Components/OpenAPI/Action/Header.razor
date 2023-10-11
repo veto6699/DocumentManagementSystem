@@ -1,4 +1,5 @@
 ﻿@using DocumentManagementSystem.Client;
+@using DocumentManagementSystem.Client.Components.OpenAPI.Action;
 
 <span>
     <div class="opblock opblock-@method @isOpenString">
@@ -17,13 +18,17 @@
         </div>
         @if (isOpen)
         {
-            <UIActionBody Action="@Action" />
+            <Body Action="@Action" Components="@Components"/>
         }
     </div>
 </span>
 
 @code {
-    [Parameter] public Models.Action Action { get; set; }
+    [Parameter] 
+    public Models.Action Action { get; set; }
+    [Parameter]
+    public Components Components { get; set; }
+
     string method;
     string? isOpenString;
     short rotate = 0;

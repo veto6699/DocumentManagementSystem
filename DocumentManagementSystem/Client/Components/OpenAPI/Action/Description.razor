@@ -2,12 +2,12 @@
 <div class="opblock-description-wrapper">
     <div class="opblock-description">
         <div class="renderedMarkdown">
-            @((MarkupString)Markdig.Markdown.ToHtml(Description))
+            @((MarkupString)Markdig.Markdown.ToHtml(RequestDescription))
         </div>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public string Description{ get; set; }
+    public string RequestDescription { get; set; }
 }

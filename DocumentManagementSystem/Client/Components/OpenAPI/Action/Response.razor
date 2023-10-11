@@ -1,0 +1,109 @@
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.Example
+
+<div class="opblock-section-header">
+    <h4>Ответ</h4>
+</div>
+<div class="responses-inner">
+    <table aria-live="polite" class="responses-table" id="post_Auth_Authorization_responses" role="region">
+        <thead>
+            <tr class="responses-header">
+                <td class="col_header response-col_status">HTTP Код</td>
+                <td class="col_header response-col_description">Description</td>
+                <td class="col col_header response-col_links">Ссылки</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="response " data-code="200">
+                <td class="response-col_status">200</td>
+                <td class="response-col_description">
+                    <div class="response-col_description__inner">
+                        <div class="renderedMarkdown">
+                            <p>Success</p>
+                        </div>
+                    </div>
+                    @if (mediaTypes is not null && mediaTypes.Count > 0)
+                    {
+                        <section class="response-controls">
+                            <div class="response-control-media-type response-control-media-type--accept-controller">
+                                <small class="response-control-media-type__title">Медиа тип</small>
+                                <div class="content-type-wrapper ">
+                                    <select class="content-type" @bind="responseMediaType">
+                                        @foreach (var mediaType in mediaTypes)
+                                        {
+                                            <option value="@mediaType">@mediaType</option>
+                                        }
+                                    </select>
+                                </div>
+                                <small class="response-control-media-type__accept-message">
+                                    Controls <code>Accept</code> header.
+                                </small>
+                            </div>
+                        </section>
+                    }
+                    <div class="model-example">
+                        <ul class="tab" role="tablist">
+                            <li class="tabitem active" role="presentation">
+                                <button aria-controls="vAD+L40=" aria-selected="true" class="tablinks" data-name="example" id="bqoOrKk=" role="tab">Example Value</button>
+                            </li>
+                            <li class="tabitem" role="presentation">
+                                <button aria-controls="lgGkZEo=" aria-selected="false" class="tablinks" data-name="model" id="xu6o3GI=" role="tab">Schema</button>
+                            </li>
+                        </ul>
+                        <div aria-hidden="false" aria-labelledby="bqoOrKk=" data-name="examplePanel" id="vAD+L40=" role="tabpanel" tabindex="0">
+                            <div>
+                                <div class="highlight-code">
+                                    <Value SchemaRef="@Responses[@responseMediaType].Ref" Components="@Components" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="response-col_links"><i>No links</i></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public Dictionary<string, Schema> Responses { get; set; }
+    [Parameter]
+    public Components Components { get; set; }
+
+    ICollection<string> mediaTypes;
+    string responseMediaType;
+
+    bool exampleValueActivate = true;
+
+
+    void ExampleValueClick()
+    {
+        if (exampleValueActivate)
+            return;
+
+        exampleValueActivate = true;
+    }
+
+    void SchemaClick()
+    {
+        if (!exampleValueActivate)
+            return;
+
+        exampleValueActivate = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        if (Responses is null)
+        {
+            Responses = new Dictionary<string, Schema>();
+
+            Schema tmp = new Schema() { Ref = "#/components/schemas/Manager.Models.AIResponseCG" };
+
+            Responses.Add("application/json", tmp);
+        }
+
+        mediaTypes = Responses.Keys;
+        responseMediaType = mediaTypes.First();
+    }
+}
