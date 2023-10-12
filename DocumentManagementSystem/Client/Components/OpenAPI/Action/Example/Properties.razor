@@ -23,12 +23,16 @@
 }
 @if(IsRoot)
 {
-    @Environment.NewLine
     <span>}</span>
 }
 else
 {
     @externalSpace<span>}</span>
+    @if (!isLastProperty)
+    {
+        <span>,</span>
+    }
+    @Environment.NewLine
 }
 
 @code {
@@ -40,6 +44,8 @@ else
     public uint SpaceCount { get; set; } = 0;
     [Parameter]
     public bool IsRoot { get; set; } = false;
+    [Parameter]
+    public bool LastProperty { get; set; }
 
     uint spaceCount = 0;
     string internalSpace, externalSpace;

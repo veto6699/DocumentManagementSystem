@@ -1,7 +1,4 @@
 ﻿using DocumentManagementSystem.Shared.OpenApi;
-using openAPI = DocumentManagementSystem.Shared.OpenApi;
-using System.IO;
-using System.ComponentModel;
 
 namespace DocumentManagementSystem.Client.Models
 {
@@ -10,34 +7,34 @@ namespace DocumentManagementSystem.Client.Models
     /// </summary>
     public struct Action
     {
-        public Action(PathItem pathItem, string path, openAPI.Components components)
+        public Action(PathItem pathItem, string path)
         {
             if (!string.IsNullOrWhiteSpace(path))
                 Path = path;
 
             if (pathItem.Post is not null)
-                Parse(pathItem.Post, "POST", components);
+                Parse(pathItem.Post, "POST");
 
             if (pathItem.Get is not null)
-                Parse(pathItem.Get, "GET", components);
+                Parse(pathItem.Get, "GET");
 
             if (pathItem.Put is not null)
-                Parse(pathItem.Put, "UPDATE", components);
+                Parse(pathItem.Put, "UPDATE");
 
             if (pathItem.Delete is not null)
-                Parse(pathItem.Delete, "DELETE", components);
+                Parse(pathItem.Delete, "DELETE");
 
             if (pathItem.Head is not null)
-                Parse(pathItem.Head, "HEAD", components);
+                Parse(pathItem.Head, "HEAD");
 
             if (pathItem.Options is not null)
-                Parse(pathItem.Options, "OPTIONS", components);
+                Parse(pathItem.Options, "OPTIONS");
 
             if (pathItem.Patch is not null)
-                Parse(pathItem.Patch, "PATCH", components);
+                Parse(pathItem.Patch, "PATCH");
 
             if (pathItem.Trace is not null)
-                Parse(pathItem.Trace, "TRACE", components);
+                Parse(pathItem.Trace, "TRACE");
         }
         /// <summary>
         /// Путь
@@ -66,7 +63,7 @@ namespace DocumentManagementSystem.Client.Models
         /// <summary>
         /// Ответы раздленные на медиа типы
         /// </summary>
-        public Dictionary<string, Schema> Response { get; set; }
+        public Dictionary<string, Dictionary<string, Schema>> Responses { get; set; }
 
 
 
@@ -79,7 +76,7 @@ namespace DocumentManagementSystem.Client.Models
         ///// </summary>
         //public Dictionary<string, Response> Response { get; set; }
 
-        void Parse(Operation operation, string method, openAPI.Components components)
+        void Parse(Operation operation, string method)
         {
             Method = method;
 
@@ -94,28 +91,23 @@ namespace DocumentManagementSystem.Client.Models
 
             if (operation.RequestBody is not null && operation.RequestBody.Content is not null && operation.RequestBody.Content.Count > 0)
             {
+                Requests = new Dictionary<string, Schema>();
                 foreach (var mediaType in operation.RequestBody.Content)
-                {
-                    //string schemaName = null;
-
-                    //if (mediaType.Value is not null)
-                    //{
-                    //    if (mediaType.Value.Schema is not null)
-                    //    {
-                    //        if (mediaType.Value.Schema.Ref is not null)
-                    //        {
-                    //            if (mediaType.Value.Schema.Ref.Contains("#/components/schemas/"))
-                    //                schemaName = mediaType.Value.Schema.Ref.Substring(21);
-                    //        }
-                    //    }
-                    //}
-
-                    //var component = components.Schemas[schemaName];
-
-                    if (Requests is null)
-                        Requests = new Dictionary<string, Schema>();
-
                     Requests.Add(mediaType.Key, mediaType.Value.Schema);
+            }
+
+            if (operation.Responses is not null && operation.Responses.Count > 0)
+            {
+                Responses = new();
+                foreach (var response in operation.Responses)
+                {
+                    if (response.Value.Content is not null && response.Value.Content.Count > 0)
+                    {
+                        Dictionary<string, Schema> responses = new();
+                        foreach (var mediaType in response.Value.Content)
+                            responses.Add(mediaType.Key, mediaType.Value.Schema);
+                        Responses.Add(response.Key, responses);
+                    }
                 }
             }
         }

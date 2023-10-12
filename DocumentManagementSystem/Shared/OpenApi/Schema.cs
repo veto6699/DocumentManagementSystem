@@ -17,7 +17,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public string Type { get; set; }
         public ICollection<string> Required { get; set; }
         /// <summary>
-        /// Параметры запроса
+        /// Параметры компонента
         /// </summary>
         public Dictionary<string, Property> Properties { get; set; }
         public Dictionary<string, string> Discriminator { get; set; }

@@ -30,7 +30,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Описание ответа
         /// </summary>
-        public Response Response { get; set; }
+        public Dictionary<string, Response> Responses { get; set; }
         public Dictionary<string, object> CallBacks { get; set; }
         public bool Deprecated { get; set; }
         public IList<Dictionary<string, IList<string>>> Security { get; set; }

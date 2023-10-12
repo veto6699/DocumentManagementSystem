@@ -58,7 +58,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Post.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Post.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Post.Tags[0], APIs.Count - 1);
@@ -67,7 +67,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Post.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -78,7 +78,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Get.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Get.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Get.Tags[0], APIs.Count - 1);
@@ -87,7 +87,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Get.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -99,7 +99,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Put.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Put.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Put.Tags[0], APIs.Count - 1);
@@ -108,7 +108,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Put.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -119,7 +119,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Delete.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Delete.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Delete.Tags[0], APIs.Count - 1);
@@ -128,7 +128,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Delete.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -139,7 +139,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Options.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Options.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Options.Tags[0], APIs.Count - 1);
@@ -148,7 +148,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Options.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -159,7 +159,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Head.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Head.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Head.Tags[0], APIs.Count - 1);
@@ -168,7 +168,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Head.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -179,7 +179,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Trace.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Trace.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Trace.Tags[0], APIs.Count - 1);
@@ -188,7 +188,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Trace.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
@@ -199,7 +199,7 @@
                     if (!DictionaryAPIs.ContainsKey(path.Value.Patch.Tags[0]))
                     {
                         var controller = new Controller(path.Value.Patch.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key, Components));
+                        controller.Actions.Add(new(path.Value, path.Key));
                         APIs.Add(controller);
 
                         DictionaryAPIs.Add(path.Value.Patch.Tags[0], APIs.Count - 1);
@@ -208,7 +208,7 @@
                     else
                     {
                         int index = DictionaryAPIs[path.Value.Patch.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key, Components));
+                        APIs[index].Actions.Add(new(path.Value, path.Key));
                     }
                 }
                 #endregion
