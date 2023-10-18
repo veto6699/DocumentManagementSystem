@@ -41,17 +41,34 @@
                                     </small>
                                 </div>
                             </section>
-                            }
                             <div class="model-example">
-                                <ul class="tab" role="tablist">
-                                    <li class="tabitem active" role="presentation">
-                                        <button aria-controls="vAD+L40=" aria-selected="true" class="tablinks" data-name="example" id="bqoOrKk=" role="tab">Example Value</button>
-                                    </li>
-                                    <li class="tabitem" role="presentation">
-                                        <button aria-controls="lgGkZEo=" aria-selected="false" class="tablinks" data-name="model" id="xu6o3GI=" role="tab">Schema</button>
-                                    </li>
+                                <ul class="tab">
+                                    @if (exampleValueActivate)
+                                    {
+                                        <li class="tabitem active" @onclick="ExampleValueClick">
+                                            <button class="tablinks">Пример значения</button>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="tabitem" @onclick="ExampleValueClick">
+                                            <button class="tablinks">Пример значения</button>
+                                        </li>
+                                    }
+                                    @if (exampleValueActivate)
+                                    {
+                                        <li class="tabitem" @onclick="SchemaClick">
+                                            <button class="tablinks">Схема</button>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="tabitem active" @onclick="SchemaClick">
+                                            <button class="tablinks">Схема</button>
+                                        </li>
+                                    }
                                 </ul>
-                                <div aria-hidden="false" aria-labelledby="bqoOrKk=" data-name="examplePanel" id="vAD+L40=" role="tabpanel" tabindex="0">
+                                <div tabindex="0">
                                     <div>
                                         <div class="highlight-code">
                                             @if (responseMediaType is null)
@@ -78,7 +95,6 @@
     [Parameter]
     public Components Components { get; set; }
 
-    //ICollection<string> mediaTypes;
     string responseMediaType;
 
     bool exampleValueActivate = true;
