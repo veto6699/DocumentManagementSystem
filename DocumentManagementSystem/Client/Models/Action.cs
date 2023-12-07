@@ -5,7 +5,7 @@ namespace DocumentManagementSystem.Client.Models
     /// <summary>
     /// Модель API/Action, так называемого действия
     /// </summary>
-    public struct Action
+    public class Action
     {
         public Action(PathItem pathItem, string path)
         {

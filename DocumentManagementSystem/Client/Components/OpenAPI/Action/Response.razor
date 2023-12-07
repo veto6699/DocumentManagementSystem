@@ -48,21 +48,15 @@
                                         <li class="tabitem active" @onclick="ExampleValueClick">
                                             <button class="tablinks">Пример значения</button>
                                         </li>
-                                    }
-                                    else
-                                    {
-                                        <li class="tabitem" @onclick="ExampleValueClick">
-                                            <button class="tablinks">Пример значения</button>
-                                        </li>
-                                    }
-                                    @if (exampleValueActivate)
-                                    {
                                         <li class="tabitem" @onclick="SchemaClick">
                                             <button class="tablinks">Схема</button>
                                         </li>
                                     }
                                     else
                                     {
+                                        <li class="tabitem" @onclick="ExampleValueClick">
+                                            <button class="tablinks">Пример значения</button>
+                                        </li>
                                         <li class="tabitem active" @onclick="SchemaClick">
                                             <button class="tablinks">Схема</button>
                                         </li>

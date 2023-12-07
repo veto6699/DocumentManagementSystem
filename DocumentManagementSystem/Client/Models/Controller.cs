@@ -2,7 +2,7 @@
 
 namespace DocumentManagementSystem.Client.Models
 {
-    public struct Controller
+    public class Controller
     {
         public Controller(string name)
         {

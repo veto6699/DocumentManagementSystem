@@ -1,6 +1,6 @@
 ﻿namespace DocumentManagementSystem.Client.Models
 {
-    public struct PropertyTypes
+    public class PropertyTypes
     {
         public const string @Object = "object";
         public const string @String = "string";
