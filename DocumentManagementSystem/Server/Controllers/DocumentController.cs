@@ -29,12 +29,6 @@ namespace DocumentManagementSystem.Server.Controllers
                 case "ecp":
                     fileName = "ecp.json";
                     break;
-                case "ecpf":
-                    fileName = "ecpFull.json";
-                    break;
-                case "ft":
-                    fileName = "ft.json";
-                    break;
                 case "ps":
                     fileName = "ps.json";
                     break;

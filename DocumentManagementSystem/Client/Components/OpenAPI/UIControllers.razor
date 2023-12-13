@@ -31,18 +31,18 @@
         {
             foreach (var tag in Tags)
             {
-                Controller controller = new();
-
                 if (string.IsNullOrEmpty(tag.Name))
-                    controller.Name = tag.Name;
+                {
+                    Controller controller = new(tag.Name);
 
-                if (string.IsNullOrEmpty(tag.Description))
-                    controller.Description = tag.Description;
+                    if (string.IsNullOrEmpty(tag.Description))
+                        controller.Description = tag.Description;
 
-                if (tag.ExternalDocs is not null)
-                    controller.ExternalDocs = tag.ExternalDocs;
+                    if (tag.ExternalDocs is not null)
+                        controller.ExternalDocs = tag.ExternalDocs;
 
-                APIs.Add(controller);
+                    APIs.Add(controller);
+                }
             }
         }
 
