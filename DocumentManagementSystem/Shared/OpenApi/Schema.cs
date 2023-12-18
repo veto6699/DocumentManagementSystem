@@ -13,15 +13,15 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Ссылка на компонент
         /// </summary>
         [JsonPropertyName("$ref")]
-        public string @Ref { get; set; }
-        public string Type { get; set; }
-        public ICollection<string> Required { get; set; }
+        public string? @Ref { get; set; }
+        public string? Type { get; set; }
+        public ICollection<string>? Required { get; set; }
         /// <summary>
         /// Параметры компонента
         /// </summary>
-        public Dictionary<string, Property> Properties { get; set; }
-        public Dictionary<string, string> Discriminator { get; set; }
-        public string Description { get; set; }
+        public Dictionary<string, Property>? Properties { get; set; }
+        public Dictionary<string, string>? Discriminator { get; set; }
+        public string? Description { get; set; }
 
     }
 }

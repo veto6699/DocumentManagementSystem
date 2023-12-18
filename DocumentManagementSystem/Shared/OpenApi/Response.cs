@@ -9,9 +9,9 @@ namespace DocumentManagementSystem.Shared.OpenApi
 {
     public class Response
     {
-        public string Description { get; set; }
-        public Dictionary<string, Header> Headers { get; set; }
-        public Dictionary<string, MediaType> Content { get; set; }
-        public Dictionary<string, Link> Links { get; set; }
+        public string? Description { get; set; }
+        public Dictionary<string, Header>? Headers { get; set; }
+        public Dictionary<string, MediaType>? Content { get; set; }
+        public Dictionary<string, Link>? Links { get; set; }
     }
 }

@@ -11,29 +11,29 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Тег(контроллер) к которому относится действие
         /// </summary>
-        public IList<string> Tags { get; set; }
+        public IList<string>? Tags { get; set; }
         /// <summary>
         /// Краткое описаине действия
         /// </summary>
-        public string Summary { get; set; }
+        public string? Summary { get; set; }
         /// <summary>
         /// Полное описание действия
         /// </summary>
-        public string Description { get; set; }
-        public ExternalDoc ExternalDocs { get; set; }
-        public string OperationId { get; set; }
-        public IList<Parameter> Parameters { get; set; }
+        public string? Description { get; set; }
+        public ExternalDoc? ExternalDocs { get; set; }
+        public string? OperationId { get; set; }
+        public IList<Parameter>? Parameters { get; set; }
         /// <summary>
         /// Описание запроса
         /// </summary>
-        public RequestBody RequestBody { get; set; }
+        public RequestBody? RequestBody { get; set; }
         /// <summary>
         /// Описание ответа
         /// </summary>
-        public Dictionary<string, Response> Responses { get; set; }
-        public Dictionary<string, object> CallBacks { get; set; }
-        public bool Deprecated { get; set; }
-        public IList<Dictionary<string, IList<string>>> Security { get; set; }
-        public IList<Server> Servers { get; set; }
+        public Dictionary<string, Response>? Responses { get; set; }
+        public Dictionary<string, object>? CallBacks { get; set; }
+        public bool? Deprecated { get; set; }
+        public IList<Dictionary<string, IList<string>>>? Security { get; set; }
+        public IList<Server>? Servers { get; set; }
     }
 }

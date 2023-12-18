@@ -11,9 +11,9 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Структура типа
         /// </summary>
-        public Schema Schema { get; set; }
-        public object Example { get; set; }
-        public Example Examples { get; set; }
-        public EncodingOpenAPI Encoding { get; set; }
+        public Schema? Schema { get; set; }
+        public object? Example { get; set; }
+        public Example? Examples { get; set; }
+        public EncodingOpenAPI? Encoding { get; set; }
     }
 }

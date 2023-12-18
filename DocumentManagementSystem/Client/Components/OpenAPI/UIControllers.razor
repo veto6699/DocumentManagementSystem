@@ -19,9 +19,9 @@
     [Parameter] 
     public Dictionary<string, PathItem>? Paths { get; set; }
     [Parameter]
-    public IList<Tag> Tags { get; set; }
+    public IList<Tag>? Tags { get; set; }
     [Parameter]
-    public Components Components { get; set; }
+    public Components? Components { get; set; }
 
     List<Controller> APIs = new();
 

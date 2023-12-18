@@ -11,10 +11,10 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Описание внешней документации (может содержать Marcdown)
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Ссылка на документацию
         /// </summary>
-        public Uri URL { get; set; }
+        public Uri? URL { get; set; }
     }
 }

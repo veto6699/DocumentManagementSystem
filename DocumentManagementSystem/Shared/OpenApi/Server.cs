@@ -11,14 +11,14 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Адрес сервера
         /// </summary>
-        public string URL { get; set; }
+        public string? URL { get; set; }
         /// <summary>
         /// Описание сервера (может содержать Marcdown)
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// какие то переменные, не разобрался
         /// </summary>
-        public Dictionary<string, Variables> Variables { get; set; }
+        public Dictionary<string, Variables>? Variables { get; set; }
     }
 }

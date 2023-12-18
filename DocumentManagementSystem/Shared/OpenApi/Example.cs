@@ -8,9 +8,9 @@ namespace DocumentManagementSystem.Shared.OpenApi
 {
     public class Example
     {
-        public string Summary { get; set; }
-        public string Description { get; set; }
-        public string ExternalValue { get; set; }
-        public string Value { get; set; }
+        public string? Summary { get; set; }
+        public string? Description { get; set; }
+        public string? ExternalValue { get; set; }
+        public string? Value { get; set; }
     }
 }

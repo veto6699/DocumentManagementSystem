@@ -2,7 +2,6 @@
 @using DocumentManagementSystem.Shared
 @using System.Text.RegularExpressions;
 @using Microsoft.AspNetCore.Components.Rendering;
-@using Microsoft.AspNetCore.Html;
 
 
 
@@ -51,8 +50,8 @@
 @code {
     [Parameter] public Info? Info { get; set; }
     [Parameter] public string? OpenAPI { get; set; }
-    [Parameter] public string URL { get; set; }
-    string openAPI;
+    [Parameter] public string? URL { get; set; }
+    string? openAPI;
 
     protected override void OnInitialized()
     {

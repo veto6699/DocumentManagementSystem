@@ -8,11 +8,11 @@ namespace DocumentManagementSystem.Shared.OpenApi
 {
     public class RequestBody
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Описание запросов для разных медиа типов
         /// </summary>
-        public Dictionary<string, MediaType> Content { get; set; }
-        public bool Required { get; set; }
+        public Dictionary<string, MediaType>? Content { get; set; }
+        public bool? Required { get; set; }
     }
 }

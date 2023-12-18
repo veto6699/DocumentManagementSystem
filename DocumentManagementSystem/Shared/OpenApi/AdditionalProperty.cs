@@ -12,14 +12,14 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Допустимо ли null значение
         /// </summary>
-        public bool Nullable { get; set; }
+        public bool? Nullable { get; set; }
         /// <summary>
         /// Тип параметра (на пример object, string, integer, array, boolean, number)
         /// </summary>
-        public string Type { get; set; }
+        public string? Type { get; set; }
         /// <summary>
         /// Параметры элемента массива
         /// </summary>
-        public Items Items { get; set; }
+        public Items? Items { get; set; }
     }
 }

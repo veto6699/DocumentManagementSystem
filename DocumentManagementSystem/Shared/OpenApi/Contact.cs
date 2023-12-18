@@ -12,14 +12,14 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Ссылка на контакт
         /// </summary>
-        public Uri URL { get; set; }
+        public Uri? URL { get; set; }
         /// <summary>
         /// Название контакта
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// Email контакта
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }

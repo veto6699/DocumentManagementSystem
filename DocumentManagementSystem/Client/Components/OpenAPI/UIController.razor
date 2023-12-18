@@ -43,9 +43,9 @@
 
 @code {
     [Parameter] 
-    public Controller Controller { get; set; }
+    public Controller? Controller { get; set; }
     [Parameter]
-    public Components Components { get; set; }
+    public Components? Components { get; set; }
 
     bool isOpen { get; set; } = true;
     short rotate { get; set; } = 180;

@@ -11,14 +11,14 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// какие то перечисление
         /// </summary>
-        public ICollection<string> @Enum { get; set; }
+        public ICollection<string>? @Enum { get; set; }
         /// <summary>
         /// какие то дефолтные значения
         /// </summary>
-        public string Default { get; set; }
+        public string? Default { get; set; }
         /// <summary>
         /// Описание переменной (может содержать Marcdown)
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

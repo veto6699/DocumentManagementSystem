@@ -12,11 +12,11 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Тип параметра (на пример object, string, integer, array, boolean, number)
         /// </summary>
-        public string Type { get; set; }
+        public string? Type { get; set; }
         /// <summary>
         /// Ссылка на компонент
         /// </summary>
         [JsonPropertyName("$ref")]
-        public string @Ref { get; set; }
+        public string? @Ref { get; set; }
     }
 }

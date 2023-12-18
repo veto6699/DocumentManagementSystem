@@ -11,14 +11,14 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Название тега
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// Описание тега (может содержать Marcdown)
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Ссылка на внешнюю документацию для этого тега
         /// </summary>
-        public ExternalDoc ExternalDocs { get; set; }
+        public ExternalDoc? ExternalDocs { get; set; }
     }
 }

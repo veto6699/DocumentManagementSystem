@@ -37,9 +37,9 @@ else
 
 @code {
     [Parameter]
-    public string SchemaRef { get; set; }
+    public string? SchemaRef { get; set; }
     [Parameter]
-    public Components Components { get; set; }
+    public Components? Components { get; set; }
     [Parameter]
     public uint SpaceCount { get; set; } = 0;
     [Parameter]
@@ -48,9 +48,9 @@ else
     public bool LastProperty { get; set; } = true;
 
     uint spaceCount = 0;
-    string internalSpace, externalSpace;
+    string? internalSpace, externalSpace;
 
-    string lastPropertyKey { get; set; }
+    string? lastPropertyKey { get; set; }
     bool isLastProperty = false;
 
     Dictionary<string, Property> properties;

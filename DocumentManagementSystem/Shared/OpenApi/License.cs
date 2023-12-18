@@ -11,14 +11,14 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Название лицензии
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// какой то идентификатор лицензии
         /// </summary>
-        public string Identifier { get; set; }
+        public string? Identifier { get; set; }
         /// <summary>
         /// Ссылка на лицензию
         /// </summary>
-        public Uri URL { get; set; }
+        public Uri? URL { get; set; }
     }
 }

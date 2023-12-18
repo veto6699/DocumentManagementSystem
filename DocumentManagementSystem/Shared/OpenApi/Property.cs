@@ -14,27 +14,27 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Ссылка на компонент
         /// </summary>
         [JsonPropertyName("$ref")]
-        public string @Ref { get; set; }
+        public string? @Ref { get; set; }
         /// <summary>
         /// Тип параметра (на пример object, string, integer, array, boolean, number)
         /// </summary>
-        public string Type { get; set; }
+        public string? Type { get; set; }
         /// <summary>
         /// Описание параметра
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Параметры элемента массива
         /// </summary>
-        public Items Items { get; set; }
-        public string Format { get; set; }
+        public Items? Items { get; set; }
+        public string? Format { get; set; }
         /// <summary>
         /// Допустимо ли null значение
         /// </summary>
-        public bool Nullable { get; set; }
+        public bool? Nullable { get; set; }
         /// <summary>
         /// Дополнительые свойства, используется для массивов
         /// </summary>
-        public AdditionalProperty AdditionalProperties { get; set; }
+        public AdditionalProperty? AdditionalProperties { get; set; }
     }
 }

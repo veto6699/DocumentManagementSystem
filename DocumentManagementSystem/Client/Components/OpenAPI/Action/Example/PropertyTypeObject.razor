@@ -20,14 +20,14 @@ else
 
 @code {
     [Parameter]
-    public Property Property { get; set; }
+    public Property? Property { get; set; }
     [Parameter]
     public uint SpaceCount { get; set; }
     [Parameter]
     public bool LastProperty { get; set; }
 
     uint spaceCount = 0;
-    string internalSpace, internalSpacePlus, externalSpace;
+    string? internalSpace, internalSpacePlus, externalSpace;
 
     protected override void OnInitialized()
     {
