@@ -3,7 +3,14 @@
 <span>{</span>@Environment.NewLine
 @foreach (var property in properties)
 {
-    @if (lastPropertyKey.Equals(property.Key)) { isLastProperty = true; }
+    @if (lastPropertyKey.Equals(property.Key))
+    {
+        isLastProperty = true;
+    }
+    else
+    {
+        isLastProperty = false;
+    }
 
     @switch(property.Value.Type)
     {
@@ -51,9 +58,9 @@ else
     string? internalSpace, externalSpace;
 
     string? lastPropertyKey { get; set; }
-    bool isLastProperty = false;
+    bool isLastProperty = true;
 
-    Dictionary<string, Property> properties;
+    Dictionary<string, Property>? properties;
 
     protected override void OnInitialized()
     {

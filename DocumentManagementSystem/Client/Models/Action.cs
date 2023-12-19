@@ -91,19 +91,19 @@ namespace DocumentManagementSystem.Client.Models
 
             if (operation.RequestBody is not null && operation.RequestBody.Content is not null && operation.RequestBody.Content.Count > 0)
             {
-                Requests = new Dictionary<string, Schema>();
+                Requests = [];
                 foreach (var mediaType in operation.RequestBody.Content)
                     Requests.Add(mediaType.Key, mediaType.Value.Schema);
             }
 
             if (operation.Responses is not null && operation.Responses.Count > 0)
             {
-                Responses = new();
+                Responses = [];
                 foreach (var response in operation.Responses)
                 {
                     if (response.Value.Content is not null && response.Value.Content.Count > 0)
                     {
-                        Dictionary<string, Schema> responses = new();
+                        Dictionary<string, Schema> responses = [];
                         foreach (var mediaType in response.Value.Content)
                             responses.Add(mediaType.Key, mediaType.Value.Schema);
                         Responses.Add(response.Key, responses);
