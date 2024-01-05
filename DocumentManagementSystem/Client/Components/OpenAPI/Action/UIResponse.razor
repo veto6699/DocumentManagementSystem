@@ -1,10 +1,12 @@
 ﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.Example
+@using DocumentManagementSystem.Client.Components.OpenAPI.Action.ComponentSchema
+@using DocumentManagementSystem.Shared.OpenApi
 
 <div class="opblock-section-header">
     <h4>Ответ</h4>
 </div>
 <div class="responses-inner">
-    <table aria-live="polite" class="responses-table" id="post_Auth_Authorization_responses" role="region">
+    <table class="responses-table">
         <thead>
             <tr class="responses-header">
                 <td class="col_header response-col_status">HTTP Код</td>
@@ -13,24 +15,24 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="response" data-code="200">
-                @foreach (var responses in Responses)
+            <tr class="response">
+                @foreach (var response in Responses)
                 {
-                    @if (responses.Value is not null && responses.Value.Keys.Count > 0)
+                    @if (response.Value is not null)
                     {
-                        <td class="response-col_status">@responses.Key</td>
+                        <td class="response-col_status">@response.Key</td>
                         <td class="response-col_description">
                             <div class="response-col_description__inner">
                                 <div class="renderedMarkdown">
-                                    <p>Success</p>
+                                    <p>@((MarkupString)Markdig.Markdown.ToHtml(response.Value.Description))</p>
                                 </div>
                             </div>
                             <section class="response-controls">
                                 <div class="response-control-media-type response-control-media-type--accept-controller">
                                     <small class="response-control-media-type__title">Медиа тип</small>
                                     <div class="content-type-wrapper ">
-                                        <select class="content-type" @bind="@responseMediaType">
-                                                @foreach (var mediaType in responses.Value.Keys)
+                                        <select class="content-type" @bind="@selectedMediaTypes[response.Key]">
+                                                @foreach (var mediaType in response.Value.Content.Keys)
                                                 {
                                                     <option value="@mediaType">@mediaType</option>
                                                 }
@@ -62,17 +64,14 @@
                                         </li>
                                     }
                                 </ul>
-                                <div tabindex="0">
-                                    <div>
-                                        <div class="highlight-code">
-                                            @if (responseMediaType is null)
-                                            {
-                                                responseMediaType = responses.Value.Keys.First();
-                                            }
-                                            <Value SchemaRef="@responses.Value[@responseMediaType].Ref" Components="@Components" />
-                                        </div>
-                                    </div>
-                                </div>
+                                @if (exampleValueActivate)
+                                {
+                                    <Value SchemaRef="@response.Value.Content[selectedMediaTypes[response.Key]].Schema.Ref" Components="@Components" />
+                                }
+                                else
+                                {
+                                    <SchemaRoot SchemaRef="@response.Value.Content[selectedMediaTypes[response.Key]].Schema.Ref" Components="@Components" />
+                                }
                             </div>
                         </td>
                         <td class="response-col_links"><i>Нет ссылок</i></td>
@@ -85,14 +84,20 @@
 
 @code {
     [Parameter]
-    public Dictionary<string, Dictionary<string, Schema>>? Responses { get; set; }
+    public Dictionary<string, Response>? Responses { get; set; }
     [Parameter]
     public Components? Components { get; set; }
 
-    string? responseMediaType;
-
     bool exampleValueActivate = true;
+    Dictionary<string, string> selectedMediaTypes = new();
 
+    protected override void OnInitialized()
+    {
+        foreach (var response in Responses)
+        {
+            selectedMediaTypes.Add(response.Key, response.Value.Content.Keys.First());
+        }
+    }
 
     void ExampleValueClick()
     {

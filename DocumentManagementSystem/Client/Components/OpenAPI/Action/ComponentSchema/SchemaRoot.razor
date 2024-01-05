@@ -1,78 +1,15 @@
-@using DocumentManagementSystem.Client.Models
 
-<span class="model">
-    <span>
-        <button class="model-box-control" @onclick="ButtonRotate">
-            <span class="pointer">
-                <span class="model-title">
-                    <span class="model-title__text">@schemaName</span>
-                </span>
-            </span>
-            <span class="pointer">
-                <UISVGRotate Rotate="@rotate" Scale="0.6" />
-            </span>
-        </button>
-        @if (isOpen)
-        {
-            @foreach (var property in properties)
-            {
-
-            }
-        }
+<div class="model-box">
+    <span class="model">
+        <span>
+            <UISchema Components="@Components" SchemaRef="@SchemaRef" IsOpen="true"/>
+        </span>
     </span>
-</span>
+</div>
 
 @code {
     [Parameter]
     public string? SchemaRef { get; set; }
     [Parameter]
     public Components? Components { get; set; }
-    [Parameter]
-    public uint SpaceCount { get; set; } = 0;
-    [Parameter]
-    public bool IsRoot { get; set; } = false;
-    [Parameter]
-    public bool LastProperty { get; set; } = true;
-
-    uint spaceCount = 0;
-    string? internalSpace, externalSpace, schemaName;
-
-    string? lastPropertyKey { get; set; }
-    bool isLastProperty = true;
-
-    Dictionary<string, Property>? properties;
-
-    protected override void OnInitialized()
-    {
-        string schemaPath = SchemaRef[21..];
-        schemaName = schemaPath;
-        properties = Components.Schemas[schemaPath].Properties;
-
-        spaceCount = SpaceCount;
-        spaceCount++;
-        SpaceAdd();
-
-        lastPropertyKey = properties.Last().Key;
-    }
-
-    void SpaceAdd()
-    {
-        for (uint i = 0; i < spaceCount; i++)
-            internalSpace += Constants.PropertySpace;
-
-        externalSpace = internalSpace[..^Constants.PropertySpace.Length];
-    }
-
-    bool isOpen { get; set; } = true;
-    short rotate { get; set; } = 0;
-
-    void ButtonRotate()
-    {
-        if (isOpen)
-            rotate -= 90;
-        else
-            rotate += 90;
-
-        isOpen = !isOpen;
-    }
 }

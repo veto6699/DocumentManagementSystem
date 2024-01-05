@@ -22,7 +22,7 @@
             <Parameters RequestParameters="@Action.Parameters" />
             @if (Action.Requests is not null)
             {
-                <Request Requests="@Action.Requests" Components="@Components"/>
+                <UIRequest Requests="@Action.Requests" Components="@Components"/>
             }
         </div>
 
@@ -36,7 +36,7 @@
 
 
         <div class="responses-wrapper">
-            <Response Responses="@Action.Responses" Components="@Components" />
+            <UIResponse Responses="@Action.Responses" Components="@Components" />
         </div>
     </div>
 </div>

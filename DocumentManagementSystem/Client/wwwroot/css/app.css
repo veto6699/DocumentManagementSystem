@@ -10450,10 +10450,6 @@ table.model tr.external-docs td:first-child {
     font-weight: 700
 }
 
-table.model tr .renderedMarkdown p:first-child {
-    margin-top: 0
-}
-
 section.models {
     border: 1px solid rgba(59,65,81,.3);
     border-radius: 4px;

@@ -27,13 +27,17 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Параметры элемента массива
         /// </summary>
         public Items? Items { get; set; }
+        /// <summary>
+        /// Дефолтное значение
+        /// </summary>
+        public string? Default { get; set; }
         public string? Format { get; set; }
         /// <summary>
         /// Допустимо ли null значение
         /// </summary>
         public bool? Nullable { get; set; }
         /// <summary>
-        /// Дополнительые свойства, используется для массивов
+        /// Дополнительные свойства, используется для массивов
         /// </summary>
         public AdditionalProperty? AdditionalProperties { get; set; }
     }

@@ -63,7 +63,7 @@ namespace DocumentManagementSystem.Client.Models
         /// <summary>
         /// Ответы раздленные на медиа типы
         /// </summary>
-        public Dictionary<string, Dictionary<string, Schema>> Responses { get; set; }
+        public Dictionary<string, Response> Responses { get; set; }
 
 
 
@@ -91,22 +91,20 @@ namespace DocumentManagementSystem.Client.Models
 
             if (operation.RequestBody is not null && operation.RequestBody.Content is not null && operation.RequestBody.Content.Count > 0)
             {
-                Requests = [];
+                Requests = new();
+
                 foreach (var mediaType in operation.RequestBody.Content)
                     Requests.Add(mediaType.Key, mediaType.Value.Schema);
             }
 
             if (operation.Responses is not null && operation.Responses.Count > 0)
             {
-                Responses = [];
+                Responses = new();
                 foreach (var response in operation.Responses)
                 {
                     if (response.Value.Content is not null && response.Value.Content.Count > 0)
                     {
-                        Dictionary<string, Schema> responses = [];
-                        foreach (var mediaType in response.Value.Content)
-                            responses.Add(mediaType.Key, mediaType.Value.Schema);
-                        Responses.Add(response.Key, responses);
+                        Responses.Add(response.Key, response.Value);
                     }
                 }
             }

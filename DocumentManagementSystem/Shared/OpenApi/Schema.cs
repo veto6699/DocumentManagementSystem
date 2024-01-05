@@ -15,6 +15,9 @@ namespace DocumentManagementSystem.Shared.OpenApi
         [JsonPropertyName("$ref")]
         public string? @Ref { get; set; }
         public string? Type { get; set; }
+        /// <summary>
+        /// Обязательные параметры
+        /// </summary>
         public ICollection<string>? Required { get; set; }
         /// <summary>
         /// Параметры компонента

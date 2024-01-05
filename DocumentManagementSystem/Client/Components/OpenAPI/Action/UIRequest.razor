@@ -44,15 +44,11 @@
                 </ul>
                 @if (exampleValueActivate)
                 {
-                    <div class="highlight-code">
-                        <Value SchemaRef="@Requests[requestMediaType].Ref" Components="@Components" />
-                    </div>
+                    <Value SchemaRef="@Requests[requestMediaType].Ref" Components="@Components" />
                 }
                 else
                 {
-                    <div class="model-box">
-                        <SchemaRoot SchemaRef="@Requests[requestMediaType].Ref" Components="@Components"/>
-                    </div>
+                    <SchemaRoot SchemaRef="@Requests[requestMediaType].Ref" Components="@Components" />
                 }
             </div>
         </div>

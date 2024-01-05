@@ -4,13 +4,34 @@
 {
     case PropertyTypes.Integer:
     case PropertyTypes.Number:
-        <span style="color: rgb(211, 99, 99);">0</span>
+        @if (string.IsNullOrEmpty(DefaultValue))
+        {
+            <span style="color: rgb(211, 99, 99);">0</span>
+        }
+        else
+        {
+            <span style="color: rgb(211, 99, 99);">@DefaultValue</span>
+        }
         break;
     case PropertyTypes.Boolean:
-        <span style="color: rgb(252, 194, 140);">true</span>
+        @if (string.IsNullOrEmpty(DefaultValue))
+        {
+            <span style="color: rgb(252, 194, 140);">true</span>
+        }
+        else
+        {
+            <span style="color: rgb(252, 194, 140);">@DefaultValue</span>
+        }
         break;
     default:
-        <span style="color: rgb(162, 252, 162);">"@Type"</span>
+        @if (string.IsNullOrEmpty(DefaultValue))
+        {
+            <span style="color: rgb(162, 252, 162);">"@Type"</span>
+        }
+        else
+        {
+            <span style="color: rgb(162, 252, 162);">"@DefaultValue"</span>
+        }
         break;
 }
 @if (!LastProperty)
@@ -24,4 +45,6 @@
     public string? Type { get; set; }
     [Parameter]
     public bool LastProperty { get; set; }
+    [Parameter]
+    public string? DefaultValue { get; set; }
 }
