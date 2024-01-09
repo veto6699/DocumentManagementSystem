@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.OpenApi
 {
-    public class Items
+    public class Item
     {
-        /// <summary>
-        /// Тип параметра (на пример object, string, integer, array, boolean, number)
-        /// </summary>
-        public string? Type { get; set; }
         /// <summary>
         /// Ссылка на компонент
         /// </summary>
         [JsonPropertyName("$ref")]
         public string? @Ref { get; set; }
+        /// <summary>
+        /// Тип параметра (на пример object, string, integer, array, boolean, number)
+        /// </summary>
+        public string? Type { get; set; }
+        /// <summary>
+        /// Параметры элемента массива
+        /// </summary>
+        public Item? Items { get; set; }
     }
 }

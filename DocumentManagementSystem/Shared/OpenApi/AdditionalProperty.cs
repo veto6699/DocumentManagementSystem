@@ -20,6 +20,6 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Параметры элемента массива
         /// </summary>
-        public Items? Items { get; set; }
+        public Item? Items { get; set; }
     }
 }

@@ -1,33 +1,30 @@
 ﻿@using DocumentManagementSystem.Client.Models
 
-@if (!isOpen)
-{
-    <button class="model-box-control" @onclick="PropertyClick">
-        <span class="pointer">
-            <span class="model-title">
-                <span class="model-title__text">@schemaName</span>
-            </span>
+
+
+<button class="model-box-control" @onclick="PropertyClick">
+    <span class="pointer">
+        <span class="model-title">
+            <span class="model-title__text">@schemaName</span>
         </span>
+    </span>
+    @if (isOpen)
+    {
+        <span class="model-toggle"></span>
+    }
+    else
+    {
         <span class="model-toggle collapsed"></span>
         <span>
             <span>
                 <span>{</span>...<span>}</span>
             </span>
         </span>
-    </button>
-}
-else
+    }
+</button>
+@if (isOpen)
 {
-    <button class="model-box-control" @onclick="PropertyClick">
-        <span class="pointer">
-            <span class="model-title">
-                <span class="model-title__text">@schemaName</span>
-            </span>
-        </span>
-        <span class="model-toggle"></span>
-    </button>
     <span class="brace-open object">{</span>
-    <span class="model-jump-to-path"></span>
     <span class="inner-object">
         <table class="model">
             <tbody>
@@ -90,63 +87,10 @@ else
                             }
                             else if (property.Value.Type == PropertyTypes.Array && property.Value.Items is not null)
                             {
-                                @if (!arrayProperties.ContainsKey(property.Key))
-                                    arrayProperties.Add(property.Key, false);
+                                @if (!arrayPropertiesIsOpen.ContainsKey(property.Key))
+                                    arrayPropertiesIsOpen.Add(property.Key, false);
 
-                                <span class="model" @onclick="@(e => arrayProperties[property.Key] = !arrayProperties[property.Key])">
-                                    <span>
-                                        <span class="pointer">
-                                            <span class="model-toggle collapsed"></span>
-                                        </span>
-
-                                        @if (arrayProperties[property.Key])
-                                        {
-                                            <span>[</span>
-                                            @if (property.Value.Nullable is not null)
-                                            {
-                                                <span class="property">
-                                                    <br>nullable: @property.Value.Nullable.ToString().ToLower()
-                                                </span>
-                                            }
-                                            @if (!string.IsNullOrEmpty(property.Value.Default))
-                                            {
-                                                <span class="property">
-                                                    <br>default: @property.Value.Default
-                                                </span>
-                                            }
-                                            @if (!string.IsNullOrEmpty(property.Value.Description))
-                                            {
-                                                <div class="renderedMarkdown">
-                                                    <p>@((MarkupString)Markdig.Markdown.ToHtml(property.Value.Description))</p>
-                                                </div>
-                                            }
-                                            @if (property.Value.Items.Type is not null || property.Value.Items.Ref is not null)
-                                            {
-                                                <span>
-                                                    <span class="model">
-                                                        <span class="">
-                                                            @if (property.Value.Items.Ref is not null)
-                                                            {
-                                                                <UISchema SchemaRef="@property.Value.Items.Ref" Components="@Components" />
-                                                            }
-                                                            else
-                                                            {
-                                                                <span class="prop">
-                                                                    <span class="prop-type">@property.Value.Items.Type</span>
-                                                                </span>
-                                                            }
-                                                        </span>
-                                                    </span>
-                                                </span>
-                                            }
-                                            <span>]</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="pointer">[...]</span>
-                                        }
-                                    </span>
-                                </span>
+                                <ModelArray Property="@property.Value" Components="@Components" IsOpen="arrayPropertiesIsOpen[property.Key]" />
                             }
                             else
                             {
@@ -182,7 +126,7 @@ else
 
     Dictionary<string, Property>? properties;
     List<string> required;
-    Dictionary<string, bool> arrayProperties = new();
+    Dictionary<string, bool> arrayPropertiesIsOpen = new();
 
     protected override void OnInitialized()
     {
@@ -220,13 +164,13 @@ else
                 required = (List<string>)Schema.Required;
         }
 
-        if (IsOpen is null)
-            isOpen = false;
+        if (IsOpen is not null && (bool)IsOpen)
+            isOpen = true;
         else
-            isOpen = (bool)IsOpen;
+            isOpen = false;
     }
 
-    bool isOpen { get; set; } = false;
+    bool isOpen { get; set; }
 
     void PropertyClick()
     {

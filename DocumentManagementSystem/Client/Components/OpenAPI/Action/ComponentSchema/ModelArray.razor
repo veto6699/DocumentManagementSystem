@@ -1,0 +1,82 @@
+﻿@using DocumentManagementSystem.Client.Models
+
+<span class="model">
+    <span>
+        <button class="model-box-control" @onclick="@(e => IsOpen = !IsOpen)">
+            @if (IsOpen)
+            {
+                <span class="model-toggle"></span>
+            }
+            else
+            {
+                <span class="pointer">
+                    <span class="model-toggle collapsed"></span>
+                </span>
+                <span>[...]</span>
+            }
+        </button>
+        @if (IsOpen)
+        {
+            <span>[</span>
+            @if (Property.Nullable is not null)
+            {
+                <span class="property">
+                    <br>nullable: @Property.Nullable.ToString().ToLower()
+                </span>
+            }
+            @if (!string.IsNullOrEmpty(Property.Default))
+            {
+                <span class="property">
+                    <br>default: @Property.Default
+                </span>
+            }
+            @if (!string.IsNullOrEmpty(Property.Description))
+            {
+                <div class="renderedMarkdown">
+                    <p>@((MarkupString)Markdig.Markdown.ToHtml(Property.Description))</p>
+                </div>
+            }
+            @if (Property.Items.Type is not null || Property.Items.Ref is not null)
+            {
+                <span>
+                    <span class="model">
+                        <span>
+                            @if (Property.Items.Ref is not null)
+                            {
+                                <UISchema SchemaRef="@Property.Items.Ref" Components="@Components" />
+                            }
+                            else if (Property.Items.Type == PropertyTypes.Array && Property.Items.Items is not null && !string.IsNullOrEmpty(Property.Items.Items.Type))
+                            {
+                                <span>[</span>
+                                <span class="model">
+                                    <span class="">
+                                        <span class="prop">
+                                            <span class="prop-type">@Property.Items.Items.Type</span>
+                                        </span>
+                                    </span>
+                                </span>
+                                <span>]</span>
+                            }
+                            else
+                            {
+                                <span class="prop">
+                                    <span class="prop-type">@Property.Items.Type</span>
+                                </span>
+                            }
+                        </span>
+                    </span>
+                </span>
+            }
+            <span>]</span>
+        }
+    </span>
+</span>
+
+@code {
+    [Parameter]
+    public Property? Property { get; set; }
+    [Parameter]
+    public Components? Components { get; set; }
+    [Parameter]
+    public bool IsOpen { get; set; }
+}
