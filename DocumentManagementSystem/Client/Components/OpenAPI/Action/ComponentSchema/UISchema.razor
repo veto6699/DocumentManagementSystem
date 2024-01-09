@@ -1,31 +1,51 @@
 ﻿@using DocumentManagementSystem.Client.Models
 
-<button class="model-box-control" @onclick="PropertyClick">
-    <span class="pointer">
-        <span class="model-title">
-            <span class="model-title__text">@schemaName</span>
-        </span>
-    </span>
-    @if (isOpen)
-    {
-        <span class="model-toggle"></span>
-    }
-    else
-    {
-        <span class="model-toggle collapsed"></span>
-    }
-</button>
-@if (isOpen)
+@if (!isOpen)
 {
+    <button class="model-box-control" @onclick="PropertyClick">
+        <span class="pointer">
+            <span class="model-title">
+                <span class="model-title__text">@schemaName</span>
+            </span>
+        </span>
+        <span class="model-toggle collapsed"></span>
+        <span>
+            <span>
+                <span>{</span>...<span>}</span>
+            </span>
+        </span>
+    </button>
+}
+else
+{
+    <button class="model-box-control" @onclick="PropertyClick">
+        <span class="pointer">
+            <span class="model-title">
+                <span class="model-title__text">@schemaName</span>
+            </span>
+        </span>
+        <span class="model-toggle"></span>
+    </button>
     <span class="brace-open object">{</span>
     <span class="model-jump-to-path"></span>
     <span class="inner-object">
         <table class="model">
             <tbody>
+                @if (schemaDescription is not null)
+                {
+                    <tr class="description">
+                        <td>описание:</td>
+                        <td>
+                            <div class="renderedMarkdown">
+                                <p>@((MarkupString)Markdig.Markdown.ToHtml(schemaDescription))</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
                 @foreach (var property in properties)
                 {
                     <tr class="property-row">
-                        @if (required.Contains(property.Key))
+                        @if (required is not null && required.Contains(property.Key))
                         {
                             <td>
                                 @property.Key
@@ -37,7 +57,6 @@
                             <td>@property.Key</td>
                         }
                         <td>
-
                             @if (property.Value.Ref is null && property.Value.Type != PropertyTypes.Array)
                             {
                                 <span class="model">
@@ -79,7 +98,7 @@
                                         <span class="pointer">
                                             <span class="model-toggle collapsed"></span>
                                         </span>
-                                        
+
                                         @if (arrayProperties[property.Key])
                                         {
                                             <span>[</span>
@@ -145,28 +164,24 @@
     </span>
     <span class="brace-close">}</span>
 }
-else
-{
-    <span>
-        <span>
-            <span>{</span>...<span>}</span>
-            <span class="model-jump-to-path"></span>
-        </span>
-    </span>
-}
 
 @code {
     [Parameter]
     public string? SchemaRef { get; set; }
+    [Parameter]
+    public Schema? Schema { get; set; }
+    [Parameter]
+    public string? SchemaName { get; set; }
     [Parameter]
     public Components? Components { get; set; }
     [Parameter]
     public bool? IsOpen { get; set; }
 
     string? schemaName;
+    string? schemaDescription;
 
     Dictionary<string, Property>? properties;
-    List<string> required = new();
+    List<string> required;
     Dictionary<string, bool> arrayProperties = new();
 
     protected override void OnInitialized()
@@ -180,12 +195,29 @@ else
             {
                 var schema = Components.Schemas[schemaPath];
 
+                if (!string.IsNullOrEmpty(schema.Description))
+                    schemaDescription = schema.Description;
+
                 if (schema.Properties is not null)
                     properties = schema.Properties;
 
                 if (schema.Required is not null)
                     required = (List<string>)schema.Required;
             }
+        }
+
+        if (Schema is not null)
+        {
+            schemaName = SchemaName;
+
+            if (!string.IsNullOrEmpty(Schema.Description))
+                schemaDescription = Schema.Description;
+
+            if (Schema.Properties is not null)
+                properties = Schema.Properties;
+
+            if (Schema.Required is not null)
+                required = (List<string>)Schema.Required;
         }
 
         if (IsOpen is null)

@@ -1,0 +1,77 @@
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.ComponentSchema
+
+<div class="wrapper">
+    <section class="block col-12 block-desktop col-12-desktop">
+        <section class="@sectionClass">
+            <h4 @onclick="ButtonRotate">
+                <span>Schemas</span>
+                <UISVGRotate Rotate="@rotate" />
+            </h4>
+            @if (isOpen)
+            {
+                <div class="no-margin">
+                    @foreach (var component in Components.Schemas)
+                    {
+                        <div class="model-container">
+                            <span class="model-box">
+                                @if (componentsIsOpen[component.Key])
+                                {
+                                    <div class="model-box">
+                                        <span class="model">
+                                            <span>
+                                                <UISchema Components="@Components" Schema="@component.Value" SchemaName="@component.Key" IsOpen="@componentsIsOpen[component.Key]" />
+                                            </span>
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="model-box-control" @onclick="@(e => componentsIsOpen[component.Key] = true)">
+                                        <span class="pointer">
+                                            <span class="model-box">
+                                                <span class="model model-title">@component.Key</span>
+                                            </span>
+                                        </span>
+                                        <span class="model-toggle collapsed" />
+                                    </button>
+                                }
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </section>
+</div>
+
+@code {
+    [Parameter]
+    public Components? Components { get; set; }
+
+    Dictionary<string, bool> componentsIsOpen = new();
+
+    protected override void OnInitialized()
+    {
+        foreach (var component in Components.Schemas)
+            componentsIsOpen.Add(component.Key, false);
+    }
+
+    bool isOpen { get; set; } = true;
+    short rotate { get; set; } = 180;
+    string sectionClass = "models is-open";
+
+    void ButtonRotate()
+    {
+        if (isOpen)
+            rotate -= 180;
+        else
+            rotate += 180;
+
+        isOpen = !isOpen;
+
+        if (isOpen)
+            sectionClass = "models is-open";
+        else
+            sectionClass = "models";
+    }
+}
