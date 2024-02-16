@@ -1,0 +1,19 @@
+﻿@inject NavigationManager Navigation
+
+<div style="text-align: center;padding: 10px;">
+    <p style="font-size:24px;color:@TextColor;">@Text</p>
+    <button @onclick="NavigateToMain" style="background: black;color: white;border: black;border-radius: 5px;font-size:18px;height:35px;width:150px">На главную</button>
+</div>
+
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+    [Parameter]
+    public string TextColor { get; set; } = "black";
+
+    void NavigateToMain()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

@@ -8,42 +8,46 @@
 @if (Info is not null)
 {
     <div class="information-container wrapper">
-        <div class="info">
-            <hgroup class="main">
-                <h2 class="title">
-                    @if (!string.IsNullOrWhiteSpace(Info.Title))
-                    {
-                        @Info.Title
+        <section class="block col-12">
+            <div>
+                <div class="info">
+                    <hgroup class="main">
+                        <h2 class="title">
+                            @if (!string.IsNullOrWhiteSpace(Info.Title))
+                            {
+                                @Info.Title
 
-                        <span>
-                            @if (!string.IsNullOrWhiteSpace(Info.Version))
-                            {
-                                <small>
-                                    <pre class="version">@Info.Version</pre>
-                                </small>
+                                <span>
+                                    @if (!string.IsNullOrWhiteSpace(Info.Version))
+                                    {
+                                        <small>
+                                            <pre class="version">@Info.Version</pre>
+                                        </small>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(openAPI))
+                                    {
+                                        <small class="version-stamp">
+                                            <pre class="version">@openAPI</pre>
+                                        </small>
+                                    }
+                                </span>
                             }
-                            @if (!string.IsNullOrWhiteSpace(openAPI))
-                            {
-                                <small class="version-stamp">
-                                    <pre class="version">@openAPI</pre>
-                                </small>
-                            }
-                        </span>
+                        </h2>
+                        <a target="_blank" href="@URL" rel="noopener noreferrer" class="link">
+                            <span class="url">@URL</span>
+                        </a>
+                    </hgroup>
+                    @if (!string.IsNullOrWhiteSpace(Info?.Description))
+                    {
+                        <div class="description">
+                            <div class="renderedMarkdown">
+                                @((MarkupString)Markdig.Markdown.ToHtml(Info.Description))
+                            </div>
+                        </div>
                     }
-                </h2>
-                <a target="_blank" href="@URL" rel="noopener noreferrer" class="link">
-                    <span class="url">@URL</span>
-                </a>
-            </hgroup>
-            @if (!string.IsNullOrWhiteSpace(Info?.Description))
-            {
-                <div class="description">
-                    <div class="renderedMarkdown">
-                        @((MarkupString)Markdig.Markdown.ToHtml(Info.Description))
-                    </div>
                 </div>
-            }
-        </div>
+            </div>
+        </section>
     </div>
 }
 

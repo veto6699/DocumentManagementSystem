@@ -1,4 +1,6 @@
 ﻿@page "/"
+@page "/index"
+@page "/home"
 @using DocumentManagementSystem.Shared
 @using DocumentManagementSystem.Client.Components.OpenAPI;
 @inject NavigationManager Navigation
@@ -7,41 +9,41 @@
 <PageTitle>Все проекты</PageTitle>
 
 <div class="wrapper menu">
-@if (documents == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    @foreach (var document in documents)
+    @if (documents is null)
     {
-        <NavLink class="nav-link">
-            <div class="menuItem" @onclick="()=>NavigateToViewingComponent(document.Code)">
-                <div>
-                    <span>@document.Name</span>
-                    <p>@document.Description</p>
-                </div>
-                <small/>
-                <button class="expand-operation">
-                    <UISVGRotate Rotate="-90"/>
-                </button>
-            </div>
-        </NavLink>
+        <p><em>загрузка...</em></p>
     }
-}
+    else
+    {
+        @foreach (var document in documents)
+        {
+            <NavLink class="nav-link">
+                <div class="menuItem" @onclick="()=>NavigateToViewing(document.Code)">
+                    <div>
+                        <span>@document.Name</span>
+                        <p>@document.Description</p>
+                    </div>
+                    <small />
+                    <button class="expand-operation">
+                        <UISVGRotate Rotate="-90" />
+                    </button>
+                </div>
+            </NavLink>
+        }
+    }
 </div>
 
 @code {
-    private void NavigateToViewingComponent(string code)
+    private void NavigateToViewing(string code)
     {
         Navigation.NavigateTo($"/viewing/{code}");
     }
 
-    List<ShortDescriptionDocumentation>? documents;
+    List<ShortDescription>? documents;
 
     protected override async Task OnInitializedAsync()
     {
-        var doc = await client.GetFromJsonAsync<List<ShortDescriptionDocumentation>>($"/ShortDescription");
+        var doc = await client.GetFromJsonAsync<List<ShortDescription>>($"/ShortDescription");
 
         documents = doc;
     }

@@ -1,8 +1,12 @@
+using DocumentManagementSystem.Server.Data;
 using Microsoft.AspNetCore.ResponseCompression;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddSingleton(new ShortDescriptionDbContext(new MongoClient(builder.Configuration.GetConnectionString("MongoDB"))));
+builder.Services.AddSingleton(new DocumentDbContext(new MongoClient(builder.Configuration.GetConnectionString("MongoDB"))));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

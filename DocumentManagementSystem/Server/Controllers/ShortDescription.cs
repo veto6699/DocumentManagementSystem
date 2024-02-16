@@ -1,6 +1,8 @@
-﻿using DocumentManagementSystem.Shared;
+﻿using DocumentManagementSystem.Server.Data;
+using DocumentManagementSystem.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Text;
 
 namespace DocumentManagementSystem.Server.Controllers
@@ -17,30 +19,30 @@ namespace DocumentManagementSystem.Server.Controllers
         }
 
         [HttpGet]
-        public List<ShortDescriptionDocumentation> Get()
+        public async Task<List<ShortDescription>> GetAll()
         {
-            List<ShortDescriptionDocumentation> documents = new()
-            {
-                 new ShortDescriptionDocumentation()
-                {
-                    Id = Guid.NewGuid(),
-                    Code = "PS",
-                    Name = "PetStore",
-                    Description = "Тестовый сваггер файл, для сравнения с оригиналом"
-                },
-                new ShortDescriptionDocumentation()
-                {
-                    Id = Guid.NewGuid(),
-                    Code = "ECP",
-                    Name = "Электронный клинический фармаколог",
-                    Description = "«Электронный Клинический Фармаколог» – ассистент врача, помогающий минимизировать риск врачебных ошибок и подобрать персонализированную фармакотерапию пациенту. " +
-                    "ЭКФ способствует снижению рисков врачебных ошибок и осложнений в клинической практике, а также сопровождает врача в условиях повышенной ответственности и нагрузки. ​" +
-                    "При использовании ЭКФ  уменьшается количество побочных эффектов от применения лекарственных средств, сокращается время приема пациента, повышается качество оказания медицинской помощи, " +
-                    "снижаются затраты медицинской организации на закупку медикаментов за счет более рациональных назначений врача."
-                },
-            };
+            var db = HttpContext.RequestServices.GetService<ShortDescriptionDbContext>();
+            return db.GetAll();
+        }
 
-            return documents;
+        [HttpPost]
+        public async Task Add(ShortDescription args)
+        {
+            var db = HttpContext.RequestServices.GetService<ShortDescriptionDbContext>();
+
+            try
+            {
+                db.Add(args);
+            }
+            catch
+            {
+                HttpContext.Response.StatusCode = 400;
+                return;
+            }
+
+            HttpContext.Response.StatusCode = 204;
+
+            return;
         }
     }
 }

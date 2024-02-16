@@ -9570,7 +9570,8 @@ img {
 .response-col_status {
     color: #3b4151;
     font-family: sans-serif;
-    font-size: 14px
+    font-size: 14px;
+    min-width: 8em;
 }
 
     .response-col_status .response-undocumented {
@@ -10815,7 +10816,6 @@ table {
         font-family: sans-serif;
         font-size: 1.5em;
         font-weight: 700;
-        max-width: 300px;
         text-decoration: none
     }
 
@@ -11191,6 +11191,39 @@ table {
         flex: 1
     }
 }
+
+.add-document {
+    background: rgb(0, 119, 255);
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-left: auto;
+    border: 0;
+    text-align: center;
+}
+
+.button-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: inherit;
+    padding: 0 16px;
+    height: 30px;
+}
+
+.button-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 1px;
+}
+
+
+
+
+
+
+
 
 
 

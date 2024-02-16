@@ -99,14 +99,7 @@ namespace DocumentManagementSystem.Client.Models
 
             if (operation.Responses is not null && operation.Responses.Count > 0)
             {
-                Responses = new();
-                foreach (var response in operation.Responses)
-                {
-                    if (response.Value.Content is not null && response.Value.Content.Count > 0)
-                    {
-                        Responses.Add(response.Key, response.Value);
-                    }
-                }
+                Responses = operation.Responses.ToDictionary(x => x.Key, y => y.Value);
             }
         }
     }

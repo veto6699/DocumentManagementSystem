@@ -1,19 +1,40 @@
 ﻿@page "/viewing/{Code}"
-@using DocumentManagementSystem.Client.Components.OpenAPI;
-@using DocumentManagementSystem.Shared.OpenApi;
+@using DocumentManagementSystem.Client.Components.OpenAPI
+@using DocumentManagementSystem.Client.Components
+@using DocumentManagementSystem.Shared.OpenApi
+@using DocumentManagementSystem.Client.Models
+@using System.Text.Json
+@using System.Net
 @inject NavigationManager Navigation
-@inject HttpClient client;
+@inject HttpClient client
 
 <PageTitle>Просмотр</PageTitle>
 
-<UIRoot Document="@Document" URL="@url"/>
+@if (statusCode is not null)
+{
+    switch(statusCode)
+    {
+        case HttpStatusCode.NotFound:
+            <EmptyPage Text="Документация не найдена" />
+            break;
+        case HttpStatusCode.BadRequest:
+            <EmptyPage Text="Ошибка загрузки документации" />
+            break;
+    }
+}
+else
+{
+    <UIRoot Document="@Document" URL="@url" />
+}
 
 
 @code {
-    [Parameter] public string? Code { get; set; }
+    [Parameter]
+    public string? Code { get; set; }
 
     OpenAPIRoot? Document { get; set; }
     string? url;
+    HttpStatusCode? statusCode;
 
     protected override async Task OnInitializedAsync()
     {
@@ -21,7 +42,18 @@
 
         url = client.BaseAddress + $"Document?Code={Code}";
 
-        Document = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document?Code={Code}");
+        var response = await client.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            statusCode = response.StatusCode;
+            return;
+        }
+
+        Document = await JsonSerializer.DeserializeAsync<OpenAPIRoot>(response.Content.ReadAsStream(), Constants.serializerOptions);
+
+        if (Document is null || Document.Components is null || Document.Components.Schemas is null || Document.Components.Schemas.Count == 0 || Document.Paths is null || Document.Paths.Count == 0)
+            statusCode = HttpStatusCode.BadRequest;
     }
 }
 

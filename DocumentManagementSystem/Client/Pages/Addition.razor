@@ -1,0 +1,168 @@
+﻿@page "/Addition"
+@using DocumentManagementSystem.Client.Components.OpenAPI
+@using DocumentManagementSystem.Client.Models
+@using DocumentManagementSystem.Shared.OpenApi
+@using DocumentManagementSystem.Shared
+@using DocumentManagementSystem.Client.Components
+@using System.Net
+@using System.Text.Json;
+@inject HttpClient client
+
+<PageTitle>Добавление</PageTitle>
+
+<div>
+    <div class="wrapper">
+        <div class="info">
+            @if (errors is not null)
+            {
+                <div>
+                    @foreach (var error in errors)
+                    {
+                        <p style="color:red">@error</p>
+                    }
+                </div>
+                <br>
+            }
+
+            @if (message is not null)
+            {
+                <EmptyPage Text="@message" TextColor="green"/>
+            }
+            else
+            {
+                <span>Код</span>
+
+                <br>
+                <input type="text" @bind-value="@documentCode" @bind-value:event="oninput">
+
+                <br>
+
+                <span>Название</span>
+
+                <br>
+                <input style="width:500px" type="text" @bind-value="@name" @bind-value:event="oninput">
+
+                <br>
+
+                <span>Краткое описание</span>
+
+                <br>
+                <textarea style="border: 1px solid #d9d9d9;border-radius: 4px;min-height: 100px;font-family:sans-serif;font-size: 100%;font-weight: normal;" @bind-value="@description" @bind-value:event="oninput"></textarea>
+
+                <br>
+
+                <span>Документ (json описание в формате OpenAPI)</span>
+
+                <br>
+                <textarea style="border: 1px solid #d9d9d9;border-radius: 4px;height: 500px;font-family:sans-serif;font-size: 100%;font-weight: normal;" @bind-value="@document" @bind-value:event="oninput"></textarea>
+
+                <br>
+
+                <br>
+
+                <button class="add-document" @onclick="Add">
+                    <span class="button-in">
+                        <span class="button-content">Добавить</span>
+                    </span>
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    string? documentCode { get; set; }
+    string? name { get; set; }
+    string? description { get; set; }
+    string? document { get; set; }
+    string? message { get; set; }
+    List<string>? errors { get; set; }
+    HttpStatusCode? statusCode;
+
+    async Task Add()
+    {
+        message = null;
+        List<string>? error = new();
+
+        if (string.IsNullOrWhiteSpace(documentCode))
+            error.Add("Код не указан");
+
+        if (documentCode?.Length < 3)
+            error.Add("Код должен быть больше 2х символов");
+
+        if (string.IsNullOrWhiteSpace(name))
+            error.Add("Название не указано");
+
+        if (name?.Length < 6)
+            error.Add("Название должено быть больше 5х символов");
+
+        if (string.IsNullOrWhiteSpace(document))
+            error.Add("Документ не указан");
+
+        if (document?.Length < 21)
+            error.Add("Документ должен быть больше 20х символов");
+
+        if (error.Count > 0)
+        {
+            errors = error;
+            return;
+        }
+
+        var shortDescription = JsonContent.Create(new ShortDescription() { Name = name, Code = documentCode, Description = description });
+
+        var response = await client.PostAsync(client.BaseAddress + "ShortDescription", shortDescription);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.NotFound:
+                error.Add("Документация не найдена");
+                break;
+            case HttpStatusCode.BadRequest:
+                error.Add("Ошибка добавления документации");
+                break;
+            case HttpStatusCode.MethodNotAllowed:
+                error.Add("Метод не поддерживается");
+                break;
+            case HttpStatusCode.Conflict:
+                error.Add("Документация c таким кодом уже добавлена");
+                break;
+        }
+
+        if (error.Count > 0)
+        {
+            errors = error;
+            return;
+        }
+
+        var documentJson = JsonContent.Create(new Document() { Code = documentCode, OpenAPI = JsonSerializer.Deserialize<OpenAPIRoot>(document, Constants.serializerOptions) });
+
+        response = await client.PostAsync(client.BaseAddress + "Document", documentJson);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.NotFound:
+                error.Add("Документация не найдена");
+                break;
+            case HttpStatusCode.BadRequest:
+                error.Add("Ошибка добавления документации");
+                break;
+            case HttpStatusCode.MethodNotAllowed:
+                error.Add("Метод не поддерживается");
+                break;
+            case HttpStatusCode.Conflict:
+                error.Add("Документация c таким кодом уже добавлена");
+                break;
+            case HttpStatusCode.NoContent:
+                message = "Документация добавлена";
+                break;
+        }
+
+        if (error.Count > 0)
+        {
+            errors = error;
+            message = null;
+        }
+        else
+            errors = null;
+    }
+}
