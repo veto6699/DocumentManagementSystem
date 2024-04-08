@@ -15,19 +15,19 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="response">
-                @foreach (var response in Responses)
+            @foreach (var response in Responses)
+            {
+                @if (response.Value is not null)
                 {
-                    @if (response.Value is not null)
-                    {
+                    <tr class="response">
                         <td class="response-col_status">@response.Key</td>
                         <td class="response-col_description">
                             <div class="response-col_description__inner">
                                 <div class="renderedMarkdown">
-                                    <p>@((MarkupString)Markdig.Markdown.ToHtml(response.Value.Description))</p>
+                                    @((MarkupString)Markdig.Markdown.ToHtml(response.Value.Description))
                                 </div>
                             </div>
-                            @if (selectedMediaTypes.Count > 0)
+                            @if (selectedMediaTypes.ContainsKey(response.Key) && response.Value.Content is not null)
                             {
                                 <section class="response-controls">
                                     <div class="response-control-media-type response-control-media-type--accept-controller">
@@ -73,22 +73,19 @@
                                     </ul>
                                     @if (exampleValueActivate)
                                     {
-
                                         <Value SchemaRef="@response.Value.Content[selectedMediaTypes[response.Key]].Schema.Ref" Components="@Components" />
-
                                     }
                                     else
                                     {
                                         <SchemaRoot SchemaRef="@response.Value.Content[selectedMediaTypes[response.Key]].Schema.Ref" Components="@Components" />
-
                                     }
                                 </div>
                             }
                         </td>
                         <td class="response-col_links"><i>Нет ссылок</i></td>
-                    }
+                    </tr>
                 }
-            </tr>
+            }
         </tbody>
     </table>
 </div>

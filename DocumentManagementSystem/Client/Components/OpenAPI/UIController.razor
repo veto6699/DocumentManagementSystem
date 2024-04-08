@@ -1,5 +1,6 @@
 ﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action;
 @using DocumentManagementSystem.Client.Components.OpenAPI.Actions;
+@using Markdig
 
 @if (Tag is not null && !string.IsNullOrWhiteSpace(Tag.Name))
 {
@@ -19,11 +20,9 @@
                 </small>
                 @if (Tag.ExternalDocs is not null && Tag.ExternalDocs.URL is not null && !string.IsNullOrWhiteSpace(Tag.ExternalDocs.Description))
                 {
-                    var text = (MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description);
-
                     <div class="info__externaldocs">
                         <small>
-                            <a href="@Tag.ExternalDocs.URL" target="_blank" rel="noopener noreferrer" class="link">@((MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description))</a>
+                            <a href="@Tag.ExternalDocs.URL" target="_blank" rel="noopener noreferrer" class="link">@(((MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description)).ToString()[3..^5])</a>
                         </small>
                     </div>
                 }

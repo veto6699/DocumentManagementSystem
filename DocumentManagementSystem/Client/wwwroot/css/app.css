@@ -102,9 +102,9 @@ svg {
     transform-origin: 50% 50%
 }
 
-svg:not(:root) {
-    overflow: hidden
-}
+    svg:not(:root) {
+        overflow: hidden
+    }
 
 button, input, optgroup, select, textarea {
     font-family: sans-serif;
@@ -10784,7 +10784,7 @@ table {
     width: 99%
 }
 
-    .response-col_description .markdown p {
+    .response-col_description .markdown p, .response-col_description .renderedMarkdown p {
         margin: 0
     }
 
