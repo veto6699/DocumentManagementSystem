@@ -3,14 +3,18 @@
 <div>
     @if (Document is not null)
     {
-        <UIInfo Info="@Document.Info" OpenAPI="@Document.OpenAPI" URL="@URL" />
+        <UIInfo Info="@Document.Info" ExternalDocs="@Document.ExternalDocs" OpenAPI="@Document.OpenAPI" URL="@URL" />
         <UIServers Servers="@Document.Servers" />
-        <UIControllers Paths="@Document.Paths" Components="@Document.Components"/>
+        <UIControllers Paths="@Document.Paths" Tags="@Document.Tags" Components="@Document.Components"/>
         <UISchemas Components="@Document.Components" />
     }
 </div>
 
 @code {
-    [Parameter] public OpenAPIRoot? Document { get; set; }
-    [Parameter] public string? URL { get; set; }
+    [Parameter]
+    [EditorRequired] 
+    public OpenAPIRoot? Document { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? URL { get; set; }
 }

@@ -1,14 +1,16 @@
 ﻿@using DocumentManagementSystem.Shared.OpenApi;
-@using DocumentManagementSystem.Client.Models;
 
 <div class="wrapper">
     <section class="block col-12 block-desktop col-12-desktop">
         <div>
-            @if (APIs is not null)
+            @if (Tags is not null)
             {
-                @foreach (var controller in APIs)
+                @foreach (var tag in Tags)
                 {
-                    <UIController Controller="controller" Components="@Components"/>
+                    @if (!string.IsNullOrEmpty(tag.Name))
+                    {
+                        <UIController Tag="@tag" Paths="@controllers[tag.Name]" Components="@Components" />
+                    }
                 }
             }
         </div>
@@ -16,202 +18,115 @@
 </div>
 
 @code {
-    [Parameter] 
+    [Parameter]
+    [EditorRequired]
     public Dictionary<string, PathItem>? Paths { get; set; }
     [Parameter]
+    [EditorRequired]
     public IList<Tag>? Tags { get; set; }
     [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
 
-    List<Controller> APIs = new();
+    Dictionary<string, Dictionary<string, PathItem>> controllers;
 
     protected override void OnInitialized()
     {
-        if(Tags is not null && Tags.Count > 0)
+        if (Paths is not null)
         {
-            foreach (var tag in Tags)
-            {
-                if (string.IsNullOrEmpty(tag.Name))
-                {
-                    Controller controller = new(tag.Name);
-
-                    if (string.IsNullOrEmpty(tag.Description))
-                        controller.Description = tag.Description;
-
-                    if (tag.ExternalDocs is not null)
-                        controller.ExternalDocs = tag.ExternalDocs;
-
-                    APIs.Add(controller);
-                }
-            }
-        }
-
-        if (Paths is not null && Paths.Count > 0)
-        {
-            Dictionary<string, int> DictionaryAPIs = new();
+            controllers = new();
 
             foreach (var path in Paths)
             {
-                #region Post
-                if (path.Value.Post is not null)
+                #region delete
+                if (path.Value.Delete is not null && path.Value.Delete.Tags is not null && path.Value.Delete.Tags.Count > 0)
                 {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Post.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Post.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
+                    var tag = path.Value.Delete.Tags[0];
 
-                        DictionaryAPIs.Add(path.Value.Post.Tags[0], APIs.Count - 1);
-                        continue;
+                    if (controllers.ContainsKey(tag))
+                    {
+                        if (!controllers[tag].ContainsKey(path.Key))
+                            controllers[tag].Add(path.Key, path.Value);
                     }
                     else
                     {
-                        int index = DictionaryAPIs[path.Value.Post.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                        var dictionary = new Dictionary<string, PathItem>();
+                        dictionary.Add(path.Key, path.Value);
+
+                        controllers.Add(tag, dictionary);
                     }
                 }
                 #endregion
 
-                #region Get
-                if (path.Value.Get is not null)
+                #region get
+                if (path.Value.Get is not null && path.Value.Get.Tags is not null && path.Value.Get.Tags.Count > 0)
                 {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Get.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Get.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
+                    var tag = path.Value.Get.Tags[0];
 
-                        DictionaryAPIs.Add(path.Value.Get.Tags[0], APIs.Count - 1);
-                        continue;
+                    if (controllers.ContainsKey(tag))
+                    {
+                        if (!controllers[tag].ContainsKey(path.Key))
+                            controllers[tag].Add(path.Key, path.Value);
                     }
                     else
                     {
-                        int index = DictionaryAPIs[path.Value.Get.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                        var dictionary = new Dictionary<string, PathItem>();
+                        dictionary.Add(path.Key, path.Value);
+
+                        controllers.Add(tag, dictionary);
                     }
                 }
                 #endregion
 
-                #region Put
-                if (path.Value.Put is not null)
+                #region post
+                if (path.Value.Post is not null && path.Value.Post.Tags is not null && path.Value.Post.Tags.Count > 0)
                 {
+                    var tag = path.Value.Post.Tags[0];
 
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Put.Tags[0]))
+                    if (controllers.ContainsKey(tag))
                     {
-                        var controller = new Controller(path.Value.Put.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
-
-                        DictionaryAPIs.Add(path.Value.Put.Tags[0], APIs.Count - 1);
-                        continue;
+                        if (!controllers[tag].ContainsKey(path.Key))
+                            controllers[tag].Add(path.Key, path.Value);
                     }
                     else
                     {
-                        int index = DictionaryAPIs[path.Value.Put.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                        var dictionary = new Dictionary<string, PathItem>();
+                        dictionary.Add(path.Key, path.Value);
+
+                        controllers.Add(tag, dictionary);
                     }
                 }
                 #endregion
 
-                #region Delete
-                if (path.Value.Delete is not null)
+                #region put
+                if (path.Value.Put is not null && path.Value.Put.Tags is not null && path.Value.Put.Tags.Count > 0)
                 {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Delete.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Delete.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
+                    var tag = path.Value.Put.Tags[0];
 
-                        DictionaryAPIs.Add(path.Value.Delete.Tags[0], APIs.Count - 1);
-                        continue;
+                    if (controllers.ContainsKey(tag))
+                    {
+                        if (!controllers[tag].ContainsKey(path.Key))
+                            controllers[tag].Add(path.Key, path.Value);
                     }
                     else
                     {
-                        int index = DictionaryAPIs[path.Value.Delete.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
+                        var dictionary = new Dictionary<string, PathItem>();
+                        dictionary.Add(path.Key, path.Value);
+
+                        controllers.Add(tag, dictionary);
                     }
                 }
                 #endregion
+            }
 
-                #region Options
-                if (path.Value.Options is not null)
+            if (Tags is null)
+            {
+                Tags = new List<Tag>();
+
+                foreach (var tag in controllers.Keys)
                 {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Options.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Options.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
-
-                        DictionaryAPIs.Add(path.Value.Options.Tags[0], APIs.Count - 1);
-                        continue;
-                    }
-                    else
-                    {
-                        int index = DictionaryAPIs[path.Value.Options.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
-                    }
+                    Tags.Add(new Tag() { Name = tag });
                 }
-                #endregion
-
-                #region Head
-                if (path.Value.Head is not null)
-                {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Head.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Head.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
-
-                        DictionaryAPIs.Add(path.Value.Head.Tags[0], APIs.Count - 1);
-                        continue;
-                    }
-                    else
-                    {
-                        int index = DictionaryAPIs[path.Value.Head.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
-                    }
-                }
-                #endregion
-
-                #region Trace
-                if (path.Value.Trace is not null)
-                {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Trace.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Trace.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
-
-                        DictionaryAPIs.Add(path.Value.Trace.Tags[0], APIs.Count - 1);
-                        continue;
-                    }
-                    else
-                    {
-                        int index = DictionaryAPIs[path.Value.Trace.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
-                    }
-                }
-                #endregion
-
-                #region Patch
-                if (path.Value.Patch is not null)
-                {
-                    if (!DictionaryAPIs.ContainsKey(path.Value.Patch.Tags[0]))
-                    {
-                        var controller = new Controller(path.Value.Patch.Tags[0]);
-                        controller.Actions.Add(new(path.Value, path.Key));
-                        APIs.Add(controller);
-
-                        DictionaryAPIs.Add(path.Value.Patch.Tags[0], APIs.Count - 1);
-                        continue;
-                    }
-                    else
-                    {
-                        int index = DictionaryAPIs[path.Value.Patch.Tags[0]];
-                        APIs[index].Actions.Add(new(path.Value, path.Key));
-                    }
-                }
-                #endregion
             }
         }
     }

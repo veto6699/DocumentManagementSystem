@@ -1,0 +1,59 @@
+﻿@using DocumentManagementSystem.Client;
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action;
+
+@if (Operation is not null)
+{
+    <span>
+        <div class="opblock opblock-delete @isOpenString">
+            <div class="opblock-summary opblock-summary-delete">
+                <button class="opblock-summary-control expand-operation" @onclick="ButtonRotate">
+                    <span class="opblock-summary-method">DELETE</span>
+                    <span class="opblock-summary-path">
+                        <a class="nostyle">
+                            <span>@Path</span>
+                        </a>
+                    </span>
+                    <div class="opblock-summary-description">@Operation.Summary</div>
+                    <small />
+                    <UISVGRotate Rotate="@rotate" />
+                </button>
+            </div>
+            @if (isOpen)
+            {
+                <Body Operation="@Operation" Components="@Components" />
+            }
+        </div>
+    </span>
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Operation? Operation { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Path { get; set; }
+
+    string? isOpenString;
+    short rotate = 0;
+    bool isOpen = false;
+
+    void ButtonRotate()
+    {
+        if (isOpen)
+        {
+            rotate -= 180;
+            isOpenString = null;
+        }
+        else
+        {
+            rotate += 180;
+            isOpenString = "is-open";
+        }
+
+        isOpen = !isOpen;
+    }
+}

@@ -3,7 +3,9 @@
 
 @code {
     [Parameter]
-    public string Name { get; set; }
+    [EditorRequired]
+    public string? Name { get; set; }
     [Parameter]
-    public string Space { get; set; }
+    [EditorRequired]
+    public string? Space { get; set; }
 }

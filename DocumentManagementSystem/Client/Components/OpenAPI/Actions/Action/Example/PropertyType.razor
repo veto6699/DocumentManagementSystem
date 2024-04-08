@@ -1,4 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Models;
+﻿@using DocumentManagementSystem.Client.Constants;
 
 @switch (Type)
 {
@@ -42,9 +42,12 @@
 
 @code {
     [Parameter]
+    [EditorRequired]
     public string? Type { get; set; }
     [Parameter]
+    [EditorRequired]
     public bool LastProperty { get; set; }
     [Parameter]
+    [EditorRequired]
     public string? DefaultValue { get; set; }
 }

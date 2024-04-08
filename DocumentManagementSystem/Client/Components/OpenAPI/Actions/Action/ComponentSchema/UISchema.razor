@@ -1,6 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Models
-
-
+﻿@using DocumentManagementSystem.Client.Constants
 
 <button class="model-box-control" @onclick="PropertyClick">
     <span class="pointer">
@@ -111,14 +109,19 @@
 
 @code {
     [Parameter]
+    [EditorRequired]
     public string? SchemaRef { get; set; }
     [Parameter]
+    [EditorRequired]
     public Schema? Schema { get; set; }
     [Parameter]
+    [EditorRequired]
     public string? SchemaName { get; set; }
     [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]
+    [EditorRequired]
     public bool? IsOpen { get; set; }
 
     string? schemaName;

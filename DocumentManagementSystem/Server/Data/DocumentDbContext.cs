@@ -30,7 +30,7 @@ namespace DocumentManagementSystem.Server.Data
 
         public Document? Get(string code)
         {
-            var document = _collection.Find(Builders<Document>.Filter.Where(doc => doc.Code == code)).First();
+            var document = _collection.Find(Builders<Document>.Filter.Where(doc => doc.Code == code)).FirstOrDefault();
 
             if (document is not null && document.OpenAPI is not null)
             {

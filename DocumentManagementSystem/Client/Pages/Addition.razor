@@ -1,6 +1,6 @@
 ﻿@page "/Addition"
 @using DocumentManagementSystem.Client.Components.OpenAPI
-@using DocumentManagementSystem.Client.Models
+@using DocumentManagementSystem.Client.Constants
 @using DocumentManagementSystem.Shared.OpenApi
 @using DocumentManagementSystem.Shared
 @using DocumentManagementSystem.Client.Components
@@ -108,7 +108,11 @@
             return;
         }
 
-        var shortDescription = JsonContent.Create(new ShortDescription() { Name = name, Code = documentCode, Description = description });
+        var docCode = documentCode.Trim().ToLower();
+        var docName = name.Trim();
+        var docDescription = description.Trim();
+
+        var shortDescription = JsonContent.Create(new ShortDescription() { Name = docName, Code = docCode, Description = docDescription });
 
         var response = await client.PostAsync(client.BaseAddress + "ShortDescription", shortDescription);
 
@@ -134,7 +138,7 @@
             return;
         }
 
-        var documentJson = JsonContent.Create(new Document() { Code = documentCode, OpenAPI = JsonSerializer.Deserialize<OpenAPIRoot>(document, Constants.serializerOptions) });
+        var documentJson = JsonContent.Create(new Document() { Code = docCode, OpenAPI = JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions) });
 
         response = await client.PostAsync(client.BaseAddress + "Document", documentJson);
 

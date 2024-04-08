@@ -1,4 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Models
+﻿@using DocumentManagementSystem.Client.Constants
 
 <span>{</span>@Environment.NewLine
 @foreach (var property in properties)
@@ -44,14 +44,19 @@ else
 
 @code {
     [Parameter]
+    [EditorRequired]
     public string? SchemaRef { get; set; }
     [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]
+    [EditorRequired]
     public uint SpaceCount { get; set; } = 0;
     [Parameter]
+    [EditorRequired]
     public bool IsRoot { get; set; } = false;
     [Parameter]
+    [EditorRequired]
     public bool LastProperty { get; set; } = true;
 
     uint spaceCount = 0;
@@ -76,8 +81,8 @@ else
     void SpaceAdd()
     {
         for (uint i = 0; i < spaceCount; i++)
-            internalSpace += Constants.PropertySpace;
+            internalSpace += SystemConstants.PropertySpace;
 
-        externalSpace = internalSpace[..^Constants.PropertySpace.Length];
+        externalSpace = internalSpace[..^SystemConstants.PropertySpace.Length];
     }
 }

@@ -2,7 +2,7 @@
 @using DocumentManagementSystem.Client.Components.OpenAPI
 @using DocumentManagementSystem.Client.Components
 @using DocumentManagementSystem.Shared.OpenApi
-@using DocumentManagementSystem.Client.Models
+@using DocumentManagementSystem.Client.Constants
 @using System.Text.Json
 @using System.Net
 @inject NavigationManager Navigation
@@ -50,7 +50,7 @@ else
             return;
         }
 
-        Document = await JsonSerializer.DeserializeAsync<OpenAPIRoot>(response.Content.ReadAsStream(), Constants.serializerOptions);
+        Document = await JsonSerializer.DeserializeAsync<OpenAPIRoot>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
 
         if (Document is null || Document.Components is null || Document.Components.Schemas is null || Document.Components.Schemas.Count == 0 || Document.Paths is null || Document.Paths.Count == 0)
             statusCode = HttpStatusCode.BadRequest;

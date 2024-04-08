@@ -1,4 +1,4 @@
-﻿namespace DocumentManagementSystem.Client.Models
+﻿namespace DocumentManagementSystem.Client.Constants
 {
     public class PropertyTypes
     {

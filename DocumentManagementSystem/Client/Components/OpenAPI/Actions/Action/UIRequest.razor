@@ -1,10 +1,17 @@
-﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.Example
-@using DocumentManagementSystem.Client.Components.OpenAPI.Action.ComponentSchema
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.Example
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
 @using DocumentManagementSystem.Shared.OpenApi
 
 <div class="opblock-section opblock-section-request-body">
     <div class="opblock-section-header">
-        <h4 class="opblock-title parameter__name undefined">Тело запроса</h4>
+        @if (RequestBody.Required is not null && (bool)RequestBody.Required)
+        {
+            <h4 class="opblock-title parameter__name required">Тело запроса</h4>
+        }
+        else
+        {
+            <h4 class="opblock-title parameter__name undefined">Тело запроса</h4>
+        }
         <label>
             @if (mediaTypes is not null && mediaTypes.Count > 0)
             {
@@ -21,6 +28,12 @@
     </div>
     <div class="opblock-description-wrapper">
         <div>
+            @if (!string.IsNullOrEmpty(RequestBody.Description))
+            {
+                <div class="renderedMarkdown">
+                    <p>@((MarkupString)Markdig.Markdown.ToHtml(RequestBody.Description))</p>
+                </div>
+            }
             <div class="model-example">
                 <ul class="tab">
                     @if (exampleValueActivate)
@@ -44,11 +57,11 @@
                 </ul>
                 @if (exampleValueActivate)
                 {
-                    <Value SchemaRef="@Requests[requestMediaType].Ref" Components="@Components" />
+                    <Value SchemaRef="@RequestBody.Content[requestMediaType].Schema.Ref" Components="@Components" />
                 }
                 else
                 {
-                    <SchemaRoot SchemaRef="@Requests[requestMediaType].Ref" Components="@Components" />
+                    <SchemaRoot SchemaRef="@RequestBody.Content[requestMediaType].Schema.Ref" Components="@Components" />
                 }
             </div>
         </div>
@@ -57,12 +70,14 @@
 
 @code {
     [Parameter]
-    public Dictionary<string, Schema> Requests { get; set; }
+    [EditorRequired]
+    public RequestBody? RequestBody { get; set; }
     [Parameter]
-    public Components Components { get; set; }
+    [EditorRequired]
+    public Components? Components { get; set; }
 
-    ICollection<string> mediaTypes;
-    string requestMediaType;
+    ICollection<string>? mediaTypes;
+    string? requestMediaType;
 
     bool exampleValueActivate = true;
 
@@ -81,7 +96,7 @@
 
     protected override void OnInitialized()
     {
-        mediaTypes = Requests.Keys;
+        mediaTypes = RequestBody.Content.Keys;
         requestMediaType = mediaTypes.First();
     }
 }

@@ -1,62 +1,94 @@
-﻿@using DocumentManagementSystem.Client.Models;
-@using DocumentManagementSystem.Client.Components.OpenAPI.Action;
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action;
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions;
 
-<span>
-    <div class="opblock-tag-section">
-        <h3 class="opblock-tag no-desc" @onclick="ButtonRotate">
-            <a class="nostyle">
-                <span>@Controller.Name</span>
-            </a>
-            <small>
-                @if (Controller.Description is not null)
+@if (Tag is not null && !string.IsNullOrWhiteSpace(Tag.Name))
+{
+    <span>
+        <div class="opblock-tag-section @isOpenString">
+            <h3 class="opblock-tag no-desc" @onclick="ButtonRotate">
+                <a class="nostyle">
+                    <span>@Tag.Name</span>
+                </a>
+                <small>
+                    @if (!string.IsNullOrWhiteSpace(Tag.Description))
+                    {
+                        <div class="markdown">
+                            <p>@((MarkupString)Markdig.Markdown.ToHtml(Tag.Description))</p>
+                        </div>
+                    }
+                </small>
+                @if (Tag.ExternalDocs is not null && Tag.ExternalDocs.URL is not null && !string.IsNullOrWhiteSpace(Tag.ExternalDocs.Description))
                 {
-                    <div class="markdown">
-                        <p>@((MarkupString)Markdig.Markdown.ToHtml(Controller.Description))</p>
+                    var text = (MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description);
+
+                    <div class="info__externaldocs">
+                        <small>
+                            <a href="@Tag.ExternalDocs.URL" target="_blank" rel="noopener noreferrer" class="link">@((MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description))</a>
+                        </small>
                     </div>
                 }
-            </small>
-            @if (Controller.ExternalDocs is not null)
+                <button class="expand-operation">
+                    <UISVGRotate Rotate="@rotate" />
+                </button>
+            </h3>
+            @if (isOpen)
             {
-                <div class="info__externaldocs">
-                    <small>
-                        <a href="@Controller.ExternalDocs.URL" target="_blank" rel="noopener noreferrer" class="link">@((MarkupString)Markdig.Markdown.ToHtml(Controller.ExternalDocs.Description))</a>
-                    </small>
+                <div class="no-margin">
+                    <div class="operation-tag-content">
+                        @foreach (var path in Paths)
+                        {
+                            @if (path.Value.Delete is not null)
+                            {
+                                <DELETE Operation="@path.Value.Delete" Components="@Components" Path="@path.Key" />
+                            }
+                            @if (path.Value.Get is not null)
+                            {
+                                <GET Operation="@path.Value.Get" Components="@Components" Path="@path.Key" />
+                            }
+                            @if (path.Value.Post is not null)
+                            {
+                                <POST Operation="@path.Value.Post" Components="@Components" Path="@path.Key" />
+                            }
+                            @if (path.Value.Put is not null)
+                            {
+                                <PUT Operation="@path.Value.Put" Components="@Components" Path="@path.Key" />
+                            }
+                        }
+                    </div>
                 </div>
             }
-            <button class="expand-operation">
-                <UISVGRotate Rotate="@rotate" />
-            </button>
-        </h3>
-        @if (isOpen)
-        {
-            <div class="no-margin">
-                <div class="operation-tag-content">
-                    @foreach (var action in Controller.Actions)
-                    {
-                        <Header Action="action" Components="@Components"/>
-                    }
-                </div>
-            </div>
-        }
-    </div>
-</span>
+        </div>
+    </span>
+}
 
 @code {
-    [Parameter] 
-    public Controller? Controller { get; set; }
     [Parameter]
+    [EditorRequired]
+    public Dictionary<string, PathItem>? Paths { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Tag? Tag { get; set; }
+    [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
 
     bool isOpen { get; set; } = true;
     short rotate { get; set; } = 180;
+    string? isOpenString;
 
     void ButtonRotate()
     {
         if (isOpen)
+        {
             rotate -= 180;
+            isOpenString = null;
+            isOpen = false;
+        }
         else
+        {
             rotate += 180;
-
-        isOpen = !isOpen;
+            isOpenString = "is-open";
+            isOpen = true;
+        }
     }
 }

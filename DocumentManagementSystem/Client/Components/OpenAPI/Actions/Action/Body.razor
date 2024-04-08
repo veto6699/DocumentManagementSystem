@@ -1,0 +1,46 @@
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action;
+
+@if (Operation is not null)
+{
+    <div class="no-margin">
+        <div class="opblock-body">
+            @if (!string.IsNullOrWhiteSpace(Operation.Description))
+            {
+                <Description RequestDescription="@Operation.Description" />
+            }
+            <div class="opblock-section">
+                <div class="opblock-section-header">
+                    <div class="tab-header">
+                        <div class="tab-item active">
+                            <h4 class="opblock-title">
+                                <span>Параметры</span>
+                            </h4>
+                        </div>
+                    </div>
+                    @* <div class="try-out">
+                        <button class="btn try-out__btn">Попробовать</button>
+                    </div> *@
+                </div>
+                <Parameters RequestParameters="@Operation.Parameters" />
+                @if (Operation.RequestBody is not null)
+                {
+                    <UIRequest RequestBody="@Operation.RequestBody" Components="@Components" />
+                }
+            </div>
+            <div class="execute-wrapper"></div>
+            <div class="responses-wrapper">
+                <UIResponse Responses="@Operation.Responses" Components="@Components" />
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Operation? Operation { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+
+}

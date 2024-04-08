@@ -9308,20 +9308,20 @@ img {
         background: #49cc90
     }
 
-.opblock.opblock-update {
+.opblock.opblock-put {
     background: rgba(252,161,48,.1);
     border-color: #fca130
 }
 
-    .opblock.opblock-update .opblock-summary-method {
+    .opblock.opblock-put .opblock-summary-method {
         background: #fca130
     }
 
-    .opblock.opblock-update .opblock-summary {
+    .opblock.opblock-put .opblock-summary {
         border-color: #fca130
     }
 
-    .opblock.opblock-update .tab-header .tab-item.active h4 span:after {
+    .opblock.opblock-put .tab-header .tab-item.active h4 span:after {
         background: #fca130
     }
 

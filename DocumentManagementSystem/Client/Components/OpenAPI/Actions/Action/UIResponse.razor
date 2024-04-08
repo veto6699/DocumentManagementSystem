@@ -1,5 +1,5 @@
-﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.Example
-@using DocumentManagementSystem.Client.Components.OpenAPI.Action.ComponentSchema
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.Example
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
 @using DocumentManagementSystem.Shared.OpenApi
 
 <div class="opblock-section-header">
@@ -95,8 +95,10 @@
 
 @code {
     [Parameter]
+    [EditorRequired]
     public Dictionary<string, Response>? Responses { get; set; }
     [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
 
     bool exampleValueActivate = true;

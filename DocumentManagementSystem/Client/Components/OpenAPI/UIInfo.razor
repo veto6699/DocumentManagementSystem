@@ -1,9 +1,6 @@
-﻿@using DocumentManagementSystem.Client.Models;
-@using DocumentManagementSystem.Shared
+﻿@using DocumentManagementSystem.Shared
 @using System.Text.RegularExpressions;
 @using Microsoft.AspNetCore.Components.Rendering;
-
-
 
 @if (Info is not null)
 {
@@ -16,7 +13,6 @@
                             @if (!string.IsNullOrWhiteSpace(Info.Title))
                             {
                                 @Info.Title
-
                                 <span>
                                     @if (!string.IsNullOrWhiteSpace(Info.Version))
                                     {
@@ -37,13 +33,41 @@
                             <span class="url">@URL</span>
                         </a>
                     </hgroup>
-                    @if (!string.IsNullOrWhiteSpace(Info?.Description))
+                    @if (!string.IsNullOrWhiteSpace(Info.Description))
                     {
                         <div class="description">
                             <div class="renderedMarkdown">
                                 @((MarkupString)Markdig.Markdown.ToHtml(Info.Description))
                             </div>
                         </div>
+                    }
+                    @if (Info.TermsOfService is not null)
+                    {
+                        <div class="info__tos">
+                            <a target="_blank" href="@Info.TermsOfService" rel="noopener noreferrer" class="link">Условия использования</a>
+                        </div>
+                    }
+                    @if (Info.Contact is not null && !string.IsNullOrWhiteSpace(Info.Contact.Email))
+                    {
+                        <div class="info__contact">
+                            <a href="mailto:@Info.Contact.Email" rel="noopener noreferrer" class="link">Написать разработчику</a>
+                        </div>
+                    }
+                    @if (Info.License is not null && Info.License.URL is not null)
+                    {
+                        @if (!string.IsNullOrWhiteSpace(Info.License.Name))
+                        {
+                            licenseName = Info.License.Name;
+                        }
+                        <div class="info__license">
+                            <div class="info__license__url">
+                                <a target="_blank" href="@Info.License.URL" rel="noopener noreferrer" class="link">@licenseName</a>
+                            </div>
+                        </div>
+                    }
+                    @if (ExternalDocs is not null && !string.IsNullOrWhiteSpace(ExternalDocs.Description) && ExternalDocs.URL is not null)
+                    {
+                        <a class="info__extdocs link" target="_blank" href="@ExternalDocs.URL" rel="noopener noreferrer">@ExternalDocs.Description</a>
                     }
                 </div>
             </div>
@@ -52,10 +76,21 @@
 }
 
 @code {
-    [Parameter] public Info? Info { get; set; }
-    [Parameter] public string? OpenAPI { get; set; }
-    [Parameter] public string? URL { get; set; }
+    [Parameter]
+    [EditorRequired] 
+    public Info? Info { get; set; }
+    [Parameter]
+    [EditorRequired] 
+    public ExternalDoc? ExternalDocs { get; set; }
+    [Parameter]
+    [EditorRequired] 
+    public string? OpenAPI { get; set; }
+    [Parameter]
+    [EditorRequired] 
+    public string? URL { get; set; }
+
     string? openAPI;
+    string licenseName = "Лицензия";
 
     protected override void OnInitialized()
     {
@@ -65,7 +100,7 @@
 
             if (openAPIVersion.Length > 0)
                 openAPI = "OAS" + openAPIVersion[0];
-            if (openAPIVersion.Length > 1 && openAPIVersion[1] != "0")
+            if (openAPIVersion.Length > 1)
                 openAPI += "." + openAPIVersion[1];
         }
     }

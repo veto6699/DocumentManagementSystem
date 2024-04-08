@@ -1,4 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Models
+﻿@using DocumentManagementSystem.Client.Constants
 
 @if (Property.Items.Ref is not null)
 {
@@ -18,12 +18,16 @@ else
 
 @code {
     [Parameter]
+    [EditorRequired]
     public Property? Property { get; set; }
     [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]
+    [EditorRequired]
     public uint SpaceCount { get; set; } = 0;
     [Parameter]
+    [EditorRequired]
     public bool LastProperty { get; set; }
 
     uint spaceCount = 0;
@@ -39,8 +43,8 @@ else
     void SpaceAdd()
     {
         for (uint i = 0; i < spaceCount; i++)
-            internalSpace += Constants.PropertySpace;
+            internalSpace += SystemConstants.PropertySpace;
 
-        externalSpace = internalSpace[..^Constants.PropertySpace.Length];
+        externalSpace = internalSpace[..^SystemConstants.PropertySpace.Length];
     }
 }

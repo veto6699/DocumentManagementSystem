@@ -1,4 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Models;
+﻿@using DocumentManagementSystem.Client.Constants;
 
 <span>{</span>@Environment.NewLine
 @if (Property.AdditionalProperties.Items is null)
@@ -20,10 +20,13 @@ else
 
 @code {
     [Parameter]
+    [EditorRequired]
     public Property? Property { get; set; }
     [Parameter]
+    [EditorRequired]
     public uint SpaceCount { get; set; }
     [Parameter]
+    [EditorRequired]
     public bool LastProperty { get; set; }
 
     uint spaceCount = 0;
@@ -39,9 +42,9 @@ else
     void SpaceAdd()
     {
         for (uint i = 0; i < spaceCount; i++)
-            internalSpace += Constants.PropertySpace;
+            internalSpace += SystemConstants.PropertySpace;
 
-        internalSpacePlus = internalSpace + Constants.PropertySpace;
-        externalSpace = internalSpace[..^Constants.PropertySpace.Length];
+        internalSpacePlus = internalSpace + SystemConstants.PropertySpace;
+        externalSpace = internalSpace[..^SystemConstants.PropertySpace.Length];
     }
 }
