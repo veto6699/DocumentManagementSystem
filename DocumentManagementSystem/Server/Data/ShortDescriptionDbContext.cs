@@ -29,22 +29,22 @@ namespace DocumentManagementSystem.Server.Data
             _collection.Indexes.CreateMany([id, code]);
         }
 
-        public ShortDescription Get(string code)
+        public async Task<ShortDescription> Get(string code)
         {
-            return _collection.Find(Builders<ShortDescription>.Filter.Where(doc => doc.Code == code)).FirstOrDefault();
+            var result = await _collection.FindAsync(Builders<ShortDescription>.Filter.Where(doc => doc.Code == code));
+            return result.FirstOrDefault();
         }
 
-        public List<ShortDescription> GetAll()
+        public async Task<List<ShortDescription>> GetAll()
         {
-            return _collection.Find(new BsonDocument()).ToList();
+            var result = await _collection.FindAsync(new BsonDocument());
+            return result.ToList();
         }
 
-        public Task Add(ShortDescription description)
+        public async Task Add(ShortDescription description)
         {
             description.Id = new();
-            _collection.InsertOne(description);
-
-            return Task.CompletedTask;
+            await _collection.InsertOneAsync(description);
         }
     }
 }

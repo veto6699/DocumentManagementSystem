@@ -14,10 +14,12 @@ namespace DocumentManagementSystem.Server.Controllers
     public class DocumentController : ControllerBase
     {
         private readonly ILogger<DocumentController> _logger;
+        private readonly DocumentDbContext _db;
 
-        public DocumentController(ILogger<DocumentController> logger)
+        public DocumentController(ILogger<DocumentController> logger, DocumentDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         [HttpGet]
@@ -31,9 +33,7 @@ namespace DocumentManagementSystem.Server.Controllers
 
             code = code.ToLower();
 
-            var db = HttpContext.RequestServices.GetService<DocumentDbContext>();
-
-            var document = db.Get(code);
+            var document = await _db.Get(code);
 
             if (document is not null && document.OpenAPI is not null)
             {
@@ -57,11 +57,9 @@ namespace DocumentManagementSystem.Server.Controllers
 
             args.Code = args.Code.ToLower();
 
-            var db = HttpContext.RequestServices.GetService<DocumentDbContext>();
-
             try
             {
-                db.Add(args);
+                await _db.Add(args);
             }
             catch
             {

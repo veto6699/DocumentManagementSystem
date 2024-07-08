@@ -12,27 +12,26 @@ namespace DocumentManagementSystem.Server.Controllers
     public class ShortDescriptionController : ControllerBase
     {
         private readonly ILogger<ShortDescriptionController> _logger;
+        private readonly ShortDescriptionDbContext _db;
 
-        public ShortDescriptionController(ILogger<ShortDescriptionController> logger)
+        public ShortDescriptionController(ILogger<ShortDescriptionController> logger, ShortDescriptionDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         [HttpGet]
         public async Task<List<ShortDescription>> GetAll()
         {
-            var db = HttpContext.RequestServices.GetService<ShortDescriptionDbContext>();
-            return db.GetAll();
+            return await _db.GetAll();
         }
 
         [HttpPost]
         public async Task Add(ShortDescription args)
         {
-            var db = HttpContext.RequestServices.GetService<ShortDescriptionDbContext>();
-
             try
             {
-                db.Add(args);
+                await _db.Add(args);
             }
             catch
             {

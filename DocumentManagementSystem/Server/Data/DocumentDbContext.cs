@@ -28,9 +28,10 @@ namespace DocumentManagementSystem.Server.Data
             _collection.Indexes.CreateMany([id, code]);
         }
 
-        public Document? Get(string code)
+        public async Task<Document?> Get(string code)
         {
-            var document = _collection.Find(Builders<Document>.Filter.Where(doc => doc.Code == code)).FirstOrDefault();
+            var result = await _collection.FindAsync(Builders<Document>.Filter.Where(doc => doc.Code == code));
+            var document = result.FirstOrDefault();
 
             if (document is not null && document.OpenAPI is not null)
             {
@@ -40,12 +41,10 @@ namespace DocumentManagementSystem.Server.Data
             return null;
         }
 
-        public Task Add(Document document)
+        public async Task Add(Document document)
         {
             document.Id = new();
-            _collection.InsertOne(document);
-
-            return Task.CompletedTask;
+            await _collection.InsertOneAsync(document);
         }
     }
 }
