@@ -1,0 +1,81 @@
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.Example
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
+@using DocumentManagementSystem.Shared.OpenApi
+
+@if (MediaType is not null)
+{
+    @switch (MediaType)
+    {
+        case Constants.MediaType.ApplicationJSON:
+            <div class="model-example">
+                <ul class="tab">
+                    @if (exampleValueActivate)
+                    {
+                        <li class="tabitem active" @onclick="ExampleValueClick">
+                            <button class="tablinks">Пример значения</button>
+                        </li>
+                        <li class="tabitem" @onclick="SchemaClick">
+                            <button class="tablinks">Схема</button>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="tabitem" @onclick="ExampleValueClick">
+                            <button class="tablinks">Пример значения</button>
+                        </li>
+                        <li class="tabitem active" @onclick="SchemaClick">
+                            <button class="tablinks">Схема</button>
+                        </li>
+                    }
+                </ul>
+                @if (exampleValueActivate)
+                {
+                    <ExampleRoot SchemaRef="@Response.Content[MediaType].Schema.Ref" Components="@Components" MediaType="@MediaType" />
+                }
+                else
+                {
+                    <SchemaRoot SchemaRef="@Response.Content[MediaType].Schema.Ref" Components="@Components" MediaType="@MediaType" />
+                }
+            </div>
+            break;
+        case Constants.MediaType.ApplicationStream:
+            <p>Для медиа типа <code>application/octet-stream</code> примеры не допустимы.</p>
+            break;
+        case Constants.MediaType.ApplicationXML:
+            <p>"Это пока не готово"</p>
+            break;
+        default:
+            <p>"Это не работает"</p>
+            break;
+    }
+}
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? HttpCode { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Response? Response { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? MediaType { get; set; }
+
+    bool exampleValueActivate = true;
+
+    void ExampleValueClick()
+    {
+        if (!exampleValueActivate)
+            exampleValueActivate = true;
+    }
+
+    void SchemaClick()
+    {
+        if (exampleValueActivate)
+            exampleValueActivate = false;
+    }
+}

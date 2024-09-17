@@ -1,6 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.Example
-@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
-@using DocumentManagementSystem.Shared.OpenApi
+﻿@using DocumentManagementSystem.Shared.OpenApi
 
 <div class="opblock-section opblock-section-request-body">
     <div class="opblock-section-header">
@@ -27,44 +25,7 @@
         </label>
     </div>
     <div class="opblock-description-wrapper">
-        <div>
-            @if (!string.IsNullOrEmpty(RequestBody.Description))
-            {
-                <div class="renderedMarkdown">
-                    <p>@((MarkupString)Markdig.Markdown.ToHtml(RequestBody.Description))</p>
-                </div>
-            }
-            <div class="model-example">
-                <ul class="tab">
-                    @if (exampleValueActivate)
-                    {
-                        <li class="tabitem active" @onclick="ExampleValueClick">
-                            <button class="tablinks">Пример значения</button>
-                        </li>
-                        <li class="tabitem" @onclick="SchemaClick">
-                            <button class="tablinks">Схема</button>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="tabitem" @onclick="ExampleValueClick">
-                            <button class="tablinks">Пример значения</button>
-                        </li>
-                        <li class="tabitem active" @onclick="SchemaClick">
-                            <button class="tablinks">Схема</button>
-                        </li>
-                    }
-                </ul>
-                @if (exampleValueActivate)
-                {
-                    <Value SchemaRef="@RequestBody.Content[requestMediaType].Schema.Ref" Components="@Components" />
-                }
-                else
-                {
-                    <SchemaRoot SchemaRef="@RequestBody.Content[requestMediaType].Schema.Ref" Components="@Components" />
-                }
-            </div>
-        </div>
+        <UIRequestBody RequestBody="@RequestBody" Components="@Components" MediaType="@requestMediaType" />
     </div>
 </div>
 
@@ -78,21 +39,6 @@
 
     ICollection<string>? mediaTypes;
     string? requestMediaType;
-
-    bool exampleValueActivate = true;
-
-
-    void ExampleValueClick()
-    {
-        if (!exampleValueActivate)
-            exampleValueActivate = true;
-    }
-
-    void SchemaClick()
-    {
-        if (exampleValueActivate)
-            exampleValueActivate = false;
-    }
 
     protected override void OnInitialized()
     {

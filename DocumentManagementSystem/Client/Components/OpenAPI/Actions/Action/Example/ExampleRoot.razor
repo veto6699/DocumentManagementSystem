@@ -1,0 +1,32 @@
+﻿@using DocumentManagementSystem.Client
+
+<div class="highlight-code">
+    <pre class="body-param__example microlight" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(51, 51, 51); color: white;">
+        @switch (MediaType)
+        {
+            case Constants.MediaType.ApplicationJSON:
+                <code class="language-json" style="white-space: pre;">
+                    <Properties Components="@Components" SchemaRef="@SchemaRef" IsRoot="true" />
+                </code>
+                break;
+            case Constants.MediaType.ApplicationXML:
+                <p>"Это пока не готово"</p>
+                break;
+            default:
+            <p>"Это не работает"</p>
+                break;
+        }
+    </pre>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? SchemaRef { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? MediaType { get; set; }
+}

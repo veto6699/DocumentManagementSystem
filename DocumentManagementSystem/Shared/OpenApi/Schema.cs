@@ -16,8 +16,15 @@ namespace DocumentManagementSystem.Shared.OpenApi
         [JsonPropertyName("$ref")]
         [BsonIgnoreIfNull]
         public string? @Ref { get; set; }
+        /// <summary>
+        /// Тип элемента
+        /// </summary>
         [BsonIgnoreIfNull]
         public string? Type { get; set; }
+        /// <summary>
+        /// Массив элемента
+        /// </summary>
+        public Item? Items { get; set; }
         /// <summary>
         /// Обязательные параметры
         /// </summary>
@@ -32,6 +39,5 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public Dictionary<string, string>? Discriminator { get; set; }
         [BsonIgnoreIfNull]
         public string? Description { get; set; }
-
     }
 }

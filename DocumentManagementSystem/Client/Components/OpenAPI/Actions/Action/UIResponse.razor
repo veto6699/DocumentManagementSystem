@@ -22,64 +22,33 @@
                     <tr class="response">
                         <td class="response-col_status">@response.Key</td>
                         <td class="response-col_description">
-                            <div class="response-col_description__inner">
-                                <div class="renderedMarkdown">
-                                    @((MarkupString)Markdig.Markdown.ToHtml(response.Value.Description))
+                            @if (!string.IsNullOrEmpty(response.Value.Description))
+                            {
+                                <div class="response-col_description__inner">
+                                    <div class="renderedMarkdown">
+                                        @((MarkupString)Markdig.Markdown.ToHtml(response.Value.Description))
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             @if (selectedMediaTypes.ContainsKey(response.Key) && response.Value.Content is not null)
                             {
                                 <section class="response-controls">
                                     <div class="response-control-media-type response-control-media-type--accept-controller">
                                         <small class="response-control-media-type__title">Медиа тип</small>
                                         <div class="content-type-wrapper ">
-
-                                            <select class="content-type" @bind="@selectedMediaTypes[response.Key]">
-                                                @foreach (var mediaType in response.Value.Content.Keys)
+                                            <select class="content-type" @bind="@selectMediaTypes">
+                                                @foreach (string mediaType in response.Value.Content.Keys)
                                                 {
                                                     <option value="@mediaType">@mediaType</option>
                                                 }
                                             </select>
-
                                         </div>
                                         <small class="response-control-media-type__accept-message">
                                             Controls <code>Accept</code> header.
                                         </small>
                                     </div>
                                 </section>
-                            }
-                            @if (response.Value.Content is not null && response.Value.Content.ContainsKey(selectedMediaTypes[response.Key]))
-                            {
-                                <div class="model-example">
-                                    <ul class="tab">
-                                        @if (exampleValueActivate)
-                                        {
-                                            <li class="tabitem active" @onclick="ExampleValueClick">
-                                                <button class="tablinks">Пример значения</button>
-                                            </li>
-                                            <li class="tabitem" @onclick="SchemaClick">
-                                                <button class="tablinks">Схема</button>
-                                            </li>
-                                        }
-                                        else
-                                        {
-                                            <li class="tabitem" @onclick="ExampleValueClick">
-                                                <button class="tablinks">Пример значения</button>
-                                            </li>
-                                            <li class="tabitem active" @onclick="SchemaClick">
-                                                <button class="tablinks">Схема</button>
-                                            </li>
-                                        }
-                                    </ul>
-                                    @if (exampleValueActivate)
-                                    {
-                                        <Value SchemaRef="@response.Value.Content[selectedMediaTypes[response.Key]].Schema.Ref" Components="@Components" />
-                                    }
-                                    else
-                                    {
-                                        <SchemaRoot SchemaRef="@response.Value.Content[selectedMediaTypes[response.Key]].Schema.Ref" Components="@Components" />
-                                    }
-                                </div>
+                                <UIResponseBody HttpCode="@response.Key" Response="@response.Value" MediaType="@selectMediaTypes" Components="@Components" />
                             }
                         </td>
                         <td class="response-col_links"><i>Нет ссылок</i></td>
@@ -100,6 +69,7 @@
 
     bool exampleValueActivate = true;
     Dictionary<string, string> selectedMediaTypes = new();
+    string? selectMediaTypes;
 
     protected override void OnInitialized()
     {
@@ -107,6 +77,12 @@
         {
             if (response.Value.Content is not null && response.Value.Content.Count > 0)
                 selectedMediaTypes.Add(response.Key, response.Value.Content.Keys.First());
+            else
+                selectedMediaTypes.Add(response.Key, null);
+
+            var type = selectedMediaTypes.First();
+            if (type.Value is not null)
+                selectMediaTypes = type.Value;
         }
     }
 
