@@ -1,6 +1,6 @@
 using DocumentManagementSystem.Server.Data;
-using Microsoft.AspNetCore.ResponseCompression;
 using MongoDB.Driver;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,10 @@ builder.Services.AddSingleton<ShortDescriptionDbContext>();
 builder.Services.AddSingleton<DocumentDbContext>();
 
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 

@@ -30,22 +30,38 @@
                 </ul>
                 @if (exampleValueActivate)
                 {
-                    <ExampleRoot SchemaRef="@Response.Content[MediaType].Schema.Ref" Components="@Components" MediaType="@MediaType" />
+                    @if (Response.Content[MediaType].Schema is not null)
+                    {
+                        @if (!string.IsNullOrEmpty(Response.Content[MediaType].Schema.Ref))
+                            schemaRef = Response.Content[MediaType].Schema.Ref;
+                        else
+                        @if (Response.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(Response.Content[MediaType].Schema.Items.Ref))
+                            schemaRef = Response.Content[MediaType].Schema.Items.Ref;
+
+                        <ExampleRoot SchemaRef="@schemaRef" Components="@Components" MediaType="@MediaType" />
+                    }
                 }
                 else
                 {
-                    <SchemaRoot SchemaRef="@Response.Content[MediaType].Schema.Ref" Components="@Components" MediaType="@MediaType" />
+                    @if (Response.Content[MediaType].Schema is not null)
+                    {
+                        @if (!string.IsNullOrEmpty(Response.Content[MediaType].Schema.Ref))
+                            schemaRef = Response.Content[MediaType].Schema.Ref;
+                        else
+                        @if (Response.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(Response.Content[MediaType].Schema.Items.Ref))
+                            schemaRef = Response.Content[MediaType].Schema.Items.Ref;
+
+                        <SchemaRoot SchemaRef="@schemaRef" Components="@Components" MediaType="@MediaType" />
+                    }
                 }
             </div>
             break;
         case Constants.MediaType.ApplicationStream:
-            <p>Для медиа типа <code>application/octet-stream</code> примеры не допустимы.</p>
+            <i>Для медиа типа <code>application/octet-stream</code> примеры не допустимы.</i>
             break;
         case Constants.MediaType.ApplicationXML:
-            <p>"Это пока не готово"</p>
-            break;
         default:
-            <p>"Это не работает"</p>
+            <i>Это не готово</i>
             break;
     }
 }
@@ -66,6 +82,7 @@
     public string? MediaType { get; set; }
 
     bool exampleValueActivate = true;
+    string? schemaRef;
 
     void ExampleValueClick()
     {

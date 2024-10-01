@@ -39,5 +39,10 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public Dictionary<string, string>? Discriminator { get; set; }
         [BsonIgnoreIfNull]
         public string? Description { get; set; }
+        /// <summary>
+        /// Параметры
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public AdditionalProperty? AdditionalProperties { get; set; }
     }
 }
