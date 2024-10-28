@@ -21,7 +21,7 @@ namespace DocumentManagementSystem.Server.Data
                     reg.AutoMap();
                 });
 
-            _collection = _client.GetDatabase(SystemConstants.DatabaseName).GetCollection<ShortDescription>(SystemConstants.ShortDescriptionsCollectionName);
+            _collection = _client.GetDatabase(SystemConstants.DBName).GetCollection<ShortDescription>(SystemConstants.ShortDescriptions);
 
             var id = new CreateIndexModel<ShortDescription>(Builders<ShortDescription>.IndexKeys.Hashed(r => r.Id), new CreateIndexOptions() { Sparse = true, Name = "Id" });
             var code = new CreateIndexModel<ShortDescription>(Builders<ShortDescription>.IndexKeys.Hashed(r => r.Code), new CreateIndexOptions() { Sparse = true, Name = "Code" });
@@ -43,7 +43,6 @@ namespace DocumentManagementSystem.Server.Data
 
         public async Task Add(ShortDescription description)
         {
-            description.Id = new();
             await _collection.InsertOneAsync(description);
         }
     }

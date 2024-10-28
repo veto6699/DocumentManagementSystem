@@ -10874,7 +10874,7 @@ table {
         }
 
 .info {
-    margin: 50px 0
+    margin: 20px 0
 }
 
     .info.failed-config {
@@ -10934,6 +10934,7 @@ table {
     .info .title {
         color: #3b4151;
         font-family: sans-serif;
+        text-align:left;
         font-size: 36px;
         margin: 0
     }
@@ -11202,6 +11203,19 @@ table {
     text-align: center;
 }
 
+.button {
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-left: auto;
+    border: 0;
+    text-align: center;
+}
+
+.blue {
+    background: rgb(0, 119, 255);
+}
+
 .button-in {
     display: flex;
     align-items: center;
@@ -11218,11 +11232,43 @@ table {
     margin-bottom: 1px;
 }
 
+.title {
+    color: #3b4151;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 24px;
+    margin: 0
+}
 
+.registration-form {
+    color: #3b4151;
+    font-family: sans-serif;
+    font-size: 24px;
+    width: 350px;
+    margin: 0 auto;
+}
 
+    .registration-form div {
+        display: inline-block;
+        text-align: left;
+        width: 100%;
+    }
 
+        .registration-form div input {
+            width: 100%;
+        }
 
-
+.registration-button {
+    background: rgb(0, 119, 255);
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-left: auto;
+    border: 0;
+    width: 100%;
+    margin-top: 12px;
+    text-align: center;
+}
 
 
 

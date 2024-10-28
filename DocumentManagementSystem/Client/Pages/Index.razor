@@ -2,9 +2,10 @@
 @page "/index"
 @page "/home"
 @using DocumentManagementSystem.Shared
-@using DocumentManagementSystem.Client.Components.OpenAPI;
-@inject NavigationManager Navigation
-@inject HttpClient client;
+@using DocumentManagementSystem.Client.Components.OpenAPI
+@using DocumentManagementSystem.Shared.Responses
+@inject NavigationManager _navigation
+@inject IHttpClientFactory _httpClientFactory
 
 <PageTitle>Все проекты</PageTitle>
 
@@ -36,14 +37,17 @@
 @code {
     private void NavigateToViewing(string code)
     {
-        Navigation.NavigateTo($"/viewing/{code}");
+        _navigation.NavigateTo($"/viewing/{code}");
     }
 
-    List<ShortDescription>? documents;
+    List<ShortDescriptionResponse>? documents;
+    HttpClient client;
 
     protected override async Task OnInitializedAsync()
     {
-        var doc = await client.GetFromJsonAsync<List<ShortDescription>>($"/ShortDescription");
+        client = _httpClientFactory.CreateClient("Api");
+
+        var doc = await client.GetFromJsonAsync<List<ShortDescriptionResponse>>($"/ShortDescription");
 
         documents = doc;
     }

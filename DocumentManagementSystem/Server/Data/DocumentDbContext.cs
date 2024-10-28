@@ -1,5 +1,6 @@
 ﻿using DocumentManagementSystem.Server.Constants;
 using DocumentManagementSystem.Shared;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
@@ -20,7 +21,7 @@ namespace DocumentManagementSystem.Server.Data
                     reg.AutoMap();
                 });
 
-            _collection = _client.GetDatabase(SystemConstants.DatabaseName).GetCollection<Document>(SystemConstants.DocumentsCollectionName);
+            _collection = _client.GetDatabase(SystemConstants.DBName).GetCollection<Document>(SystemConstants.Documents);
 
             var id = new CreateIndexModel<Document>(Builders<Document>.IndexKeys.Hashed(r => r.Id), new CreateIndexOptions() { Sparse = true, Name = "Id" });
             var code = new CreateIndexModel<Document>(Builders<Document>.IndexKeys.Hashed(r => r.Code), new CreateIndexOptions() { Sparse = true, Name = "Code" });
@@ -43,7 +44,6 @@ namespace DocumentManagementSystem.Server.Data
 
         public async Task Add(Document document)
         {
-            document.Id = new();
             await _collection.InsertOneAsync(document);
         }
     }

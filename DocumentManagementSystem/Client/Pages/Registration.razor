@@ -1,0 +1,181 @@
+﻿@page "/registration"
+@using System.ComponentModel.DataAnnotations
+@using DocumentManagementSystem.Client.Components
+@using DocumentManagementSystem.Client.Components.Redirect
+@using DocumentManagementSystem.Shared.Requests
+@using DocumentManagementSystem.Shared
+@using System.Net
+@using System.Net.Mail
+@using System.Text.RegularExpressions
+@inject IHttpClientFactory _httpClientFactory
+
+<PageTitle>Регистрация</PageTitle>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="title">
+            <h2>Регистрация</h2>
+        </div>
+
+        <div>
+            <div class="wrapper">
+                <div class="registration-form">
+                    @if (errors is not null)
+                    {
+                        <div>
+                            @foreach (var error in errors)
+                            {
+                                <p style="color:red">@error</p>
+                            }
+                        </div>
+                        <br>
+                    }
+                    @if (message is not null)
+                    {
+                        <EmptyPage Text="@message" TextColor="green" />
+                    }
+                    else
+                    {
+                        <div>
+                            <label>Электронная почта</label>
+                            <br />
+                            <input type="email" inputmode="text" autocomplete="email" @bind-value="@email" @bind-value:event="oninput">
+                        </div>
+                        <div>
+                            <label>Имя</label>
+                            <br />
+                            <input type="text" inputmode="text" autocomplete="given-name" @bind-value="@name" @bind-value:event="oninput">
+                        </div>
+                        <div>
+                            <label>Фамилия</label>
+                            <br />
+                            <input type="text" inputmode="text" autocomplete="family-name" @bind-value="@surname" @bind-value:event="oninput">
+                        </div>
+                        <div>
+                            <label>Пароль</label>
+                            <br />
+                            <input type="password" inputmode="text" autocomplete="new-password" @bind-value="@password" @bind-value:event="oninput">
+                        </div>
+                        <div>
+                            <label>Повторите пароль</label>
+                            <br />
+                            <input type="password" inputmode="text" autocomplete="new-password" @bind-value="@repeatPassword" @bind-value:event="oninput">
+                        </div>
+                        <button class="registration-button" @onclick="Send">
+                            <span class="button-in">
+                                <span class="button-content">Зарегистрироваться</span>
+                            </span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <RedirectToIndex />
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    string? email { get; set; }
+    string? name { get; set; }
+    string? surname { get; set; }
+    string? password { get; set; }
+    string? repeatPassword { get; set; }
+
+    string? message { get; set; }
+    List<string>? errors { get; set; }
+    HttpClient client;
+
+    async Task Send()
+    {
+        List<string>? error = new();
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            string pattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|" + @"([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\.)\.)*)(?<!\.)" + @"@[a-z0-9][\w\.-]*[a-z0-9]\.[a-z][a-z\.]*[a-z]$";
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            if (!regex.IsMatch(email))
+                error.Add("Невалидная почта");
+        }
+        else
+            error.Add("Почта не заполнена");
+
+        if (string.IsNullOrWhiteSpace(name))
+            error.Add("Имя не заполнено");
+
+        if (string.IsNullOrWhiteSpace(surname))
+            error.Add("Фамилия не заполнена");
+
+        if (string.IsNullOrWhiteSpace(password))
+            error.Add("Пароль не заполнен");
+        else
+        {
+            if (password.Trim().Length < 8)
+                error.Add("Длина пароля меньше 8 символов");
+            else
+            {
+                if (string.IsNullOrWhiteSpace(repeatPassword))
+                    error.Add("Вы не повторили пароль");
+                else
+                {
+                    if (password is not null && repeatPassword is not null)
+                    {
+                        string tempPassword = password.Trim();
+                        string tempRepeatPassword = repeatPassword.Trim();
+
+                        if (tempPassword != tempRepeatPassword)
+                            error.Add("Повтор пароля не равен паролю");
+                    }
+                }
+            }
+        }
+
+        if (error.Count > 0)
+        {
+            errors = error;
+            return;
+        }
+
+        var tmpEmail = email.Trim().ToLower();
+        var tmpName = name.Trim();
+        var tmpSurname = surname.Trim();
+        var tmpPassword = password.Trim();
+
+        var user = JsonContent.Create(new AddUserRequest() { Email = tmpEmail, Name = tmpName, Surname = tmpSurname, Password = tmpPassword });
+
+        var response = await client.PostAsync(client.BaseAddress + "User", user);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.NotFound:
+                error.Add("API не найден");
+                break;
+            case HttpStatusCode.BadRequest:
+                error.Add("Ошибка регистрации");
+                break;
+            case HttpStatusCode.MethodNotAllowed:
+                error.Add("API не поддерживается");
+                break;
+            case HttpStatusCode.Conflict:
+                error.Add("Пользователь c такой почтой уже зарегистрирован");
+                break;
+            case HttpStatusCode.NoContent:
+                message = "Вы зарестрированы";
+                break;
+        }
+
+        if (error.Count > 0)
+        {
+            errors = error;
+        }
+        else
+            errors = null;
+    }
+
+    protected override void OnInitialized()
+    {
+        client = _httpClientFactory.CreateClient("Api");
+    }
+}

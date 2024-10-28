@@ -1,16 +1,25 @@
 ﻿@inject NavigationManager Navigation
+@using DocumentManagementSystem.Client.Components.Redirect
 @using DocumentManagementSystem.Client.Components
 
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Страница не найдена</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <EmptyPage Text="Страница не найдена" />
-        </LayoutView>
-    </NotFound>
-</Router>
-
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    @if (context.User.Identity is null || !context.User.Identity.IsAuthenticated)
+                    {
+                        <RedirectToLogin />
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Страница не найдена</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <EmptyPage Text="Страница не найдена" />
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

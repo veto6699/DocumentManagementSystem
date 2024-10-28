@@ -6,48 +6,46 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using DocumentManagementSystem.Server.Data;
+using Microsoft.AspNetCore.Authorization;
+using DocumentManagementSystem.Shared.Responses;
+using DocumentManagementSystem.Shared.Requests;
 
 namespace DocumentManagementSystem.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DocumentController : ControllerBase
+    public class DocumentController(ILogger<DocumentController> logger, DocumentDbContext db) : ControllerBase
     {
-        private readonly ILogger<DocumentController> _logger;
-        private readonly DocumentDbContext _db;
-
-        public DocumentController(ILogger<DocumentController> logger, DocumentDbContext db)
-        {
-            _logger = logger;
-            _db = db;
-        }
+        private readonly ILogger<DocumentController> _logger = logger;
+        private readonly DocumentDbContext _db = db;
 
         [HttpGet]
-        public async Task<OpenAPIRoot?> Get(string? code)
+        public async Task<DocumentResponse?> Get(string code)
         {
-            if (string.IsNullOrWhiteSpace(code))
+            if (!string.IsNullOrWhiteSpace(code))
             {
-                HttpContext.Response.StatusCode = 400;
-                return null;
+                code = code.ToLower();
+
+                var document = await _db.Get(code);
+
+                if (document is not null && document.OpenAPI is not null)
+                {
+                    return new(document);
+                }
+                else
+                {
+                    HttpContext.Response.StatusCode = 404;
+                    return null;
+                }
             }
 
-            code = code.ToLower();
-
-            var document = await _db.Get(code);
-
-            if (document is not null && document.OpenAPI is not null)
-            {
-                return document.OpenAPI;
-            }
-            else
-            {
-                HttpContext.Response.StatusCode = 404;
-                return null;
-            }
+            HttpContext.Response.StatusCode = 400;
+            return null;
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task Add(Document args)
+        public async Task Add(DocumentRequest args)
         {
             if (string.IsNullOrWhiteSpace(args.Code))
             {
@@ -59,7 +57,7 @@ namespace DocumentManagementSystem.Server.Controllers
 
             try
             {
-                await _db.Add(args);
+                await _db.Add(new(args));
             }
             catch
             {

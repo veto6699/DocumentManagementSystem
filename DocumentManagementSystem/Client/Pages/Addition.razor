@@ -1,83 +1,89 @@
-﻿@page "/Addition"
+﻿@page "/addition"
 @using DocumentManagementSystem.Client.Components.OpenAPI
+@using DocumentManagementSystem.Client.Components.Redirect
 @using DocumentManagementSystem.Client.Constants
 @using DocumentManagementSystem.Shared.OpenApi
 @using DocumentManagementSystem.Shared
 @using DocumentManagementSystem.Client.Components
 @using System.Net
 @using System.Text.Json;
-@inject HttpClient client
+@using DocumentManagementSystem.Shared.Requests
+@using Microsoft.AspNetCore.Authorization
+@inject AuthenticationStateProvider _provider
+@inject NavigationManager _navigation
+@inject IHttpClientFactory _httpClientFactory
+@attribute [Authorize]
 
 <PageTitle>Добавление</PageTitle>
 
-<div>
-    <div class="wrapper">
-        <div class="info">
-            @if (errors is not null)
-            {
-                <div>
-                    @foreach (var error in errors)
+<AuthorizeView>
+    <Authorized>
+        <div class="title">
+            <h2>Добавление документации</h2>
+        </div>
+
+        <div>
+            <div class="wrapper">
+                <div class="info">
+                    @if (errors is not null && errors.Count > 0)
                     {
-                        <p style="color:red">@error</p>
+                        <div>
+                            @foreach (var error in errors)
+                            {
+                                <p style="color:red">@error</p>
+                            }
+                        </div>
+                        <br>
+                    }
+
+                    @if (message is not null)
+                    {
+                        <EmptyPage Text="@message" TextColor="green" />
+                    }
+                    else
+                    {
+                        <label>Код</label>
+                        <br>
+                        <input type="text" @bind-value="@documentCode" @bind-value:event="oninput">
+                        <br>
+                        <label>Название</label>
+                        <br>
+                        <input style="width:500px" type="text" @bind-value="@name" @bind-value:event="oninput">
+                        <br>
+                        <label>Краткое описание</label>
+                        <br>
+                        <textarea style="border: 1px solid #d9d9d9;border-radius: 4px;min-height: 100px;font-family:sans-serif;font-size: 100%;font-weight: normal;" @bind-value="@description" @bind-value:event="oninput"></textarea>
+                        <br>
+                        <label>Документ (json описание в формате OpenAPI)</label>
+                        <br>
+                        <textarea style="border: 1px solid #d9d9d9;border-radius: 4px;height: 500px;font-family:sans-serif;font-size: 100%;font-weight: normal;" @bind-value="@document" @bind-value:event="oninput"></textarea>
+                        <br>
+                        <br>
+                        <button class="add-document" @onclick="Add">
+                            <span class="button-in">
+                                <span class="button-content">Добавить</span>
+                            </span>
+                        </button>
                     }
                 </div>
-                <br>
-            }
-
-            @if (message is not null)
-            {
-                <EmptyPage Text="@message" TextColor="green"/>
-            }
-            else
-            {
-                <span>Код</span>
-
-                <br>
-                <input type="text" @bind-value="@documentCode" @bind-value:event="oninput">
-
-                <br>
-
-                <span>Название</span>
-
-                <br>
-                <input style="width:500px" type="text" @bind-value="@name" @bind-value:event="oninput">
-
-                <br>
-
-                <span>Краткое описание</span>
-
-                <br>
-                <textarea style="border: 1px solid #d9d9d9;border-radius: 4px;min-height: 100px;font-family:sans-serif;font-size: 100%;font-weight: normal;" @bind-value="@description" @bind-value:event="oninput"></textarea>
-
-                <br>
-
-                <span>Документ (json описание в формате OpenAPI)</span>
-
-                <br>
-                <textarea style="border: 1px solid #d9d9d9;border-radius: 4px;height: 500px;font-family:sans-serif;font-size: 100%;font-weight: normal;" @bind-value="@document" @bind-value:event="oninput"></textarea>
-
-                <br>
-
-                <br>
-
-                <button class="add-document" @onclick="Add">
-                    <span class="button-in">
-                        <span class="button-content">Добавить</span>
-                    </span>
-                </button>
-            }
+            </div>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     string? documentCode { get; set; }
     string? name { get; set; }
     string? description { get; set; }
     string? document { get; set; }
+
     string? message { get; set; }
     List<string>? errors { get; set; }
     HttpStatusCode? statusCode;
+    HttpClient client;
 
     async Task Add()
     {
@@ -93,7 +99,7 @@
         if (string.IsNullOrWhiteSpace(name))
             error.Add("Название не указано");
 
-        if (name?.Length < 6)
+        if (name.Length < 6)
             error.Add("Название должено быть больше 5х символов");
 
         if (string.IsNullOrWhiteSpace(document))
@@ -112,7 +118,7 @@
         var docName = name.Trim();
         var docDescription = description.Trim();
 
-        var shortDescription = JsonContent.Create(new ShortDescription() { Name = docName, Code = docCode, Description = docDescription });
+        var shortDescription = JsonContent.Create(new ShortDescriptionRequest(docName, docCode, docDescription));
 
         var response = await client.PostAsync(client.BaseAddress + "ShortDescription", shortDescription);
 
@@ -130,6 +136,11 @@
             case HttpStatusCode.Conflict:
                 error.Add("Документация c таким кодом уже добавлена");
                 break;
+            case HttpStatusCode.Unauthorized:
+                error.Add("Вы не авторизованы");
+                ((AuthStateProvider)_provider).DeleteAuthState();
+                break;
+
         }
 
         if (error.Count > 0)
@@ -138,7 +149,7 @@
             return;
         }
 
-        var documentJson = JsonContent.Create(new Document() { Code = docCode, OpenAPI = JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions) });
+        var documentJson = JsonContent.Create(new DocumentRequest(docCode, JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions)));
 
         response = await client.PostAsync(client.BaseAddress + "Document", documentJson);
 
@@ -156,6 +167,10 @@
             case HttpStatusCode.Conflict:
                 error.Add("Документация c таким кодом уже добавлена");
                 break;
+            case HttpStatusCode.Unauthorized:
+                error.Add("Вы не авторизованы");
+                ((AuthStateProvider)_provider).DeleteAuthState();
+                break;
             case HttpStatusCode.NoContent:
                 message = "Документация добавлена";
                 break;
@@ -168,5 +183,10 @@
         }
         else
             errors = null;
+    }
+
+    protected override void OnInitialized()
+    {
+        client = _httpClientFactory.CreateClient("Api");
     }
 }
