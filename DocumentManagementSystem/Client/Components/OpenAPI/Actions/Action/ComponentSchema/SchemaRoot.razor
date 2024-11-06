@@ -1,0 +1,31 @@
+
+<div class="model-box">
+    <span class="model">
+        <span>
+            @switch (MediaType)
+            {
+                case Constants.MediaType.ApplicationJSON:
+                    <UISchema Components="@Components" SchemaRef="@SchemaRef" IsOpen="true" />
+                    break;
+                case Constants.MediaType.ApplicationXML:
+                    <p>"Это пока не готово"</p>
+                    break;
+                default:
+                    <p>"Это не работает"</p>
+                    break;
+            }
+        </span>
+    </span>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? SchemaRef { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? MediaType { get; set; }
+}

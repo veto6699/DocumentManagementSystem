@@ -1,0 +1,101 @@
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.Example
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
+
+@if (MediaType is not null)
+{
+    @switch (MediaType)
+    {
+        case Constants.MediaType.ApplicationJSON:
+            <div>
+                @if (!string.IsNullOrEmpty(RequestBody.Description))
+                {
+                    <div class="renderedMarkdown">
+                        <p>@((MarkupString)Markdig.Markdown.ToHtml(RequestBody.Description))</p>
+                    </div>
+                }
+                <div class="model-example">
+                    <ul class="tab">
+                        @if (exampleValueActivate)
+                        {
+                            <li class="tabitem active" @onclick="ExampleValueClick">
+                                <button class="tablinks">Пример значения</button>
+                            </li>
+                            <li class="tabitem" @onclick="SchemaClick">
+                                <button class="tablinks">Схема</button>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="tabitem" @onclick="ExampleValueClick">
+                                <button class="tablinks">Пример значения</button>
+                            </li>
+                            <li class="tabitem active" @onclick="SchemaClick">
+                                <button class="tablinks">Схема</button>
+                            </li>
+                        }
+                    </ul>
+                    @if (exampleValueActivate)
+                    {
+                        @if (RequestBody.Content[MediaType].Schema is not null)
+                        {
+                            @if (!string.IsNullOrEmpty(RequestBody.Content[MediaType].Schema.Ref))
+                                schemaRef = RequestBody.Content[MediaType].Schema.Ref;
+                            else
+                            @if (RequestBody.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(RequestBody.Content[MediaType].Schema.Items.Ref))
+                                schemaRef = RequestBody.Content[MediaType].Schema.Items.Ref;
+
+                            <ExampleRoot SchemaRef="@schemaRef" Components="@Components" MediaType="@MediaType" />
+                        }
+                    }
+                    else
+                    {
+                        @if (RequestBody.Content[MediaType].Schema is not null)
+                        {
+                            @if (!string.IsNullOrEmpty(RequestBody.Content[MediaType].Schema.Ref))
+                                schemaRef = RequestBody.Content[MediaType].Schema.Ref;
+                            else
+                            @if (RequestBody.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(RequestBody.Content[MediaType].Schema.Items.Ref))
+                                schemaRef = RequestBody.Content[MediaType].Schema.Items.Ref;
+
+                            <SchemaRoot SchemaRef="@schemaRef" Components="@Components" MediaType="@MediaType" />
+                        }
+                    }
+                </div>
+            </div>
+            break;
+        case Constants.MediaType.ApplicationStream:
+            <i>Для медиа типа <code>application/octet-stream</code> примеры не допустимы.</i>
+            break;
+        case Constants.MediaType.ApplicationXML:
+        default:
+            <i>Это не готово</i>
+            break;
+    }
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public RequestBody? RequestBody { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? MediaType { get; set; }
+
+    bool exampleValueActivate = true;
+    string? schemaRef;
+
+    void ExampleValueClick()
+    {
+        if (!exampleValueActivate)
+            exampleValueActivate = true;
+    }
+
+    void SchemaClick()
+    {
+        if (exampleValueActivate)
+            exampleValueActivate = false;
+    }
+}

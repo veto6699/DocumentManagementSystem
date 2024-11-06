@@ -1,0 +1,48 @@
+﻿@using DocumentManagementSystem.Shared.OpenApi
+
+<div class="opblock-section opblock-section-request-body">
+    <div class="opblock-section-header">
+        @if (RequestBody.Required is not null && (bool)RequestBody.Required)
+        {
+            <h4 class="opblock-title parameter__name required">Тело запроса</h4>
+        }
+        else
+        {
+            <h4 class="opblock-title parameter__name undefined">Тело запроса</h4>
+        }
+        <label>
+            @if (mediaTypes is not null && mediaTypes.Count > 0)
+            {
+                <div class="content-type-wrapper body-param-content-type">
+                    <select class="content-type" @bind="requestMediaType">
+                        @foreach (var mediaType in mediaTypes)
+                        {
+                            <option value="@mediaType">@mediaType</option>
+                        }
+                    </select>
+                </div>
+            }
+        </label>
+    </div>
+    <div class="opblock-description-wrapper">
+        <UIRequestBody RequestBody="@RequestBody" Components="@Components" MediaType="@requestMediaType" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public RequestBody? RequestBody { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+
+    ICollection<string>? mediaTypes;
+    string? requestMediaType;
+
+    protected override void OnInitialized()
+    {
+        mediaTypes = RequestBody.Content.Keys;
+        requestMediaType = mediaTypes.First();
+    }
+}

@@ -1,4 +1,4 @@
-﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Action.ComponentSchema
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
 
 <div class="wrapper">
     <section class="block col-12 block-desktop col-12-desktop">
@@ -46,14 +46,18 @@
 
 @code {
     [Parameter]
+    [EditorRequired]
     public Components? Components { get; set; }
 
     Dictionary<string, bool> componentsIsOpen = new();
 
     protected override void OnInitialized()
     {
-        foreach (var component in Components.Schemas)
-            componentsIsOpen.Add(component.Key, false);
+        if (Components is not null && Components.Schemas is not null)
+        {
+            foreach (var component in Components.Schemas)
+                componentsIsOpen.Add(component.Key, false);
+        }
     }
 
     bool isOpen { get; set; } = true;

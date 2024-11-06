@@ -102,9 +102,9 @@ svg {
     transform-origin: 50% 50%
 }
 
-svg:not(:root) {
-    overflow: hidden
-}
+    svg:not(:root) {
+        overflow: hidden
+    }
 
 button, input, optgroup, select, textarea {
     font-family: sans-serif;
@@ -9308,20 +9308,20 @@ img {
         background: #49cc90
     }
 
-.opblock.opblock-update {
+.opblock.opblock-put {
     background: rgba(252,161,48,.1);
     border-color: #fca130
 }
 
-    .opblock.opblock-update .opblock-summary-method {
+    .opblock.opblock-put .opblock-summary-method {
         background: #fca130
     }
 
-    .opblock.opblock-update .opblock-summary {
+    .opblock.opblock-put .opblock-summary {
         border-color: #fca130
     }
 
-    .opblock.opblock-update .tab-header .tab-item.active h4 span:after {
+    .opblock.opblock-put .tab-header .tab-item.active h4 span:after {
         background: #fca130
     }
 
@@ -9570,7 +9570,8 @@ img {
 .response-col_status {
     color: #3b4151;
     font-family: sans-serif;
-    font-size: 14px
+    font-size: 14px;
+    min-width: 8em;
 }
 
     .response-col_status .response-undocumented {
@@ -10783,7 +10784,7 @@ table {
     width: 99%
 }
 
-    .response-col_description .markdown p {
+    .response-col_description .markdown p, .response-col_description .renderedMarkdown p {
         margin: 0
     }
 
@@ -10815,7 +10816,6 @@ table {
         font-family: sans-serif;
         font-size: 1.5em;
         font-weight: 700;
-        max-width: 300px;
         text-decoration: none
     }
 
@@ -10874,7 +10874,7 @@ table {
         }
 
 .info {
-    margin: 50px 0
+    margin: 20px 0
 }
 
     .info.failed-config {
@@ -10934,6 +10934,7 @@ table {
     .info .title {
         color: #3b4151;
         font-family: sans-serif;
+        text-align:left;
         font-size: 36px;
         margin: 0
     }
@@ -11191,6 +11192,84 @@ table {
         flex: 1
     }
 }
+
+.add-document {
+    background: rgb(0, 119, 255);
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-left: auto;
+    border: 0;
+    text-align: center;
+}
+
+.button {
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-left: auto;
+    border: 0;
+    text-align: center;
+}
+
+.blue {
+    background: rgb(0, 119, 255);
+}
+
+.button-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: inherit;
+    padding: 0 16px;
+    height: 30px;
+}
+
+.button-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 1px;
+}
+
+.title {
+    color: #3b4151;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 24px;
+    margin: 0
+}
+
+.registration-form {
+    color: #3b4151;
+    font-family: sans-serif;
+    font-size: 24px;
+    width: 350px;
+    margin: 0 auto;
+}
+
+    .registration-form div {
+        display: inline-block;
+        text-align: left;
+        width: 100%;
+    }
+
+        .registration-form div input {
+            width: 100%;
+        }
+
+.registration-button {
+    background: rgb(0, 119, 255);
+    color: white;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-left: auto;
+    border: 0;
+    width: 100%;
+    margin-top: 12px;
+    text-align: center;
+}
+
 
 
 

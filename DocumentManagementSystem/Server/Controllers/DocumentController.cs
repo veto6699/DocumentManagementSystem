@@ -1,47 +1,72 @@
 ﻿using DocumentManagementSystem.Shared;
+using DocumentManagementSystem.Shared.OpenApi;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using DocumentManagementSystem.Server.Data;
+using Microsoft.AspNetCore.Authorization;
+using DocumentManagementSystem.Shared.Responses;
+using DocumentManagementSystem.Shared.Requests;
 
 namespace DocumentManagementSystem.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DocumentController : ControllerBase
+    public class DocumentController(ILogger<DocumentController> logger, DocumentDbContext db) : ControllerBase
     {
-        private readonly ILogger<DocumentController> _logger;
-
-        public DocumentController(ILogger<DocumentController> logger)
-        {
-            _logger = logger;
-        }
-
+        private readonly ILogger<DocumentController> _logger = logger;
+        private readonly DocumentDbContext _db = db;
 
         [HttpGet]
-        public async Task<string> Get(string? code)
+        public async Task<DocumentResponse?> Get(string code)
         {
-            code = code.ToLower();
-            string fileName = string.Empty;
-
-            switch(code)
+            if (!string.IsNullOrWhiteSpace(code))
             {
-                case "ecp":
-                    fileName = "ecp.json";
-                    break;
-                case "ps":
-                    fileName = "ps.json";
-                    break;
+                code = code.ToLower();
+
+                var document = await _db.Get(code);
+
+                if (document is not null && document.OpenAPI is not null)
+                {
+                    return new(document);
+                }
+                else
+                {
+                    HttpContext.Response.StatusCode = 404;
+                    return null;
+                }
             }
 
-            using (var fs = new FileStream(fileName, FileMode.Open))
+            HttpContext.Response.StatusCode = 400;
+            return null;
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task Add(DocumentRequest args)
+        {
+            if (string.IsNullOrWhiteSpace(args.Code))
             {
-                byte[] buffer = new byte[fs.Length];
-
-                await fs.ReadAsync(buffer, 0, buffer.Length);
-
-                return Encoding.Default.GetString(buffer);
+                HttpContext.Response.StatusCode = 400;
+                return;
             }
+
+            args.Code = args.Code.ToLower();
+
+            try
+            {
+                await _db.Add(new(args));
+            }
+            catch
+            {
+                HttpContext.Response.StatusCode = 400;
+                return;
+            }
+
+            HttpContext.Response.StatusCode = 204;
+            return;
         }
     }
 }

@@ -1,24 +1,25 @@
 ﻿@inject NavigationManager Navigation
+@using DocumentManagementSystem.Client.Components.Redirect
+@using DocumentManagementSystem.Client.Components
 
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Страница не найдена</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <div style="text-align: center;padding: 10px;">
-            <p style="font-size:24px">Страница не найдена</p>
-                <button @onclick="NavigateToMain" style="background: black;color: white;border: black;border-radius: 5px;font-size:18px;height:35px;width:150px">На главную</button>
-            </div>
-        </LayoutView>
-    </NotFound>
-</Router>
-
-@code {
-    private void NavigateToMain()
-    {
-        Navigation.NavigateTo("/");
-    }
-}
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    @if (context.User.Identity is null || !context.User.Identity.IsAuthenticated)
+                    {
+                        <RedirectToLogin />
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Страница не найдена</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <EmptyPage Text="Страница не найдена" />
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

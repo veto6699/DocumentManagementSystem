@@ -1,0 +1,104 @@
+﻿@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.Example
+@using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action.ComponentSchema
+@using DocumentManagementSystem.Shared.OpenApi
+
+<div class="opblock-section-header">
+    <h4>Ответ</h4>
+</div>
+<div class="responses-inner">
+    <table class="responses-table">
+        <thead>
+            <tr class="responses-header">
+                <td class="col_header response-col_status">HTTP Код</td>
+                <td class="col_header response-col_description">Описание</td>
+                <td class="col col_header response-col_links">Ссылки</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var response in Responses)
+            {
+                @if (response.Value is not null)
+                {
+                    <tr class="response">
+                        <td class="response-col_status">@response.Key</td>
+                        <td class="response-col_description">
+                            @if (!string.IsNullOrEmpty(response.Value.Description))
+                            {
+                                <div class="response-col_description__inner">
+                                    <div class="renderedMarkdown">
+                                        @((MarkupString)Markdig.Markdown.ToHtml(response.Value.Description))
+                                    </div>
+                                </div>
+                            }
+                            @if (selectedMediaTypes.ContainsKey(response.Key) && response.Value.Content is not null)
+                            {
+                                <section class="response-controls">
+                                    <div class="response-control-media-type response-control-media-type--accept-controller">
+                                        <small class="response-control-media-type__title">Медиа тип</small>
+                                        <div class="content-type-wrapper ">
+                                            <select class="content-type" @bind="@selectMediaTypes">
+                                                @foreach (string mediaType in response.Value.Content.Keys)
+                                                {
+                                                    <option value="@mediaType">@mediaType</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <small class="response-control-media-type__accept-message">
+                                            Controls <code>Accept</code> header.
+                                        </small>
+                                    </div>
+                                </section>
+                                <UIResponseBody HttpCode="@response.Key" Response="@response.Value" MediaType="@selectMediaTypes" Components="@Components" />
+                            }
+                        </td>
+                        <td class="response-col_links"><i>Нет ссылок</i></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Dictionary<string, Response>? Responses { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+
+    bool exampleValueActivate = true;
+    Dictionary<string, string> selectedMediaTypes = new();
+    string? selectMediaTypes;
+
+    protected override void OnInitialized()
+    {
+        foreach (var response in Responses)
+        {
+            if (response.Value.Content is not null && response.Value.Content.Count > 0)
+                selectedMediaTypes.Add(response.Key, response.Value.Content.Keys.First());
+            else
+                selectedMediaTypes.Add(response.Key, null);
+
+            var type = selectedMediaTypes.First();
+            if (type.Value is not null)
+                selectMediaTypes = type.Value;
+        }
+    }
+
+    void ExampleValueClick()
+    {
+        if (exampleValueActivate)
+            return;
+
+        exampleValueActivate = true;
+    }
+
+    void SchemaClick()
+    {
+        if (!exampleValueActivate)
+            return;
+
+        exampleValueActivate = false;
+    }
+}

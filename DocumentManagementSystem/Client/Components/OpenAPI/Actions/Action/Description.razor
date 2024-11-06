@@ -1,0 +1,17 @@
+﻿
+<div class="opblock-description-wrapper">
+    <div class="opblock-description">
+        @if (!string.IsNullOrEmpty(RequestDescription))
+        {
+            <div class="renderedMarkdown">
+                @((MarkupString)Markdig.Markdown.ToHtml(RequestDescription))
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? RequestDescription { get; set; }
+}

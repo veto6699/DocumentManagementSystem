@@ -22,5 +22,7 @@
 }
 
 @code {
-    [Parameter] public IList<Server>? Servers { get; set; }
+    [Parameter]
+    [EditorRequired] 
+    public IList<Server>? Servers { get; set; }
 }

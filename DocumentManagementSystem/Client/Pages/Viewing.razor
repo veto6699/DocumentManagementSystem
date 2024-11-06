@@ -1,27 +1,71 @@
 ﻿@page "/viewing/{Code}"
-@using DocumentManagementSystem.Client.Components.OpenAPI;
-@using DocumentManagementSystem.Shared.OpenApi;
-@inject NavigationManager Navigation
-@inject HttpClient client;
+@using DocumentManagementSystem.Client.Components.OpenAPI
+@using DocumentManagementSystem.Client.Components
+@using DocumentManagementSystem.Shared.OpenApi
+@using DocumentManagementSystem.Client.Constants
+@using System.Text.Json
+@using System.Net
+@using DocumentManagementSystem.Shared.Responses
+@inject NavigationManager _navigation
+@inject IHttpClientFactory _httpClientFactory
 
 <PageTitle>Просмотр</PageTitle>
 
-<UIRoot Document="@Document" URL="@url"/>
+@if (statusCode is not null)
+{
+    switch (statusCode)
+    {
+        case HttpStatusCode.NotFound:
+            <EmptyPage Text="Документация не найдена" />
+            break;
+        case HttpStatusCode.BadRequest:
+            <EmptyPage Text="Ошибка загрузки документации" />
+            break;
+    }
+}
+else
+{
+    <UIRoot Document="@Document?.Document" URL="@url" />
+}
 
 
 @code {
-    [Parameter] public string? Code { get; set; }
+    [Parameter]
+    public string? Code { get; set; }
 
-    OpenAPIRoot? Document { get; set; }
+    DocumentResponse? Document { get; set; }
     string? url;
+    HttpStatusCode? statusCode;
+    HttpClient client;
 
     protected override async Task OnInitializedAsync()
     {
-        if (string.IsNullOrWhiteSpace(Code)) Navigation.NavigateTo("/");
+        client = _httpClientFactory.CreateClient("Api");
+
+        if (string.IsNullOrWhiteSpace(Code))
+            _navigation.NavigateTo("/");
 
         url = client.BaseAddress + $"Document?Code={Code}";
 
-        Document = await client.GetFromJsonAsync<OpenAPIRoot>($"/Document?Code={Code}");
+        var response = await client.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            statusCode = response.StatusCode;
+            return;
+        }
+
+        Document = await JsonSerializer.DeserializeAsync<DocumentResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
+
+        if (Document is null
+            || Document.Document.Components is null
+            || Document.Document.Components.Schemas is null
+            || Document.Document.Components.Schemas.Count == 0
+            || Document.Document.Paths is null
+            || Document.Document.Paths.Count == 0)
+        {
+            statusCode = HttpStatusCode.BadRequest;
+        }
     }
 }
 
