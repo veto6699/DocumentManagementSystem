@@ -20,29 +20,6 @@ namespace DocumentManagementSystem.Server.Controllers
             _db = db;
         }
 
-        [Authorize]
-        [HttpGet]
-        public async Task<User?> Get(string id)
-        {
-            if (ObjectId.TryParse(id, out ObjectId objectId))
-            {
-                var user = await _db.Get(objectId);
-
-                if (user is not null && user.Email is not null)
-                {
-                    return user;
-                }
-                else
-                {
-                    HttpContext.Response.StatusCode = 404;
-                    return null;
-                }
-            }
-
-            HttpContext.Response.StatusCode = 400;
-            return null;
-        }
-
         [HttpPost]
         public async Task Add(AddUserRequest args)
         {

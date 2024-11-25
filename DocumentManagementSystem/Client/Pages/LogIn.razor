@@ -89,7 +89,7 @@
 
         var login = JsonContent.Create(new LogInRequest() { Email = email, Password = password });
 
-        var response = await client.PostAsync(client.BaseAddress + "Authorize", login);
+        var response = await client.PostAsync(client.BaseAddress + "Authentication", login);
 
         switch (response.StatusCode)
         {
