@@ -1,0 +1,30 @@
+networks:
+  dms:
+    driver: bridge
+services:
+  documentmanagementsystem.server:
+    container_name: DMS.Server
+    restart: always
+    image: ${DOCKER_REGISTRY-}documentmanagementsystemserver
+    build:
+      context: .
+      dockerfile: DocumentManagementSystem/Server/Dockerfile
+    ports:
+      - 44348:8080
+      - 44347:8081
+    networks:
+      - dms
+    depends_on:
+      - mongo
+  mongo:
+    container_name: MongoDB
+    restart: always
+    image: mongo:latest
+    ports:
+      - 27018:27017
+    networks:
+      - dms
+    volumes:
+      - mongo-data:/var/lib/mongo/data
+volumes:
+  mongo-data:

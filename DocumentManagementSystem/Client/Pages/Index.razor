@@ -21,7 +21,7 @@
         {
             <EmptyPage Text="Ошибка загрузки документации" TextColor="red" />
         }
-        else if (documents is null)
+        else if (documents is null || documents.Count == 0)
         {
             <p style="text-align: center;"><em>Документации нет</em></p>
         }
