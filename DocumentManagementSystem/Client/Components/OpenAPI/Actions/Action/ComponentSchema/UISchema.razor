@@ -57,14 +57,18 @@
                                 <span class="model">
                                     <span>
                                         <span class="prop">
-                                            @if (property.Value.Type is not null)
+                                            @if (!string.IsNullOrEmpty(property.Value.Type))
                                             {
                                                 <span class="prop-type">@property.Value.Type</span>
+                                                @if (!string.IsNullOrEmpty(property.Value.Format))
+                                                {
+                                                    <span class="prop-format">($@property.Value.Format)</span>
+                                                }
                                             }
                                             @if (property.Value.Nullable is not null)
                                             {
                                                 <span class="property primitive">
-                                                    <br>nullable: @property.Value.Nullable.ToString().ToLower()
+                                                    <br>nullable: @property.Value.Nullable?.ToString().ToLower()
                                                 </span>
                                             }
                                             @if (!string.IsNullOrEmpty(property.Value.Default))
@@ -78,6 +82,27 @@
                                                 <div class="renderedMarkdown">
                                                     <p>@((MarkupString)Markdig.Markdown.ToHtml(property.Value.Description))</p>
                                                 </div>
+                                            }
+                                            @if (property.Value.Enum is not null && property.Value.Enum.Count > 0)
+                                            {
+                                                string enums = string.Empty;
+
+                                                @foreach (var en in property.Value.Enum)
+                                                {
+                                                    @if (property.Value.Enum.Last<string>() != en)
+                                                    {
+                                                        enums += $"{en}, ";
+                                                    }
+                                                    else
+                                                        enums += en;
+                                                }
+
+                                                <span class="prop-enum">
+                                                    Enum:<br>
+                                                    <span>
+                                                        [ @enums ]
+                                                    </span>
+                                                </span>
                                             }
                                         </span>
                                     </span>
@@ -112,23 +137,20 @@
     [EditorRequired]
     public string? SchemaRef { get; set; }
     [Parameter]
-    [EditorRequired]
     public Schema? Schema { get; set; }
     [Parameter]
-    [EditorRequired]
     public string? SchemaName { get; set; }
     [Parameter]
     [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]
-    [EditorRequired]
     public bool? IsOpen { get; set; }
 
     string? schemaName;
     string? schemaDescription;
 
     Dictionary<string, Property>? properties;
-    List<string> required;
+    List<string>? required;
     Dictionary<string, bool> arrayPropertiesIsOpen = new();
 
     protected override void OnInitialized()
@@ -149,7 +171,7 @@
                     properties = schema.Properties;
 
                 if (schema.Required is not null)
-                    required = (List<string>)schema.Required;
+                    required = schema.Required;
             }
         }
 
@@ -164,7 +186,7 @@
                 properties = Schema.Properties;
 
             if (Schema.Required is not null)
-                required = (List<string>)Schema.Required;
+                required = Schema.Required;
         }
 
         if (IsOpen is not null && (bool)IsOpen)
