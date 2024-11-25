@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Buffers.Text;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -23,9 +24,12 @@ internal class AuthStateProvider(ILocalStorageService localStorageService) : Aut
 
     private static List<Claim> ParseClaimsFromJwt(string jwt)
     {
-        var payload = jwt.Split('.')[1].Replace("_","/");
+        var payload = jwt.Split('.')[1];
+        var payloadСorrected = payload.Replace("_","/").Replace("-", "+");
+
         var jsonBytes = ParseBase64WithoutPadding(payload);
         var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
+
         return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())).ToList();
     }
 

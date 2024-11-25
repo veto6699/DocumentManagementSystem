@@ -45,7 +45,6 @@ namespace DocumentManagementSystem.Server.Controllers
 
             if (user is not null && user.Email == args.Email && user.Password == args.Password)
             {
-                var a = _db.GenerateJwtToken(user);
                 return new LogInResponse() { AccessToken = _db.GenerateJwtToken(user) };
             }
 
