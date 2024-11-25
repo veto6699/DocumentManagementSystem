@@ -29,7 +29,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Обязательные параметры
         /// </summary>
         [BsonIgnoreIfNull]
-        public ICollection<string>? Required { get; set; }
+        public List<string>? Required { get; set; }
         /// <summary>
         /// Параметры компонента
         /// </summary>

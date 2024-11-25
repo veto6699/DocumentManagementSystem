@@ -52,5 +52,10 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// </summary>
         [BsonIgnoreIfNull]
         public AdditionalProperty? AdditionalProperties { get; set; }
+        /// <summary>
+        /// Список возможных значений
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public IList<string>? @Enum { get; set; }
     }
 }

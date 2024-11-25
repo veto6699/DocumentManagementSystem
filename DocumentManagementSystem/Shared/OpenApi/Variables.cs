@@ -11,7 +11,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// какие то перечисление
         /// </summary>
-        public ICollection<string>? @Enum { get; set; }
+        public List<string>? @Enum { get; set; }
         /// <summary>
         /// какие то дефолтные значения
         /// </summary>
