@@ -1,18 +1,16 @@
 ﻿@using DocumentManagementSystem.Shared.OpenApi;
 
-<div>
-    @if (Document is not null)
-    {
-        <UIInfo Info="@Document.Info" ExternalDocs="@Document.ExternalDocs" OpenAPI="@Document.OpenAPI" URL="@URL" />
-        <UIServers Servers="@Document.Servers" />
-        <UIControllers Paths="@Document.Paths" Tags="@Document.Tags" Components="@Document.Components"/>
-        <UISchemas Components="@Document.Components" />
-    }
-</div>
+@if (Document is not null)
+{
+    <UIInfo Info="@Document.Info" ExternalDocs="@Document.ExternalDocs" OpenAPI="@Document.OpenAPI" URL="@URL" />
+    <UIServers Servers="@Document.Servers" />
+    <UIControllers Paths="@Document.Paths" Tags="@Document.Tags" Components="@Document.Components" />
+    <UISchemas Components="@Document.Components" />
+}
 
 @code {
     [Parameter]
-    [EditorRequired] 
+    [EditorRequired]
     public OpenAPIRoot? Document { get; set; }
     [Parameter]
     [EditorRequired]

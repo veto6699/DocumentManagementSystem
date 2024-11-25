@@ -28,7 +28,7 @@
     [EditorRequired]
     public Components? Components { get; set; }
 
-    Dictionary<string, Dictionary<string, PathItem>> controllers;
+    Dictionary<string, Dictionary<string, PathItem>>? controllers;
 
     protected override void OnInitialized()
     {
@@ -38,10 +38,10 @@
 
             foreach (var path in Paths)
             {
-                #region delete
-                if (path.Value.Delete is not null && path.Value.Delete.Tags is not null && path.Value.Delete.Tags.Count > 0)
+                #region get
+                if (path.Value.Get is not null && path.Value.Get.Tags is not null && path.Value.Get.Tags.Count > 0)
                 {
-                    var tag = path.Value.Delete.Tags[0];
+                    var tag = path.Value.Get.Tags[0];
 
                     if (controllers.ContainsKey(tag))
                     {
@@ -58,10 +58,10 @@
                 }
                 #endregion
 
-                #region get
-                if (path.Value.Get is not null && path.Value.Get.Tags is not null && path.Value.Get.Tags.Count > 0)
+                #region put
+                if (path.Value.Put is not null && path.Value.Put.Tags is not null && path.Value.Put.Tags.Count > 0)
                 {
-                    var tag = path.Value.Get.Tags[0];
+                    var tag = path.Value.Put.Tags[0];
 
                     if (controllers.ContainsKey(tag))
                     {
@@ -98,10 +98,10 @@
                 }
                 #endregion
 
-                #region put
-                if (path.Value.Put is not null && path.Value.Put.Tags is not null && path.Value.Put.Tags.Count > 0)
+                #region delete
+                if (path.Value.Delete is not null && path.Value.Delete.Tags is not null && path.Value.Delete.Tags.Count > 0)
                 {
-                    var tag = path.Value.Put.Tags[0];
+                    var tag = path.Value.Delete.Tags[0];
 
                     if (controllers.ContainsKey(tag))
                     {

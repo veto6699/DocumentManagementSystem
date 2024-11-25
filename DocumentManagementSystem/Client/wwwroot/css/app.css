@@ -10716,7 +10716,7 @@ table {
         border-width: 1px
     }
 
-    .parameters-col_description .markdown p {
+    .parameters-col_description .markdown p, .parameters-col_description .renderedMarkdown p {
         margin: 0
     }
 
@@ -10934,7 +10934,7 @@ table {
     .info .title {
         color: #3b4151;
         font-family: sans-serif;
-        text-align:left;
+        text-align: left;
         font-size: 36px;
         margin: 0
     }
@@ -11232,7 +11232,7 @@ table {
     margin-bottom: 1px;
 }
 
-.title {
+.page-title {
     color: #3b4151;
     text-align: center;
     font-family: sans-serif;
@@ -11270,7 +11270,9 @@ table {
     text-align: center;
 }
 
-
+.information-container {
+    margin: 50px auto;
+}
 
 
 
