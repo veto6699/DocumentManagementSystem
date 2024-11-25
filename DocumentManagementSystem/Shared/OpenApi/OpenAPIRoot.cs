@@ -29,7 +29,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Список серверов для запросов
         /// </summary>
         [BsonIgnoreIfNull]
-        public IList<Server>? Servers { get; set; }
+        public List<Server>? Servers { get; set; }
         /// <summary>
         /// Описание операций (ключ - путь, значение - модель)
         /// </summary>
@@ -48,12 +48,12 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// что то связаннное с авторизацией, не разобрался
         /// </summary>
         [BsonIgnoreIfNull]
-        public IList<Dictionary<string, IList<string>>>? Security { get; set; }
+        public List<Dictionary<string, List<string>>>? Security { get; set; }
         /// <summary>
         /// Теги по которым группируются операции
         /// </summary>
         [BsonIgnoreIfNull]
-        public IList<Tag>? Tags { get; set; }
+        public List<Tag>? Tags { get; set; }
         /// <summary>
         /// какая то внешняя документация, не разобрался
         /// </summary>

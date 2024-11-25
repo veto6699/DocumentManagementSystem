@@ -56,6 +56,6 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Список возможных значений
         /// </summary>
         [BsonIgnoreIfNull]
-        public IList<string>? @Enum { get; set; }
+        public List<string>? @Enum { get; set; }
     }
 }
