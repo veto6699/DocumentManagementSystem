@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DocumentManagementSystem.Shared
+namespace DocumentManagementSystem.Server.Models
 {
     [BsonIgnoreExtraElements]
     public class User(AddUserRequest args)

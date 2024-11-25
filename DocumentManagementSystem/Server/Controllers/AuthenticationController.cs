@@ -1,5 +1,5 @@
 ﻿using DocumentManagementSystem.Server.Data;
-using DocumentManagementSystem.Shared;
+using DocumentManagementSystem.Server.Models;
 using DocumentManagementSystem.Shared.Requests;
 using DocumentManagementSystem.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;

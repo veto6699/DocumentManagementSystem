@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using DocumentManagementSystem.Shared;
+using DocumentManagementSystem.Server.Models;
 using MongoDB.Bson.Serialization;
 using DocumentManagementSystem.Server.Constants;
 using MongoDB.Bson;
