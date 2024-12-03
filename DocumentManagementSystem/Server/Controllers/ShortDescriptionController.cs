@@ -21,7 +21,7 @@ namespace DocumentManagementSystem.Server.Controllers
         private readonly ShortDescriptionDbContext _db = db;
 
         [HttpGet]
-        public async Task<List<ShortDescriptionResponse>> GetAll()
+        public async Task<List<ShortDescriptionResponse>> Get()
         {
             var descriptions = await _db.GetAll();
 
@@ -41,9 +41,14 @@ namespace DocumentManagementSystem.Server.Controllers
             {
                 await _db.Add(new(args));
             }
+            catch(ArgumentException ex)
+            {
+                HttpContext.Response.StatusCode = 409;
+                return;
+            }
             catch
             {
-                HttpContext.Response.StatusCode = 400;
+                HttpContext.Response.StatusCode = 500;
                 return;
             }
 

@@ -15,8 +15,8 @@ services:
     networks:
       - dms
     depends_on:
-      - mongo
-  mongo:
+      - mongodb
+  mongodb:
     container_name: MongoDB
     restart: always
     image: mongo:latest

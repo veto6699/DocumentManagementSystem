@@ -1,6 +1,5 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using System.Buffers.Text;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -18,16 +17,15 @@ internal class AuthStateProvider(ILocalStorageService localStorageService) : Aut
 
         var claims = ParseClaimsFromJwt(jwtToken);
 
-        return new AuthenticationState(new ClaimsPrincipal(
-            new ClaimsIdentity(claims, "JwtAuth")));
+        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims, "JwtAuth")));
     }
 
     private static List<Claim> ParseClaimsFromJwt(string jwt)
     {
         var payload = jwt.Split('.')[1];
-        var payloadСorrected = payload.Replace("_","/").Replace("-", "+");
+        var payloadСorrected = payload.Replace("_", "/").Replace("-", "+");
 
-        var jsonBytes = ParseBase64WithoutPadding(payload);
+        var jsonBytes = ParseBase64WithoutPadding(payloadСorrected);
         var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
         return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())).ToList();
@@ -47,7 +45,7 @@ internal class AuthStateProvider(ILocalStorageService localStorageService) : Aut
     internal async void DeleteAuthState()
     {
         await _localStorageService.RemoveItemAsync("jwt-access-token");
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        ChangeAuthState();
     }
 
     internal void ChangeAuthState()

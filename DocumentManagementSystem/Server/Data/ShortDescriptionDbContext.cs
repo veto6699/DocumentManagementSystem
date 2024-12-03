@@ -3,6 +3,7 @@ using DocumentManagementSystem.Shared;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using ZstdSharp;
 
 namespace DocumentManagementSystem.Server.Data
 {
@@ -43,7 +44,10 @@ namespace DocumentManagementSystem.Server.Data
 
         public async Task Add(ShortDescription description)
         {
-            await _collection.InsertOneAsync(description);
+            if (await Get(description.Code) == default)
+                await _collection.InsertOneAsync(description);
+            else
+                throw new ArgumentException();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DocumentManagementSystem.Server.Constants;
+﻿using DocumentManagementSystem.Client.Components.OpenAPI.Actions.Action;
+using DocumentManagementSystem.Server.Constants;
 using DocumentManagementSystem.Shared;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -44,7 +45,10 @@ namespace DocumentManagementSystem.Server.Data
 
         public async Task Add(Document document)
         {
-            await _collection.InsertOneAsync(document);
+            if (await Get(document.Code) == default)
+                await _collection.InsertOneAsync(document);
+            else
+                throw new ArgumentException();
         }
     }
 }

@@ -43,6 +43,6 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// Параметры
         /// </summary>
         [BsonIgnoreIfNull]
-        public AdditionalProperty? AdditionalProperties { get; set; }
+        public bool? AdditionalProperties { get; set; }
     }
 }
