@@ -4,12 +4,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.OpenApi
 {
     public class AdditionalProperty
     {
+        /// <summary>
+        /// Ссылка на компонент
+        /// </summary>
+        [JsonPropertyName("$ref")]
+        [BsonIgnoreIfNull]
+        public string? @Ref { get; set; }
         /// <summary>
         /// Допустимо ли null значение
         /// </summary>
