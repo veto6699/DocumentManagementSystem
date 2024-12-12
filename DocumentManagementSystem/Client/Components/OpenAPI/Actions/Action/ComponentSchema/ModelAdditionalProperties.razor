@@ -1,0 +1,82 @@
+﻿
+<span class="model">
+    <span>
+        <button class="model-box-control" @onclick="@(e => IsOpen = !IsOpen)">
+            @if (IsOpen)
+            {
+                <span class="model-toggle"></span>
+            }
+            else
+            {
+                <span class="pointer">
+                    <span class="model-toggle collapsed"></span>
+                </span>
+                <span>{...}</span>
+            }
+        </button>
+        @if (IsOpen)
+        {
+            <span class="brace-open object">{</span>
+            <span class="inner-object">
+                <table class="model">
+                    <tbody>
+                        @if (!string.IsNullOrEmpty(Property.Description))
+                        {
+                            <tr class="description">
+                                <td>описание:</td>
+                                <td>
+                                    <div class="renderedMarkdown">
+                                        <p>@((MarkupString)Markdig.Markdown.ToHtml(Property.Description))</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Ref) || !string.IsNullOrWhiteSpace(Property.AdditionalProperties.Type))
+                        {
+                            <tr class="property-row">
+                                <td>&lt; * &gt;:</td>
+                                @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Ref))
+                                {
+                                    <td>
+                                        <span>
+                                            <UISchema SchemaRef="@Property.AdditionalProperties.Ref" Components="@Components" />
+                                        </span>
+                                    </td>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Type))
+                                {
+                                    <td>
+                                        <span>[</span>
+                                        <span class="prop">
+                                            <span class="prop-type">@Property.AdditionalProperties.Type</span>
+                                        </span>
+                                        <span>]</span>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </span>
+            <span class="brace-close">}</span>
+        }
+        @if (Property.Nullable is not null)
+        {
+            <span class="property">
+                <br>nullable: @Property.Nullable?.ToString().ToLower()
+            </span>
+        }
+    </span>
+</span>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Property? Property { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public Components? Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public bool IsOpen { get; set; }
+}

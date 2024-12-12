@@ -52,7 +52,7 @@
                             <td>@property.Key</td>
                         }
                         <td>
-                            @if (property.Value.Ref is null && property.Value.Type != PropertyTypes.Array)
+                            @if (property.Value.Ref is null && property.Value.Type != PropertyTypes.Array && property.Value.AdditionalProperties is null)
                             {
                                 <span class="model">
                                     <span>
@@ -115,12 +115,22 @@
 
                                 <ModelArray Property="@property.Value" Components="@Components" IsOpen="arrayPropertiesIsOpen[property.Key]" />
                             }
+                            else if (property.Value.AdditionalProperties is not null)
+                            {
+                                <ModelAdditionalProperties Property="@property.Value" IsOpen="@false" Components="@Components" />
+                            }
                             else
                             {
                                 <span class="model">
                                     <span>
                                         <UISchema SchemaRef="@property.Value.Ref" Components="@Components" />
                                     </span>
+                                    @if (property.Value.Nullable is not null)
+                                    {
+                                        <span class="property">
+                                            <br>nullable: @property.Value.Nullable?.ToString().ToLower()
+                                        </span>
+                                    }
                                 </span>
                             }
                         </td>
