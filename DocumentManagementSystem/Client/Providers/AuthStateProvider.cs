@@ -42,19 +42,25 @@ public class AuthStateProvider(ILocalStorageService localStorageService, Navigat
         {
             var refreshToken = await _localStorageService.GetItemAsync<string>(Names.RefreshToken);
 
-            if(refreshToken is null)
+            if (refreshToken is null)
+            {
+                await DeleteTokens();
                 return new AuthenticationState(_anonym);
+            }
 
             var login = JsonContent.Create(new RefreshAccessTokenRequest(refreshToken));
 
             var response = await new HttpClient().PostAsync(_baseAddress + "Authentication/RefreshAccessToken", login);
 
-            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                await DeleteTokens();
                 return new AuthenticationState(_anonym);
+            }
 
             var tokens = await JsonSerializer.DeserializeAsync<RefreshAccessTokenResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
 
-            SetTokens(tokens.AccessToken, tokens.RefreshToken);
+            await SetTokens(tokens.AccessToken, tokens.RefreshToken);
 
             return await GetAuthenticationStateAsync();
         }
@@ -111,10 +117,16 @@ public class AuthStateProvider(ILocalStorageService localStorageService, Navigat
         await _localStorageService.SetItemAsync<string>(Names.RefreshToken, token);
     }
 
-    internal async void DeleteAuthState()
+    internal async void ResetAuthState()
+    {
+        await DeleteTokens();
+        ChangeAuthState();
+    }
+
+    private async Task DeleteTokens()
     {
         await _localStorageService.RemoveItemAsync(Names.JWTAccessToken);
-        ChangeAuthState();
+        await _localStorageService.RemoveItemAsync(Names.RefreshToken);
     }
 
     private void ChangeAuthState()

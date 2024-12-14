@@ -138,7 +138,7 @@
                 break;
             case HttpStatusCode.Unauthorized:
                 error.Add("Вы не авторизованы");
-                ((AuthStateProvider)_provider).DeleteAuthState();
+                ((AuthStateProvider)_provider).ResetAuthState();
                 break;
         }
 
@@ -170,7 +170,7 @@
                 break;
             case HttpStatusCode.Unauthorized:
                 error.Add("Вы не авторизованы");
-                ((AuthStateProvider)_provider).DeleteAuthState();
+                ((AuthStateProvider)_provider).ResetAuthState();
                 break;
             case HttpStatusCode.NoContent:
                 message = "Документация добавлена";
