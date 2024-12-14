@@ -1,23 +1,33 @@
 using DocumentManagementSystem.Server;
 using DocumentManagementSystem.Server.Data;
+using DocumentManagementSystem.Server.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+
 // Add services to the container.
 builder.Services.AddSingleton(new MongoClient(builder.Configuration.GetConnectionString("MongoDB")));
-builder.Services.AddSingleton<ShortDescriptionDbContext>();
+builder.Services.AddSingleton<SummaryDbContext>();
 builder.Services.AddSingleton<DocumentDbContext>();
 builder.Services.AddSingleton<UserDbContext>();
+builder.Services.AddSingleton<RefreshTokenDbContext>();
+builder.Services.AddSingleton<UserService>();
 builder.Services.Configure<AuthTokenSettings>(builder.Configuration.GetSection(nameof(AuthTokenSettings)));
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();

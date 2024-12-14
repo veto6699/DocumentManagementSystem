@@ -4,14 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DocumentManagementSystem.Shared.Responses
+namespace DocumentManagementSystem.Shared.Requests
 {
-    public class LoginResponse(string accessToken, string refreshToken)
+    public class RefreshAccessTokenRequest(string refreshToken)
     {
-        /// <summary>
-        /// Токен авторизации
-        /// </summary>
-        public string AccessToken { get; set; } = accessToken;
         /// <summary>
         /// Токен обновления токена авторизации
         /// </summary>

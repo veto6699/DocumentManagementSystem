@@ -1,6 +1,7 @@
 ﻿using Blazored.LocalStorage;
+using DocumentManagementSystem.Client.Constants;
 
-namespace DocumentManagementSystem.Client.Shared.Providers
+namespace DocumentManagementSystem.Client.Providers
 {
     public class CustomHttpHandler : DelegatingHandler
     {
@@ -18,7 +19,7 @@ namespace DocumentManagementSystem.Client.Shared.Providers
                 return await base.SendAsync(request, cancellationToken);
             }
 
-            var token = await _localStorageService.GetItemAsync<string>("jwt-access-token");
+            var token = await _localStorageService.GetItemAsync<string>(Names.JWTAccessToken);
             if (!string.IsNullOrEmpty(token))
             {
                 request.Headers.Add("Authorization", $"Bearer {token}");

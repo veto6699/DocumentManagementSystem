@@ -143,9 +143,9 @@
         var tmpSurname = surname.Trim();
         var tmpPassword = password.Trim();
 
-        var user = JsonContent.Create(new AddUserRequest() { Email = tmpEmail, Name = tmpName, Surname = tmpSurname, Password = tmpPassword });
+        var user = JsonContent.Create(new RegistrationRequest() { Email = tmpEmail, Name = tmpName, Surname = tmpSurname, Password = tmpPassword });
 
-        var response = await client.PostAsync(client.BaseAddress + "User", user);
+        var response = await client.PostAsync(client.BaseAddress + "Registration", user);
 
         switch (response.StatusCode)
         {

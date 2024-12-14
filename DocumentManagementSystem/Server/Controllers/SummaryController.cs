@@ -15,27 +15,38 @@ namespace DocumentManagementSystem.Server.Controllers
     /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class ShortDescriptionController(ILogger<ShortDescriptionController> logger, ShortDescriptionDbContext db) : ControllerBase
+    public class SummaryController(ILogger<SummaryController> logger, SummaryDbContext db) : ControllerBase
     {
-        private readonly ILogger<ShortDescriptionController> _logger = logger;
-        private readonly ShortDescriptionDbContext _db = db;
+        private readonly ILogger<SummaryController> _logger = logger;
+        private readonly SummaryDbContext _db = db;
 
         [HttpGet]
-        public async Task<List<ShortDescriptionResponse>> Get()
+        public async Task<List<SummaryResponse>> Get()
         {
-            var descriptions = await _db.GetAll();
+            var summaries = await _db.GetAll();
 
-            var descriptionsResponse = new List<ShortDescriptionResponse>(descriptions.Count);
+            var summaryResponse = new List<SummaryResponse>(summaries.Count);
 
-            foreach (var description in descriptions)
-                descriptionsResponse.Add(new(description));
+            foreach (var summary in summaries)
+            {
+                SummaryResponse content = new()
+                {
+                    Code = summary.Code,
+                    Name = summary.Name
+                };
 
-            return descriptionsResponse;
+                if(summary.Description is not null)
+                    content.Description = summary.Description;
+
+                summaryResponse.Add(summary.GetDTOResponse());
+            }
+
+            return summaryResponse;
         }
 
         [Authorize]
         [HttpPost]
-        public async Task Add(ShortDescriptionRequest args)
+        public async Task Add(SummaryRequest args)
         {
             try
             {

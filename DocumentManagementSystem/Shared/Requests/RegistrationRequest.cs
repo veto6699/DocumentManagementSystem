@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.Requests
 {
-    public class AddUserRequest
+    public class RegistrationRequest
     {
         /// <summary>
         /// Почта

@@ -18,5 +18,9 @@
         /// Имя коллекции с пользователями
         /// </summary>
         public const string Users = "Users";
+        /// <summary>
+        /// Имя коллекции с токенами обновления
+        /// </summary>
+        public const string RefreshTokens = "RefreshTokens";
     }
 }

@@ -1,25 +1,22 @@
 ﻿using DocumentManagementSystem.Shared.OpenApi;
 using DocumentManagementSystem.Shared.Requests;
+using DocumentManagementSystem.Shared.Responses;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace DocumentManagementSystem.Shared
+namespace DocumentManagementSystem.Server.Models
 {
-    [BsonIgnoreExtraElements]
     public class Document(DocumentRequest args)
     {
         /// <summary>
         /// Ид
         /// </summary>
-        [BsonId]
-        public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+        [BsonId, BsonGuidRepresentation(GuidRepresentation.Standard)]
+        public Guid Id { get; set; } = Guid.NewGuid();
         /// <summary>
         /// Код
         /// </summary>
@@ -28,5 +25,14 @@ namespace DocumentManagementSystem.Shared
         /// Описание в формате OpenAPI
         /// </summary>
         public OpenAPIRoot OpenAPI { get; set; } = args.Document;
+
+        public DocumentResponse GetDTOResponse()
+        {
+            return new DocumentResponse()
+            {
+                Code = Code,
+                Document = OpenAPI
+            };
+        }
     }
 }

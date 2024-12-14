@@ -52,7 +52,7 @@
         _navigation.NavigateTo($"/viewing/{code}");
     }
 
-    List<ShortDescriptionResponse>? documents;
+    List<SummaryResponse>? documents;
     HttpClient client;
     bool download = true;
     bool error = false;
@@ -63,7 +63,7 @@
 
         try
         {
-            var doc = await client.GetFromJsonAsync<List<ShortDescriptionResponse>>($"/ShortDescription");
+            var doc = await client.GetFromJsonAsync<List<SummaryResponse>>($"/Summary");
 
             if (doc is not null)
                 documents = doc;

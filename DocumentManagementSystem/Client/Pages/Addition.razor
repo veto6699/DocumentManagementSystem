@@ -98,8 +98,8 @@
 
         if (string.IsNullOrWhiteSpace(name))
             error.Add("Название не указано");
-
-        if (name.Length < 6)
+        else
+            if (name.Length < 6)
             error.Add("Название должено быть больше 5х символов");
 
         if (string.IsNullOrWhiteSpace(document))
@@ -118,9 +118,9 @@
         var docName = name.Trim();
         var docDescription = description.Trim();
 
-        var shortDescription = JsonContent.Create(new ShortDescriptionRequest(docName, docCode, docDescription));
+        var shortDescription = JsonContent.Create(new SummaryRequest(docName, docCode, docDescription));
 
-        var response = await client.PostAsync(client.BaseAddress + "ShortDescription", shortDescription);
+        var response = await client.PostAsync(client.BaseAddress + "Summary", shortDescription);
 
         switch (response.StatusCode)
         {
@@ -140,7 +140,6 @@
                 error.Add("Вы не авторизованы");
                 ((AuthStateProvider)_provider).DeleteAuthState();
                 break;
-
         }
 
         if (error.Count > 0)
@@ -148,6 +147,8 @@
             errors = error;
             return;
         }
+
+        var a = JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions);
 
         var documentJson = JsonContent.Create(new DocumentRequest(docCode, JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions)));
 
