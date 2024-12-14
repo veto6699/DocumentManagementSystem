@@ -1,15 +1,14 @@
-﻿using Blazored.LocalStorage;
-using DocumentManagementSystem.Client.Constants;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 
 namespace DocumentManagementSystem.Client.Providers
 {
     public class CustomHttpHandler : DelegatingHandler
     {
-        private readonly ILocalStorageService _localStorageService;
+        private readonly AuthStateProvider _authStateProvider;
 
-        public CustomHttpHandler(ILocalStorageService localStorageService)
+        public CustomHttpHandler(AuthenticationStateProvider authStateProvider)
         {
-            _localStorageService = localStorageService;
+            _authStateProvider = (AuthStateProvider)authStateProvider;
         }
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -19,7 +18,7 @@ namespace DocumentManagementSystem.Client.Providers
                 return await base.SendAsync(request, cancellationToken);
             }
 
-            var token = await _localStorageService.GetItemAsync<string>(Names.JWTAccessToken);
+            var token = await _authStateProvider.GetJWTAccessToken();
             if (!string.IsNullOrEmpty(token))
             {
                 request.Headers.Add("Authorization", $"Bearer {token}");

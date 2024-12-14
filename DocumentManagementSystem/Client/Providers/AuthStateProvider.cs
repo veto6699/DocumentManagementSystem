@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 
-internal class AuthStateProvider(ILocalStorageService localStorageService, NavigationManager nav) : AuthenticationStateProvider
+public class AuthStateProvider(ILocalStorageService localStorageService, NavigationManager nav) : AuthenticationStateProvider
 {
     readonly ClaimsPrincipal _anonym = new(new ClaimsIdentity());
     readonly ILocalStorageService _localStorageService = localStorageService;
@@ -88,6 +88,11 @@ internal class AuthStateProvider(ILocalStorageService localStorageService, Navig
     {
         await SetTokens(accessToken, refreshToken);
         ChangeAuthState();
+    }
+
+    internal async Task<string?> GetJWTAccessToken()
+    {
+        return await _localStorageService.GetItemAsync<string>(Names.JWTAccessToken);
     }
 
     private async Task SetTokens(string accessToken, string refreshToken)
