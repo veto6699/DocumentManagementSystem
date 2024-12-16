@@ -69,7 +69,7 @@ namespace DocumentManagementSystem.Server.Controllers
                 return;
             }
 
-            HttpContext.Response.StatusCode = 204;
+            HttpContext.Response.StatusCode = 200;
             return;
         }
     }

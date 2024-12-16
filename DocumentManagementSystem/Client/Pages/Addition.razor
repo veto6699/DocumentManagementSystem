@@ -92,20 +92,17 @@
 
         if (string.IsNullOrWhiteSpace(documentCode))
             error.Add("Код не указан");
-
-        if (documentCode?.Length < 3)
+        else if (documentCode.Length < 3)
             error.Add("Код должен быть больше 2х символов");
 
         if (string.IsNullOrWhiteSpace(name))
             error.Add("Название не указано");
-        else
-            if (name.Length < 6)
+        else if (name.Length < 6)
             error.Add("Название должено быть больше 5х символов");
 
         if (string.IsNullOrWhiteSpace(document))
             error.Add("Документ не указан");
-
-        if (document?.Length < 21)
+        else if (document.Length < 21)
             error.Add("Документ должен быть больше 20х символов");
 
         if (error.Count > 0)
@@ -115,12 +112,10 @@
         }
 
         var docCode = documentCode.Trim().ToLower();
-        var docName = name.Trim();
-        var docDescription = description.Trim();
 
-        var shortDescription = JsonContent.Create(new SummaryRequest(docName, docCode, docDescription));
+        var documentJson = JsonContent.Create(new DocumentRequest(docCode, JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions)));
 
-        var response = await client.PostAsync(client.BaseAddress + "Summary", shortDescription);
+        var response = await client.PostAsync(client.BaseAddress + "Document", documentJson);
 
         switch (response.StatusCode)
         {
@@ -148,11 +143,15 @@
             return;
         }
 
-        var a = JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions);
+        var docName = name.Trim();
+        string? docDescription = null;
 
-        var documentJson = JsonContent.Create(new DocumentRequest(docCode, JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions)));
+        if (!string.IsNullOrWhiteSpace(description))
+            docDescription = description.Trim();
 
-        response = await client.PostAsync(client.BaseAddress + "Document", documentJson);
+        var shortDescription = JsonContent.Create(new SummaryRequest(docName, docCode, docDescription));
+
+        response = await client.PostAsync(client.BaseAddress + "Summary", shortDescription);
 
         switch (response.StatusCode)
         {
@@ -172,7 +171,7 @@
                 error.Add("Вы не авторизованы");
                 ((AuthStateProvider)_provider).ResetAuthState();
                 break;
-            case HttpStatusCode.NoContent:
+            case HttpStatusCode.OK:
                 message = "Документация добавлена";
                 break;
         }
