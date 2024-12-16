@@ -25,9 +25,9 @@
         }
         break;
     default:
-        @if (!string.IsNullOrEmpty(DefaultValue))
+        @if (!string.IsNullOrEmpty(stringValue))
         {
-            <span style="color: rgb(162, 252, 162);">"@DefaultValue"</span>
+            <span style="color: rgb(162, 252, 162);">"@stringValue"</span>
         }
         else
         {
@@ -51,4 +51,52 @@
     [Parameter]
     [EditorRequired]
     public string? DefaultValue { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public int? MinLength { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Format { get; set; }
+
+    string? stringValue;
+
+    protected override void OnInitialized()
+    {
+        if (Type == PropertyTypes.String)
+        {
+            if (!string.IsNullOrEmpty(DefaultValue))
+            {
+                stringValue = DefaultValue;
+                return;
+            }
+
+            if (Format is not null && Format == "email")
+            {
+                stringValue = "user@example.com";
+                return;
+            }
+
+            if (MinLength is not null)
+            {
+                int minLength = (int)MinLength;
+
+                if (minLength < Type.Length)
+                    minLength = Type.Length;
+
+                stringValue = string.Empty;
+
+                for (int i = 0; stringValue.Length < minLength; i++)
+                {
+                    stringValue += @Type;
+
+                    if (stringValue.Length > minLength)
+                        stringValue = stringValue.Substring(0, minLength);
+                }
+
+                return;
+            }
+
+            stringValue = Type;
+        }
+    }
 }

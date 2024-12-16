@@ -75,6 +75,15 @@ namespace DocumentManagementSystem.Shared.JsonConverters
                         case "xml":
                             property.XML = _defaultXMLConverter.Read(ref reader, _xmlType, options);
                             break;
+                        case "readOnly":
+                            property.ReadOnly = reader.GetBoolean();
+                            break;
+                        case "maxLength":
+                            property.MaxLength = reader.GetInt32();
+                            break;
+                        case "minLength":
+                            property.MinLength = reader.GetInt32();
+                            break;
                     }
                 }
             }
@@ -141,6 +150,30 @@ namespace DocumentManagementSystem.Shared.JsonConverters
             {
                 writer.WritePropertyName("enum");
                 _defaultEnumConverter.Write(writer, property.Enum, options);
+            }
+
+            if (property.XML is not null)
+            {
+                writer.WritePropertyName("xml");
+                _defaultXMLConverter.Write(writer, property.XML, options);
+            }
+
+            if (property.ReadOnly is not null)
+            {
+                writer.WritePropertyName("readOnly");
+                writer.WriteBooleanValue((bool)property.ReadOnly);
+            }
+
+            if (property.MaxLength is not null)
+            {
+                writer.WritePropertyName("maxLength");
+                writer.WriteNumberValue((int)property.MaxLength);
+            }
+
+            if (property.MinLength is not null)
+            {
+                writer.WritePropertyName("minLength");
+                writer.WriteNumberValue((int)property.MinLength);
             }
 
             writer.WriteEndObject();

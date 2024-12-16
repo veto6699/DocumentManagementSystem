@@ -65,16 +65,28 @@
                                                     <span class="prop-format">($@property.Value.Format)</span>
                                                 }
                                             }
-                                            @if (property.Value.Nullable is not null)
+                                            @if (property.Value.MaxLength is not null)
                                             {
                                                 <span class="property primitive">
-                                                    <br>nullable: @property.Value.Nullable?.ToString().ToLower()
+                                                    <br>maxLength: @property.Value.MaxLength
+                                                </span>
+                                            }
+                                            @if (property.Value.MinLength is not null)
+                                            {
+                                                <span class="property primitive">
+                                                    <br>minLength: @property.Value.MinLength
                                                 </span>
                                             }
                                             @if (!string.IsNullOrEmpty(property.Value.Default))
                                             {
                                                 <span class="property primitive">
                                                     <br>default: @property.Value.Default
+                                                </span>
+                                            }
+                                            @if (property.Value.Nullable is not null)
+                                            {
+                                                <span class="property primitive">
+                                                    <br>nullable: @property.Value.Nullable?.ToString().ToLower()
                                                 </span>
                                             }
                                             @if (!string.IsNullOrEmpty(property.Value.Description))
