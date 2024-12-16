@@ -38,7 +38,7 @@
                         @if (Response.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(Response.Content[MediaType].Schema.Items.Ref))
                             schemaRef = Response.Content[MediaType].Schema.Items.Ref;
 
-                        <ExampleRoot SchemaRef="@schemaRef" Components="@Components" MediaType="@MediaType" />
+                        <ExampleRoot SchemaRef="@schemaRef"/>
                     }
                 }
                 else
@@ -51,7 +51,7 @@
                         @if (Response.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(Response.Content[MediaType].Schema.Items.Ref))
                             schemaRef = Response.Content[MediaType].Schema.Items.Ref;
 
-                        <SchemaRoot SchemaRef="@schemaRef" Components="@Components" MediaType="@MediaType" />
+                        <SchemaRoot SchemaRef="@schemaRef"/>
                     }
                 }
             </div>
@@ -74,10 +74,10 @@
     [Parameter]
     [EditorRequired]
     public Response? Response { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
-    [Parameter]
+    [CascadingParameter(Name = "MediaType")]
     [EditorRequired]
     public string? MediaType { get; set; }
 

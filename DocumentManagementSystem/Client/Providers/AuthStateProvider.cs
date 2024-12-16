@@ -58,7 +58,7 @@ public class AuthStateProvider(ILocalStorageService localStorageService, Navigat
                 return new AuthenticationState(_anonym);
             }
 
-            var tokens = await JsonSerializer.DeserializeAsync<RefreshAccessTokenResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
+            var tokens = await JsonSerializer.DeserializeAsync<RefreshAccessTokenResponse>(response.Content.ReadAsStream(), SystemConstants.JSONSerializerOptions);
 
             await SetTokens(tokens.AccessToken, tokens.RefreshToken);
 

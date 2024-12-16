@@ -41,7 +41,7 @@
                 <span>
                     @if (Property.Items.Ref is not null)
                     {
-                        <UISchema SchemaRef="@Property.Items.Ref" Components="@Components" />
+                        <UISchema SchemaRef="@Property.Items.Ref"/>
                     }
                     else if (Property.Items.Type == PropertyTypes.Array && Property.Items.Items is not null && !string.IsNullOrEmpty(Property.Items.Items.Type))
                     {
@@ -72,7 +72,7 @@
     [Parameter]
     [EditorRequired]
     public Property? Property { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]

@@ -28,11 +28,7 @@ namespace DocumentManagementSystem.Server.Models
 
         public DocumentResponse GetDTOResponse()
         {
-            return new DocumentResponse()
-            {
-                Code = Code,
-                Document = OpenAPI
-            };
+            return new DocumentResponse(Code, OpenAPI);
         }
     }
 }

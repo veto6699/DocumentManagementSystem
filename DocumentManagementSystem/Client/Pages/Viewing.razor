@@ -11,21 +11,23 @@
 
 <PageTitle>Просмотр</PageTitle>
 
-@if (statusCode is not null)
+@if (error is not null)
 {
-    switch (statusCode)
-    {
-        case HttpStatusCode.NotFound:
-            <EmptyPage Text="Документация не найдена" />
-            break;
-        case HttpStatusCode.BadRequest:
-            <EmptyPage Text="Ошибка загрузки документации" />
-            break;
-    }
+    <div>
+        <EmptyPage Text="@error" TextColor="red" />
+    </div>
+    <br>
 }
 else
 {
-    <UIRoot Document="@Document?.Document" URL="@url" />
+    @if (download)
+    {
+        <p style="text-align: center;"><em>загрузка...</em></p>
+    }
+    else
+    {
+        <UIRoot Document="@Document.Document" URL="@url" />
+    }
 }
 
 
@@ -35,37 +37,43 @@ else
 
     DocumentResponse? Document { get; set; }
     string? url;
-    HttpStatusCode? statusCode;
+    string? error { get; set; }
     HttpClient client;
+    bool download { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        client = _httpClientFactory.CreateClient("Api");
-
         if (string.IsNullOrWhiteSpace(Code))
-            _navigation.NavigateTo("/");
+        {
+            error = "Не указан код документации";
+            return;
+        }
+
+        client = _httpClientFactory.CreateClient("Api");
 
         url = client.BaseAddress + $"Document?Code={Code}";
 
         var response = await client.GetAsync(url);
 
-        if (!response.IsSuccessStatusCode)
+        switch (response.StatusCode)
         {
-            statusCode = response.StatusCode;
-            return;
+            case HttpStatusCode.NotFound:
+                error = "Документация не найдена";
+                return;
+            case HttpStatusCode.BadRequest:
+                error = "Ошибка загрузки документации";
+                return;
+            case HttpStatusCode.MethodNotAllowed:
+                error = "Метод не поддерживается";
+                return;
         }
 
-        Document = await JsonSerializer.DeserializeAsync<DocumentResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
+        Document = await JsonSerializer.DeserializeAsync<DocumentResponse>(response.Content.ReadAsStream(), SystemConstants.JSONSerializerOptions);
 
-        if (Document is null
-            || Document.Document.Components is null
-            || Document.Document.Components.Schemas is null
-            || Document.Document.Components.Schemas.Count == 0
-            || Document.Document.Paths is null
-            || Document.Document.Paths.Count == 0)
-        {
-            statusCode = HttpStatusCode.BadRequest;
-        }
+        if (Document is null)
+            error = "Ошибка загрузки документации";
+
+        download = false;
     }
 }
 

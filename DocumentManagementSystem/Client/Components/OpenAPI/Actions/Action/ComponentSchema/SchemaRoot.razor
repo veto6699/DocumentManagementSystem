@@ -5,7 +5,7 @@
             @switch (MediaType)
             {
                 case Constants.MediaType.ApplicationJSON:
-                    <UISchema Components="@Components" SchemaRef="@SchemaRef" IsOpen="true" />
+                    <UISchema SchemaRef="@SchemaRef" IsOpen="true" />
                     break;
                 case Constants.MediaType.ApplicationXML:
                     <p>"Это пока не готово"</p>
@@ -22,10 +22,10 @@
     [Parameter]
     [EditorRequired]
     public string? SchemaRef { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
-    [Parameter]
+    [CascadingParameter(Name = "MediaType")]
     [EditorRequired]
     public string? MediaType { get; set; }
 }

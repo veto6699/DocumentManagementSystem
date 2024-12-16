@@ -113,17 +113,17 @@
                                 @if (!arrayPropertiesIsOpen.ContainsKey(property.Key))
                                     arrayPropertiesIsOpen.Add(property.Key, false);
 
-                                <ModelArray Property="@property.Value" Components="@Components" IsOpen="arrayPropertiesIsOpen[property.Key]" />
+                                <ModelArray Property="@property.Value" IsOpen="arrayPropertiesIsOpen[property.Key]" />
                             }
                             else if (property.Value.AdditionalProperties is not null)
                             {
-                                <ModelAdditionalProperties Property="@property.Value" IsOpen="@false" Components="@Components" />
+                                <ModelAdditionalProperties Property="@property.Value" IsOpen="@false"/>
                             }
                             else
                             {
                                 <span class="model">
                                     <span>
-                                        <UISchema SchemaRef="@property.Value.Ref" Components="@Components" />
+                                        <UISchema SchemaRef="@property.Value.Ref"/>
                                     </span>
                                     @if (property.Value.Nullable is not null)
                                     {
@@ -150,7 +150,7 @@
     public Schema? Schema { get; set; }
     [Parameter]
     public string? SchemaName { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]

@@ -9,7 +9,7 @@
                 {
                     @if (!string.IsNullOrEmpty(tag.Name))
                     {
-                        <UIController Tag="@tag" Paths="@controllers[tag.Name]" Components="@Components" />
+                        <UIController Tag="@tag" Paths="@controllers[tag.Name]"/>
                     }
                 }
             }
@@ -24,7 +24,7 @@
     [Parameter]
     [EditorRequired]
     public IList<Tag>? Tags { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
 

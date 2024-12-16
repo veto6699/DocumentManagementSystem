@@ -58,7 +58,7 @@ namespace DocumentManagementSystem.Server.Controllers
             {
                 await _db.Add(new(args));
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 HttpContext.Response.StatusCode = 409;
                 return;

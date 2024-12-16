@@ -24,12 +24,12 @@
                 <Parameters RequestParameters="@Operation.Parameters" />
                 @if (Operation.RequestBody is not null)
                 {
-                    <UIRequest RequestBody="@Operation.RequestBody" Components="@Components" />
+                    <UIRequest RequestBody="@Operation.RequestBody"/>
                 }
             </div>
             <div class="execute-wrapper"></div>
             <div class="responses-wrapper">
-                <UIResponse Responses="@Operation.Responses" Components="@Components" />
+                <UIResponse Responses="@Operation.Responses"/>
             </div>
         </div>
     </div>
@@ -39,7 +39,7 @@
     [Parameter]
     [EditorRequired]
     public Operation? Operation { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
 

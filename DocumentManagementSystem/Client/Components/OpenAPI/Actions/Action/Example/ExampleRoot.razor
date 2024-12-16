@@ -6,7 +6,7 @@
         {
             case Constants.MediaType.ApplicationJSON:
                 <code class="language-json" style="white-space: pre;">
-                    <Properties Components="@Components" SchemaRef="@SchemaRef" IsRoot="true" />
+                    <Properties SchemaRef="@SchemaRef" IsRoot="true" />
                 </code>
                 break;
             case Constants.MediaType.ApplicationXML:
@@ -23,10 +23,10 @@
     [Parameter]
     [EditorRequired]
     public string? SchemaRef { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
-    [Parameter]
+    [CascadingParameter(Name = "MediaType")]
     [EditorRequired]
     public string? MediaType { get; set; }
 }

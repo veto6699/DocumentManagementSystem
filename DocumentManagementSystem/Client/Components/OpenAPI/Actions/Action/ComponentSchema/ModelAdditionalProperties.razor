@@ -39,7 +39,7 @@
                                 {
                                     <td>
                                         <span>
-                                            <UISchema SchemaRef="@Property.AdditionalProperties.Ref" Components="@Components" />
+                                            <UISchema SchemaRef="@Property.AdditionalProperties.Ref"/>
                                         </span>
                                     </td>
                                 }
@@ -73,7 +73,7 @@
     [Parameter]
     [EditorRequired]
     public Property? Property { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]

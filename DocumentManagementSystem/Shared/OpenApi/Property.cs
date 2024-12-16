@@ -57,5 +57,11 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// </summary>
         [BsonIgnoreIfNull]
         public List<string>? @Enum { get; set; }
+        /// <summary>
+        /// Расширенные парааметры, только для xml
+        /// </summary>
+        [JsonPropertyName("xml")]
+        [BsonIgnoreIfNull]
+        public XML? XML { get; set; }
     }
 }

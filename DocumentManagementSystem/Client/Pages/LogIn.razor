@@ -115,7 +115,7 @@
         else
             errors = null;
 
-        LoginResponse loginResponse = await JsonSerializer.DeserializeAsync<LoginResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
+        LoginResponse loginResponse = await JsonSerializer.DeserializeAsync<LoginResponse>(response.Content.ReadAsStream(), SystemConstants.JSONSerializerOptions);
 
         ((AuthStateProvider)_provider).ChangeTokens(loginResponse.AccessToken, loginResponse.RefreshToken);
 
