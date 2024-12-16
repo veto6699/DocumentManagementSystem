@@ -1,6 +1,4 @@
 ﻿@using DocumentManagementSystem.Client.Constants
-
-<span>{</span>@Environment.NewLine
 @foreach (var property in properties)
 {
     @if (lastPropertyKey is not null && lastPropertyKey.Equals(property.Key))
@@ -11,7 +9,12 @@
     @switch(property.Value.Type)
     {
         case null:
-            <PropertyName Name="@property.Key" Space="@internalSpace" /><Properties SchemaRef="@property.Value.Ref" SpaceCount="@spaceCount" />
+            <PropertyName Name="@property.Key" Space="@internalSpace" /><span>{</span>@Environment.NewLine<Properties SchemaRef="@property.Value.Ref" SpaceCount="@spaceCount" />@internalSpace<span>}</span>            
+            @if (!IsLastProperty)
+            {
+                <span>,</span>
+            }
+            @Environment.NewLine
             break;
         case PropertyTypes.Object:
             <PropertyName Name="@property.Key" Space="@internalSpace" /><PropertyTypeObject Property="@property.Value" SpaceCount="@spaceCount" LastProperty="@IsLastProperty" />
@@ -24,19 +27,6 @@
             break;
     }
 }
-@if(IsRoot)
-{
-    <span>}</span>
-}
-else
-{
-    @externalSpace<span>}</span>
-    @if (!IsLastProperty)
-    {
-        <span>,</span>
-    }
-    @Environment.NewLine
-}
 
 @code {
     [Parameter]
@@ -48,12 +38,10 @@ else
     [Parameter]
     public uint SpaceCount { get; set; } = 0;
     [Parameter]
-    public bool IsRoot { get; set; } = false;
-    [Parameter]
     public bool IsLastProperty { get; set; } = false;
 
     uint spaceCount = 0;
-    string? internalSpace, externalSpace;
+    string? internalSpace;
 
     string? lastPropertyKey;
 
@@ -74,7 +62,5 @@ else
     {
         for (uint i = 0; i < spaceCount; i++)
             internalSpace += SystemConstants.PropertySpace;
-
-        externalSpace = internalSpace[..^SystemConstants.PropertySpace.Length];
     }
 }

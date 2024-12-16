@@ -49,13 +49,10 @@
     [EditorRequired]
     public bool LastProperty { get; set; }
     [Parameter]
-    [EditorRequired]
     public string? DefaultValue { get; set; }
     [Parameter]
-    [EditorRequired]
     public int? MinLength { get; set; }
     [Parameter]
-    [EditorRequired]
     public string? Format { get; set; }
 
     string? stringValue;
@@ -70,7 +67,7 @@
                 return;
             }
 
-            if (Format is not null && Format == "email")
+            if (!string.IsNullOrEmpty(Format) && Format == "email")
             {
                 stringValue = "user@example.com";
                 return;

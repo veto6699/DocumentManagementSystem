@@ -2,12 +2,16 @@
 
 @if (Property.Items.Ref is not null)
 {
-    <span>[</span>@Environment.NewLine@internalSpace<Properties SchemaRef="@Property.Items.Ref" SpaceCount="@spaceCount" />@externalSpace<span>]</span>
+    <span>[</span>@Environment.NewLine
+        @internalSpace<span>{</span>@Environment.NewLine
+            <Properties SchemaRef="@Property.Items.Ref" SpaceCount="@spaceCount" />
+        @internalSpace<span>}</span>@Environment.NewLine
+    @externalSpace<span>]</span>
 }
 else
 {
     <span>[</span>@Environment.NewLine
-    @internalSpace<PropertyType Type="@Property.Items.Type" LastProperty="true" />
+    @internalSpace<PropertyType Type="@Property.Items.Type" LastProperty="true"/>
     @externalSpace<span>]</span>
 }
 @if (!LastProperty)
