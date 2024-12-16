@@ -9,13 +9,12 @@
 @inject AuthenticationStateProvider _provider
 @inject IHttpClientFactory _httpClientFactory
 @inject NavigationManager _navigation
-@inject ILocalStorageService _localStorageService
 
 <PageTitle>Вход</PageTitle>
 
 <AuthorizeView>
     <NotAuthorized>
-        <div class="title">
+        <div class="page-title">
             <h2>Вход</h2>
         </div>
 
@@ -35,14 +34,14 @@
                     <div>
                         <label>Электронная почта</label>
                         <br />
-                        <input type="email" inputmode="text" autocomplete="nickname" @bind-value="@email" @bind-value:event="oninput">
+                        <input type="email" inputmode="text" autocomplete="email" @bind-value="@email" @bind-value:event="oninput">
                     </div>
                     <div>
                         <label>Пароль</label>
                         <br />
                         <input type="password" inputmode="text" autocomplete="current-password" @bind-value="@password" @bind-value:event="oninput">
                     </div>
-                    <button class="registration-button" @onclick="Login">
+                    <button class="registration-button" @onclick="UserLogin">
                         <span class="button-in">
                             <span class="button-content">Войти</span>
                         </span>
@@ -63,7 +62,7 @@
     List<string>? errors { get; set; }
     HttpClient client;
 
-    async Task Login()
+    async Task UserLogin()
     {
         List<string>? error = new();
 
@@ -87,15 +86,16 @@
             return;
         }
 
-        var login = JsonContent.Create(new LogInRequest() { Email = email, Password = password });
+        var login = JsonContent.Create(new LoginRequest() { Email = email, Password = password });
 
-        var response = await client.PostAsync(client.BaseAddress + "Authorize", login);
+        var response = await client.PostAsync(client.BaseAddress + "Authentication/Login", login);
 
         switch (response.StatusCode)
         {
             case HttpStatusCode.NotFound:
                 error.Add("API не найден");
                 break;
+            case HttpStatusCode.Forbidden:
             case HttpStatusCode.BadRequest:
                 error.Add("Ошибка входа");
                 break;
@@ -115,10 +115,9 @@
         else
             errors = null;
 
-        LogInResponse logInResponse = await JsonSerializer.DeserializeAsync<LogInResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
+        LoginResponse loginResponse = await JsonSerializer.DeserializeAsync<LoginResponse>(response.Content.ReadAsStream(), SystemConstants.serializerOptions);
 
-        await _localStorageService.SetItemAsync<string>("jwt-access-token", logInResponse.AccessToken);
-        ((AuthStateProvider)_provider).ChangeAuthState();
+        ((AuthStateProvider)_provider).ChangeTokens(loginResponse.AccessToken, loginResponse.RefreshToken);
 
         _navigation.NavigateTo("/");
     }

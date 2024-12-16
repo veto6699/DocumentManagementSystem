@@ -6,31 +6,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DocumentManagementSystem.Shared
+namespace DocumentManagementSystem.Server.Models
 {
     [BsonIgnoreExtraElements]
-    public class User(AddUserRequest args)
+    public class User(RegistrationRequest args)
     {
         /// <summary>
         /// Ид
         /// </summary>
-        [BsonId]
-        public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+        [BsonId, BsonGuidRepresentation(GuidRepresentation.Standard)]
+        public Guid Id { get; set; } = Guid.NewGuid();
         /// <summary>
         /// Почта
         /// </summary>
-        public string Email { get; set; } = args.Email;
+        public string Email { get; set; } = args.Email.Trim().ToLower();
         /// <summary>
         /// Имя
         /// </summary>
-        public string Name { get; set; } = args.Name;
+        public string Name { get; set; } = args.Name.Trim();
         /// <summary>
         /// Фамилия
         /// </summary>
-        public string Surname { get; set; } = args.Surname;
+        public string Surname { get; set; } = args.Surname.Trim();
         /// <summary>
         /// Пароль
         /// </summary>
-        public string Password { get; set; } = args.Password;
+        public string Password { get; set; } = args.Password.Trim();
     }
 }

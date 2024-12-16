@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.Requests
 {
-    public class ShortDescriptionRequest
+    public class SummaryRequest
     {
-        public ShortDescriptionRequest(string name, string code, string description)
+        public SummaryRequest(string name, string code, string? description)
         {
             Code = code;
-            Description = description;
             Name = name;
+
+            if (!string.IsNullOrWhiteSpace(description))
+                Description = description;
         }
         /// <summary>
         /// Код

@@ -3,6 +3,7 @@
 @page "/home"
 @using DocumentManagementSystem.Shared
 @using DocumentManagementSystem.Client.Components.OpenAPI
+@using DocumentManagementSystem.Client.Components
 @using DocumentManagementSystem.Shared.Responses
 @inject NavigationManager _navigation
 @inject IHttpClientFactory _httpClientFactory
@@ -10,26 +11,37 @@
 <PageTitle>Все проекты</PageTitle>
 
 <div class="wrapper menu">
-    @if (documents is null)
+    @if (download)
     {
-        <p><em>загрузка...</em></p>
+        <p style="text-align: center;"><em>загрузка...</em></p>
     }
     else
     {
-        @foreach (var document in documents)
+        @if (error)
         {
-            <NavLink class="nav-link">
-                <div class="menuItem" @onclick="()=>NavigateToViewing(document.Code)">
-                    <div>
-                        <span>@document.Name</span>
-                        <p>@document.Description</p>
+            <EmptyPage Text="Ошибка загрузки документации" TextColor="red" />
+        }
+        else if (documents is null || documents.Count == 0)
+        {
+            <p style="text-align: center;"><em>Документации нет</em></p>
+        }
+        else
+        {
+            @foreach (var document in documents)
+            {
+                <NavLink class="nav-link">
+                    <div class="menuItem" @onclick="()=>NavigateToViewing(document.Code)">
+                        <div>
+                            <span>@document.Name</span>
+                            <p>@document.Description</p>
+                        </div>
+                        <small />
+                        <button class="expand-operation">
+                            <UISVGRotate Rotate="-90" />
+                        </button>
                     </div>
-                    <small />
-                    <button class="expand-operation">
-                        <UISVGRotate Rotate="-90" />
-                    </button>
-                </div>
-            </NavLink>
+                </NavLink>
+            }
         }
     }
 </div>
@@ -40,15 +52,27 @@
         _navigation.NavigateTo($"/viewing/{code}");
     }
 
-    List<ShortDescriptionResponse>? documents;
+    List<SummaryResponse>? documents;
     HttpClient client;
+    bool download = true;
+    bool error = false;
 
     protected override async Task OnInitializedAsync()
     {
         client = _httpClientFactory.CreateClient("Api");
 
-        var doc = await client.GetFromJsonAsync<List<ShortDescriptionResponse>>($"/ShortDescription");
+        try
+        {
+            var doc = await client.GetFromJsonAsync<List<SummaryResponse>>($"/Summary");
 
-        documents = doc;
+            if (doc is not null)
+                documents = doc;
+        }
+        catch
+        {
+            error = true;
+        }
+
+        download = false;
     }
 }

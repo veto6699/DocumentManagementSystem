@@ -1,10 +1,6 @@
-﻿using DocumentManagementSystem.Shared;
-using DocumentManagementSystem.Shared.OpenApi;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
 using DocumentManagementSystem.Server.Data;
 using Microsoft.AspNetCore.Authorization;
 using DocumentManagementSystem.Shared.Responses;
@@ -12,6 +8,9 @@ using DocumentManagementSystem.Shared.Requests;
 
 namespace DocumentManagementSystem.Server.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с документацией
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class DocumentController(ILogger<DocumentController> logger, DocumentDbContext db) : ControllerBase
@@ -30,7 +29,7 @@ namespace DocumentManagementSystem.Server.Controllers
 
                 if (document is not null && document.OpenAPI is not null)
                 {
-                    return new(document);
+                    return document.GetDTOResponse();
                 }
                 else
                 {
@@ -59,13 +58,18 @@ namespace DocumentManagementSystem.Server.Controllers
             {
                 await _db.Add(new(args));
             }
+            catch (ArgumentException ex)
+            {
+                HttpContext.Response.StatusCode = 409;
+                return;
+            }
             catch
             {
-                HttpContext.Response.StatusCode = 400;
+                HttpContext.Response.StatusCode = 500;
                 return;
             }
 
-            HttpContext.Response.StatusCode = 204;
+            HttpContext.Response.StatusCode = 200;
             return;
         }
     }

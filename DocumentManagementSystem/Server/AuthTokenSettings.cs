@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
+﻿
 namespace DocumentManagementSystem.Server
 {
     public class AuthTokenSettings

@@ -1,41 +1,40 @@
-﻿using DocumentManagementSystem.Server.Data;
-using DocumentManagementSystem.Shared;
+﻿using DocumentManagementSystem.Server.Service;
 using DocumentManagementSystem.Shared.Requests;
 using DocumentManagementSystem.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentManagementSystem.Server.Controllers
 {
-    [Route("[controller]")]
+    /// <summary>
+    /// Контроллер для авторизации
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="userService"></param>
+    [Route("[controller]/[action]")]
     [ApiController]
-    public class AuthenticationController : Controller
+    public class AuthenticationController(ILogger<AuthenticationController> logger, UserService userService) : Controller
     {
-        private readonly ILogger<UserDbContext> _logger;
-        private readonly UserDbContext _db;
-
-        public AuthenticationController(ILogger<UserDbContext> logger, UserDbContext db)
-        {
-            _logger = logger;
-            _db = db;
-        }
+        private readonly ILogger<AuthenticationController> _logger = logger;
+        private readonly UserService _userService = userService;
 
         [HttpPost]
-        public async Task<LogInResponse?> LogIn(LogInRequest args)
+        public async Task<LoginResponse?> Login(LoginRequest args)
         {
-            if (string.IsNullOrWhiteSpace(args.Email) || string.IsNullOrWhiteSpace(args.Password))
+            LoginResponse result;
+
+            try
+            {
+                result = await _userService.Login(args);
+            }
+            catch(ArgumentNullException)
             {
                 HttpContext.Response.StatusCode = 400;
                 return null;
             }
-
-            args.Email = args.Email.Trim().ToLower();
-            args.Password = args.Password.Trim();
-
-            User user;
-
-            try
+            catch (ArgumentException)
             {
-                user = await _db.SearchByEmail(args.Email);
+                HttpContext.Response.StatusCode = 403;
+                return null;
             }
             catch
             {
@@ -43,14 +42,35 @@ namespace DocumentManagementSystem.Server.Controllers
                 return null;
             }
 
-            if (user is not null && user.Email == args.Email && user.Password == args.Password)
+            return result;
+        }
+
+        [HttpPost]
+        public async Task<RefreshAccessTokenResponse?> RefreshAccessToken(RefreshAccessTokenRequest args)
+        {
+            RefreshAccessTokenResponse result;
+
+            try
             {
-                var a = _db.GenerateJwtToken(user);
-                return new LogInResponse() { AccessToken = _db.GenerateJwtToken(user) };
+                result = await _userService.RefreshAccessToken(args);
+            }
+            catch (ArgumentNullException)
+            {
+                HttpContext.Response.StatusCode = 400;
+                return null;
+            }
+            catch (ArgumentException)
+            {
+                HttpContext.Response.StatusCode = 403;
+                return null;
+            }
+            catch
+            {
+                HttpContext.Response.StatusCode = 500;
+                return null;
             }
 
-            HttpContext.Response.StatusCode = 400;
-            return null;
+            return result;
         }
     }
 }

@@ -1,21 +1,82 @@
 ﻿
 
 <div class="parameters-container">
-    <div class="opblock-description-wrapper">
-        @if (RequestParameters is null || RequestParameters.Count == 0)
-        {
+    @if (RequestParameters is null || RequestParameters.Count == 0)
+    {
+        <div class="opblock-description-wrapper">
             <p>Нет параметров</p>
-        }
-        else
-        {
-            <p>Параметры есть, но я их еще не сделал;)</p>
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="parameters">
+                <thead>
+                    <tr>
+                        <th class="col_header parameters-col_name">Название</th>
+                        <th class="col_header parameters-col_description">Описание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var parameter in RequestParameters)
+                    {
+                        <tr>
+                            <td class="parameters-col_name">
+                                @if (parameter.Required is not null && (bool)parameter.Required)
+                                {
+                                    <div class="parameter__name required">
+                                        @parameter.Name<span>&nbsp;*</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="parameter__name">
+                                        @parameter.Name
+                                    </div>
+                                }
+                                @if (parameter.Schema is not null && !string.IsNullOrWhiteSpace(parameter.Schema.Type))
+                                {
+                                    <div class="parameter__type">
+                                        @parameter.Schema.Type
+                                        @if (!string.IsNullOrWhiteSpace(parameter.Schema.Format))
+                                        {
+                                            <span class="prop-format">($@parameter.Schema.Format)</span>
+                                        }
+                                    </div>
+                                }
+                                @if (parameter.Deprecated is not null && (bool)parameter.Deprecated)
+                                {
+                                    <div class="parameter__deprecated">
+                                        deprecated
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(parameter.In))
+                                {
+                                    <div class="parameter__in">
+                                        (@parameter.In)
+                                    </div>
+                                }
+                            </td>
+                            <td class="parameters-col_description">
+                                @if (!string.IsNullOrWhiteSpace(parameter.Description))
+                                {
+                                    <div class="renderedMarkdown">
+                                        @((MarkupString)Markdig.Markdown.ToHtml(parameter.Description))
+                                    </div>
+                                }
+                                <input type="text" placeholder="@parameter.Name">
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
-    
+
 
 @code {
     [Parameter]
     [EditorRequired]
-    public ICollection<Parameter>? RequestParameters { get; set; }
+    public List<Parameter>? RequestParameters { get; set; }
 }

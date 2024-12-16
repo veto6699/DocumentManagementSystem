@@ -1,14 +1,14 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using DocumentManagementSystem.Shared.JsonConverters;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.OpenApi
 {
+    [JsonConverter(typeof(PropertyJsonConverter))]
     public class Property
     {
         /// <summary>
@@ -52,5 +52,10 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// </summary>
         [BsonIgnoreIfNull]
         public AdditionalProperty? AdditionalProperties { get; set; }
+        /// <summary>
+        /// Список возможных значений
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public List<string>? @Enum { get; set; }
     }
 }

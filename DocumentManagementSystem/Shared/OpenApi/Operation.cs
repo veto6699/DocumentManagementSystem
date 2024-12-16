@@ -11,7 +11,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Тег(контроллер) к которому относится действие
         /// </summary>
-        public IList<string>? Tags { get; set; }
+        public List<string>? Tags { get; set; }
         /// <summary>
         /// Краткое описаине действия
         /// </summary>
@@ -22,7 +22,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public string? Description { get; set; }
         public ExternalDoc? ExternalDocs { get; set; }
         public string? OperationId { get; set; }
-        public IList<Parameter>? Parameters { get; set; }
+        public List<Parameter>? Parameters { get; set; }
         /// <summary>
         /// Описание запроса
         /// </summary>
@@ -33,7 +33,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         public Dictionary<string, Response>? Responses { get; set; }
         public Dictionary<string, object>? CallBacks { get; set; }
         public bool? Deprecated { get; set; }
-        public IList<Dictionary<string, IList<string>>>? Security { get; set; }
-        public IList<Server>? Servers { get; set; }
+        public List<Dictionary<string, List<string>>>? Security { get; set; }
+        public List<Server>? Servers { get; set; }
     }
 }

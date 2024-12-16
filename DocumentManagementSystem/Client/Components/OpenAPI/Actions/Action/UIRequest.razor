@@ -37,12 +37,12 @@
     [EditorRequired]
     public Components? Components { get; set; }
 
-    ICollection<string>? mediaTypes;
+    List<string>? mediaTypes;
     string? requestMediaType;
 
     protected override void OnInitialized()
     {
-        mediaTypes = RequestBody.Content.Keys;
+        mediaTypes = RequestBody.Content.Keys.ToList();
         requestMediaType = mediaTypes.First();
     }
 }

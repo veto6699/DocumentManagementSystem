@@ -1,6 +1,5 @@
-﻿using DocumentManagementSystem.Server.Constants;
-using DocumentManagementSystem.Shared;
-using MongoDB.Bson;
+﻿using DocumentManagementSystem.Server.Models;
+using DocumentManagementSystem.Server.Constants;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
@@ -23,10 +22,9 @@ namespace DocumentManagementSystem.Server.Data
 
             _collection = _client.GetDatabase(SystemConstants.DBName).GetCollection<Document>(SystemConstants.Documents);
 
-            var id = new CreateIndexModel<Document>(Builders<Document>.IndexKeys.Hashed(r => r.Id), new CreateIndexOptions() { Sparse = true, Name = "Id" });
             var code = new CreateIndexModel<Document>(Builders<Document>.IndexKeys.Hashed(r => r.Code), new CreateIndexOptions() { Sparse = true, Name = "Code" });
 
-            _collection.Indexes.CreateMany([id, code]);
+            _collection.Indexes.CreateMany([code]);
         }
 
         public async Task<Document?> Get(string code)
@@ -44,7 +42,10 @@ namespace DocumentManagementSystem.Server.Data
 
         public async Task Add(Document document)
         {
-            await _collection.InsertOneAsync(document);
+            if (await Get(document.Code) == default)
+                await _collection.InsertOneAsync(document);
+            else
+                throw new ArgumentException();
         }
     }
 }

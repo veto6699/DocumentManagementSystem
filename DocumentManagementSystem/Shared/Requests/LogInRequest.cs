@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.Requests
 {
-    public class LogInRequest
+    public class LoginRequest
     {
         /// <summary>
         /// Почта

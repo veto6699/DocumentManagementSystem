@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.Responses
 {
-    public class LoginResponse(string accessToken, string refreshToken)
+    public class RefreshAccessTokenResponse(string accessToken, string refreshToken)
     {
         /// <summary>
         /// Токен авторизации

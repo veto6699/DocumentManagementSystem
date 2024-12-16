@@ -36,21 +36,21 @@
                     <div class="operation-tag-content">
                         @foreach (var path in Paths)
                         {
-                            @if (path.Value.Delete is not null)
-                            {
-                                <DELETE Operation="@path.Value.Delete" Components="@Components" Path="@path.Key" />
-                            }
                             @if (path.Value.Get is not null)
                             {
                                 <GET Operation="@path.Value.Get" Components="@Components" Path="@path.Key" />
+                            }
+                            @if (path.Value.Put is not null)
+                            {
+                                <PUT Operation="@path.Value.Put" Components="@Components" Path="@path.Key" />
                             }
                             @if (path.Value.Post is not null)
                             {
                                 <POST Operation="@path.Value.Post" Components="@Components" Path="@path.Key" />
                             }
-                            @if (path.Value.Put is not null)
+                            @if (path.Value.Delete is not null)
                             {
-                                <PUT Operation="@path.Value.Put" Components="@Components" Path="@path.Key" />
+                                <DELETE Operation="@path.Value.Delete" Components="@Components" Path="@path.Key" />
                             }
                         }
                     </div>
