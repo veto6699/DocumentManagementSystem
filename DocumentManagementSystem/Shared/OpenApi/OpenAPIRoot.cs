@@ -14,6 +14,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// <summary>
         /// Версия формата
         /// </summary>
+        [JsonPropertyName("openapi")]
         public string? OpenAPI { get; set; }
         /// <summary>
         /// Мета данные файла
