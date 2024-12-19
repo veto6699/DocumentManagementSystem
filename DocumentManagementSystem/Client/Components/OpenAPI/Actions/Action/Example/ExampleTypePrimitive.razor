@@ -35,19 +35,11 @@
         }
         break;
 }
-@if (!LastProperty)
-{
-    <span>,</span>
-}
-@Environment.NewLine
 
 @code {
     [Parameter]
     [EditorRequired]
     public string? Type { get; set; }
-    [Parameter]
-    [EditorRequired]
-    public bool LastProperty { get; set; }
     [Parameter]
     public string? DefaultValue { get; set; }
     [Parameter]
