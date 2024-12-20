@@ -1,0 +1,66 @@
+﻿@using DocumentManagementSystem.Client.Constants
+
+<span class="brace-open object">{</span>
+<span class="inner-object">
+    <table class="model">
+        <tbody>
+            <UISchemaDescription Description="@Schema.Description" />
+
+            @foreach (var propertyPair in Schema.Properties)
+            {
+                var property = propertyPair.Value;
+
+                <tr class="property-row">
+                    <UISchemaPropertyName PropertyName="@propertyPair.Key" Required="@Schema.Required" />
+                    <td>
+                        @if (property.Type is not null)
+                        {
+                            <CascadingValue Value="property.Default" Name="DefaultValue">
+                                <CascadingValue Value="property.Description" Name="Description">
+                                    <CascadingValue Value="property.Enum" Name="Enum">
+                                        <CascadingValue Value="property.Format" Name="Format">
+                                            <CascadingValue Value="property.MaxLength" Name="MaxLength">
+                                                <CascadingValue Value="property.MinLength" Name="MinLength">
+                                                    <CascadingValue Value="property.Nullable" Name="Nullable">
+                                                        @switch (property.Type)
+                                                        {
+                                                            case PropertyTypes.Object:
+                                                                <UISchemaAdditionalProperties AdditionalProperties="@property.AdditionalProperties" />
+                                                                break;
+                                                            case PropertyTypes.Array:
+                                                                <UISchemaArray Items="property.Items" />
+                                                                break;
+                                                            default:
+                                                                <UISchemaPropertyPrimitive Type="@property.Type" />
+                                                                break;
+                                                        }
+                                                    </CascadingValue>
+                                                </CascadingValue>
+                                            </CascadingValue>
+                                        </CascadingValue>
+                                    </CascadingValue>
+                                </CascadingValue>
+                            </CascadingValue>
+                        }
+                        else if (property.Ref is not null)
+                        {
+                            <UISchemaRef SchemaRef="@property.Ref" IsOpen="false" />
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</span>
+<span class="brace-close">}</span>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Schema Schema { get; set; }
+    [CascadingParameter]
+    public Components Components { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string SchemaName { get; set; }
+}

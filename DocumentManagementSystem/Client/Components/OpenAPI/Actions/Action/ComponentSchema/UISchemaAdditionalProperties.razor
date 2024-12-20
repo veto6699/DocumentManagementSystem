@@ -1,0 +1,42 @@
+﻿@using DocumentManagementSystem.Client.Constants
+
+
+<span class="brace-open object">{</span>
+<span class="inner-object">
+    <table class="model">
+        <tbody>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&lt; * &gt;:</td>
+                <td>
+                    <span class="model">
+                        @if (!string.IsNullOrEmpty(AdditionalProperties.Type))
+                        {
+                            switch (AdditionalProperties.Type)
+                            {
+                                case PropertyTypes.Array:
+                                    <UISchemaArray Items="@AdditionalProperties.Items" />
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else if (AdditionalProperties.Ref is not null)
+                        {
+                            <UISchemaRef SchemaRef="@AdditionalProperties.Ref" />
+                        }
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</span>
+<span class="brace-close">}</span>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public AdditionalProperty AdditionalProperties { get; set; }
+}

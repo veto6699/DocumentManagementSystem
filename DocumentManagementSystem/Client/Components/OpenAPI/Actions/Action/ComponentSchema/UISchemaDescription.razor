@@ -1,0 +1,17 @@
+﻿@if (Description is not null)
+{
+    <tr class="description">
+        <td>описание:</td>
+        <td>
+            <div class="renderedMarkdown">
+                <p>@((MarkupString)Markdig.Markdown.ToHtml(Description))</p>
+            </div>
+        </td>
+    </tr>
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? Description { get; set; }
+}

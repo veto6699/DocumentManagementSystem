@@ -1,0 +1,97 @@
+﻿
+<span class="model">
+    <span>
+        <span class="prop">
+            @if (!string.IsNullOrEmpty(Type))
+            {
+                <span class="prop-type">@Type</span>
+                @if (!string.IsNullOrEmpty(Format))
+                {
+                    <span class="prop-format">($@Format)</span>
+                }
+            }
+
+            @if (MaxLength is not null)
+            {
+                <span class="property primitive">
+                    <br>maxLength: @MaxLength
+                </span>
+            }
+
+            @if (MinLength is not null)
+            {
+                <span class="property primitive">
+                    <br>minLength: @MinLength
+                </span>
+            }
+
+            @if (!string.IsNullOrEmpty(DefaultValue))
+            {
+                <span class="property primitive">
+                    <br>default: @DefaultValue
+                </span>
+            }
+
+            @if (Nullable is not null)
+            {
+                <span class="property primitive">
+                    <br>nullable: @Nullable.ToString().ToLower()
+                </span>
+            }
+
+            @if (!string.IsNullOrEmpty(Description))
+            {
+                <div class="renderedMarkdown">
+                    <p>@((MarkupString)Markdig.Markdown.ToHtml(Description))</p>
+                </div>
+            }
+
+            @if (Enum is not null && Enum.Count > 0)
+            {
+                string enums = string.Empty;
+
+                @foreach (var en in Enum)
+                {
+                    enums += $"{en}, ";
+                }
+
+                enums = enums[..2];
+
+                <span class="prop-enum">
+                    Enum:<br>
+                    <span>
+                        [ @enums ]
+                    </span>
+                </span>
+            }
+
+        </span>
+    </span>
+</span>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string Type { get; set; }
+
+    [CascadingParameter(Name = "DefaultValue")]
+    public string? DefaultValue { get; set; }
+
+    [CascadingParameter(Name = "MaxLength")]
+    public int? MaxLength { get; set; }
+
+    [CascadingParameter(Name = "MinLength")]
+    public int? MinLength { get; set; }
+
+    [CascadingParameter(Name = "Format")]
+    public string? Format { get; set; }
+
+    [CascadingParameter(Name = "Nullable")]
+    public bool? Nullable { get; set; }
+
+    [CascadingParameter(Name = "Description")]
+    public string? Description { get; set; }
+
+    [CascadingParameter(Name = "Enum")]
+    public List<string>? Enum { get; set; }
+}

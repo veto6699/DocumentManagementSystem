@@ -55,5 +55,40 @@ namespace DocumentManagementSystem.Shared.OpenApi
         [JsonPropertyName("xml")]
         [BsonIgnoreIfNull]
         public XML? XML { get; set; }
+        /// <summary>
+        /// Допустимо ли null значение
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public bool? Nullable { get; set; }
+        /// <summary>
+        /// Значение по умолчанию
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public string? Default { get; set; }
+        /// <summary>
+        /// Формат числа 
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public string? Format { get; set; }
+        /// <summary>
+        /// Только для чтения
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public bool? ReadOnly { get; set; }
+        /// <summary>
+        /// Максимальный размер
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public int? MaxLength { get; set; }
+        /// <summary>
+        /// Минимальный размер
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public int? MinLength { get; set; }
+        /// <summary>
+        /// Список возможных значений
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public List<string>? @Enum { get; set; }
     }
 }

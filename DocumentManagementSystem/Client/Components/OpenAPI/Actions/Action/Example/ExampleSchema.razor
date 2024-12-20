@@ -1,5 +1,4 @@
 ﻿@using DocumentManagementSystem.Client.Constants
-@using System.Text
 
 @if (Schema.Type is not null)
 {
@@ -20,7 +19,6 @@ else if (Schema.Ref is not null)
 {
     <ExampleSchemaRef SchemaRef="@Schema.Ref" SpaceCount="@SpaceCount" />
 }
-
 
 @code {
     [Parameter]

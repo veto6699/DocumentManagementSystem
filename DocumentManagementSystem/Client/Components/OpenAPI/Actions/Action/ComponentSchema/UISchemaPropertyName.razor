@@ -1,0 +1,18 @@
+﻿
+<td>
+    @PropertyName
+    @if (Required is not null && Required.Contains(PropertyName))
+    {
+            <span class="star">*</span>
+    }
+</td>
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string PropertyName { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public List<string>? Required { get; set; }
+}

@@ -57,7 +57,7 @@
                             @if (RequestBody.Content[MediaType].Schema.Items is not null && !string.IsNullOrEmpty(RequestBody.Content[MediaType].Schema.Items.Ref))
                                 schemaRef = RequestBody.Content[MediaType].Schema.Items.Ref;
 
-                            <SchemaRoot SchemaRef="@schemaRef" />
+                            <UISchemaRoot SchemaRef="@schemaRef" />
                         }
                     }
                 </div>

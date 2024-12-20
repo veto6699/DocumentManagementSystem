@@ -1,0 +1,18 @@
+﻿
+@if (Schema.AdditionalProperties is not null)
+{
+    <UISchemaAdditionalProperties AdditionalProperties="@Schema.AdditionalProperties" />
+}
+else if (Schema.Properties is not null)
+{
+    <UISchemaProperties Schema="@Schema" SchemaName="@SchemaName" />
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Schema Schema { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string SchemaName { get; set; }
+}

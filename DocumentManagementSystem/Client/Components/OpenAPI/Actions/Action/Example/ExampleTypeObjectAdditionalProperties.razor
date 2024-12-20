@@ -10,38 +10,38 @@
         switch (AdditionalProperty.Type)
         {
             case PropertyTypes.Array:
-                @internalSpace<ExampleTypeName Name="additionalProp1" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
-                @internalSpace<ExampleTypeName Name="additionalProp2" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
-                @internalSpace<ExampleTypeName Name="additionalProp3" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" />@Environment.NewLine
+                @internalSpace<ExamplePropertyName Name="additionalProp1" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExamplePropertyName Name="additionalProp2" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExamplePropertyName Name="additionalProp3" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" />@Environment.NewLine
                 break;
             default:            
-                @internalSpace<ExampleTypeName Name="additionalProp1" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" /><span>,</span>@Environment.NewLine
-                @internalSpace<ExampleTypeName Name="additionalProp2" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" /><span>,</span>@Environment.NewLine
-                @internalSpace<ExampleTypeName Name="additionalProp3" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" />@Environment.NewLine
+                @internalSpace<ExamplePropertyName Name="additionalProp1" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExamplePropertyName Name="additionalProp2" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExamplePropertyName Name="additionalProp3" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" />@Environment.NewLine
                 break;
         }
     }
     else if (AdditionalProperty.Items is not null && !string.IsNullOrEmpty(AdditionalProperty.Items.Type))
     {
-        @externalSpace<ExampleTypeName Name="additionalProp1" /><span>[</span>@Environment.NewLine
+        @externalSpace<ExamplePropertyName Name="additionalProp1" /><span>[</span>@Environment.NewLine
             @internalSpace<ExampleTypePrimitive Type="@AdditionalProperty.Items.Type"/>
         @externalSpace<span>]</span><span>,</span>@Environment.NewLine
 
-        @externalSpace<ExampleTypeName Name="additionalProp2" /><span>[</span>@Environment.NewLine
+        @externalSpace<ExamplePropertyName Name="additionalProp2" /><span>[</span>@Environment.NewLine
             @internalSpace<ExampleTypePrimitive Type="@AdditionalProperty.Items.Type"/>
         @externalSpace<span>]</span><span>,</span>@Environment.NewLine
 
-        @externalSpace<ExampleTypeName Name="additionalProp3" /><span>[</span>@Environment.NewLine
+        @externalSpace<ExamplePropertyName Name="additionalProp3" /><span>[</span>@Environment.NewLine
             @internalSpace<ExampleTypePrimitive Type="@AdditionalProperty.Items.Type"/>
         @externalSpace<span>]</span>@Environment.NewLine
     }
     else if (!string.IsNullOrEmpty(AdditionalProperty.Ref))
     {
-        @internalSpace<ExampleTypeName Name="additionalProp1" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
+        @internalSpace<ExamplePropertyName Name="additionalProp1" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
 
-        @internalSpace<ExampleTypeName Name="additionalProp2" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount"  /><span>,</span>@Environment.NewLine
+        @internalSpace<ExamplePropertyName Name="additionalProp2" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount"  /><span>,</span>@Environment.NewLine
 
-        @internalSpace<ExampleTypeName Name="additionalProp3" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount" />@Environment.NewLine
+        @internalSpace<ExamplePropertyName Name="additionalProp3" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount" />@Environment.NewLine
     }
     @externalSpace
 }

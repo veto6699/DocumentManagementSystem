@@ -1,224 +1,72 @@
 ﻿@using DocumentManagementSystem.Client.Constants
 
-<button class="model-box-control" @onclick="PropertyClick">
-    <span class="pointer">
-        <span class="model-title">
-            <span class="model-title__text">@schemaName</span>
-        </span>
-    </span>
-    @if (isOpen)
-    {
-        <span class="model-toggle"></span>
-    }
-    else
-    {
-        <span class="model-toggle collapsed"></span>
-        <span>
-            <span>
-                <span>{</span>...<span>}</span>
+<span class="model">
+    <button class="model-box-control" @onclick="() => IsOpen = !IsOpen">
+        <span class="pointer">
+            <span class="model-title">
+                <span class="model-title__text">@SchemaName</span>
             </span>
         </span>
+        @if (IsOpen)
+        {
+            <span class="model-toggle"></span>
+        }
+        else
+        {
+            <span class="model-toggle collapsed"></span>
+            <span>
+                <span>
+                    <span>{</span>...<span>}</span>
+                </span>
+            </span>
+        }
+    </button>
+
+    @if (IsOpen)
+    {
+        @if (Schema.Type is not null)
+        {
+            <CascadingValue Value="Schema.Default" Name="DefaultValue">
+                <CascadingValue Value="Schema.Description" Name="Description">
+                    <CascadingValue Value="Schema.Enum" Name="Enum">
+                        <CascadingValue Value="Schema.Format" Name="Format">
+                            <CascadingValue Value="Schema.MaxLength" Name="MaxLength">
+                                <CascadingValue Value="Schema.MinLength" Name="MinLength">
+                                    <CascadingValue Value="Schema.Nullable" Name="Nullable">
+                                        @switch (Schema.Type)
+                                        {
+                                            case PropertyTypes.Object:
+                                                <UISchemaObject Schema="@Schema" SchemaName="@SchemaName" />
+                                                break;
+                                            case PropertyTypes.Array:
+                                                @if (Schema.Items is not null)
+                                                {
+                                                    <UISchemaArray Items="@Schema.Items" />
+                                                }
+                                                break;
+                                        }
+                                    </CascadingValue>
+                                </CascadingValue>
+                            </CascadingValue>
+                        </CascadingValue>
+                    </CascadingValue>
+                </CascadingValue>
+            </CascadingValue>
+        }
+        else if (Schema.Ref is not null)
+        {
+            <UISchemaRef SchemaRef="@Schema.Ref" />
+        }
     }
-</button>
-@if (isOpen)
-{
-    <span class="brace-open object">{</span>
-    <span class="inner-object">
-        <table class="model">
-            <tbody>
-                @if (schemaDescription is not null)
-                {
-                    <tr class="description">
-                        <td>описание:</td>
-                        <td>
-                            <div class="renderedMarkdown">
-                                <p>@((MarkupString)Markdig.Markdown.ToHtml(schemaDescription))</p>
-                            </div>
-                        </td>
-                    </tr>
-                }
-                @foreach (var property in properties)
-                {
-                    <tr class="property-row">
-                        @if (required is not null && required.Contains(property.Key))
-                        {
-                            <td>
-                                @property.Key
-                                <span class="star">*</span>
-                            </td>
-                        }
-                        else
-                        {
-                            <td>@property.Key</td>
-                        }
-                        <td>
-                            @if (property.Value.Ref is null && property.Value.Type != PropertyTypes.Array && property.Value.AdditionalProperties is null)
-                            {
-                                <span class="model">
-                                    <span>
-                                        <span class="prop">
-                                            @if (!string.IsNullOrEmpty(property.Value.Type))
-                                            {
-                                                <span class="prop-type">@property.Value.Type</span>
-                                                @if (!string.IsNullOrEmpty(property.Value.Format))
-                                                {
-                                                    <span class="prop-format">($@property.Value.Format)</span>
-                                                }
-                                            }
-                                            @if (property.Value.MaxLength is not null)
-                                            {
-                                                <span class="property primitive">
-                                                    <br>maxLength: @property.Value.MaxLength
-                                                </span>
-                                            }
-                                            @if (property.Value.MinLength is not null)
-                                            {
-                                                <span class="property primitive">
-                                                    <br>minLength: @property.Value.MinLength
-                                                </span>
-                                            }
-                                            @if (!string.IsNullOrEmpty(property.Value.Default))
-                                            {
-                                                <span class="property primitive">
-                                                    <br>default: @property.Value.Default
-                                                </span>
-                                            }
-                                            @if (property.Value.Nullable is not null)
-                                            {
-                                                <span class="property primitive">
-                                                    <br>nullable: @property.Value.Nullable?.ToString().ToLower()
-                                                </span>
-                                            }
-                                            @if (!string.IsNullOrEmpty(property.Value.Description))
-                                            {
-                                                <div class="renderedMarkdown">
-                                                    <p>@((MarkupString)Markdig.Markdown.ToHtml(property.Value.Description))</p>
-                                                </div>
-                                            }
-                                            @if (property.Value.Enum is not null && property.Value.Enum.Count > 0)
-                                            {
-                                                string enums = string.Empty;
-
-                                                @foreach (var en in property.Value.Enum)
-                                                {
-                                                    @if (property.Value.Enum.Last<string>() != en)
-                                                    {
-                                                        enums += $"{en}, ";
-                                                    }
-                                                    else
-                                                        enums += en;
-                                                }
-
-                                                <span class="prop-enum">
-                                                    Enum:<br>
-                                                    <span>
-                                                        [ @enums ]
-                                                    </span>
-                                                </span>
-                                            }
-                                        </span>
-                                    </span>
-                                </span>
-                            }
-                            else if (property.Value.Type == PropertyTypes.Array && property.Value.Items is not null)
-                            {
-                                @if (!arrayPropertiesIsOpen.ContainsKey(property.Key))
-                                    arrayPropertiesIsOpen.Add(property.Key, false);
-
-                                <ModelArray Property="@property.Value" IsOpen="arrayPropertiesIsOpen[property.Key]" />
-                            }
-                            else if (property.Value.AdditionalProperties is not null)
-                            {
-                                <ModelAdditionalProperties Property="@property.Value" IsOpen="@false"/>
-                            }
-                            else
-                            {
-                                <span class="model">
-                                    <span>
-                                        <UISchema SchemaRef="@property.Value.Ref"/>
-                                    </span>
-                                    @if (property.Value.Nullable is not null)
-                                    {
-                                        <span class="property">
-                                            <br>nullable: @property.Value.Nullable?.ToString().ToLower()
-                                        </span>
-                                    }
-                                </span>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </span>
-    <span class="brace-close">}</span>
-}
+</span>
 
 @code {
     [Parameter]
-    public string? SchemaRef { get; set; }
+    [EditorRequired]
+    public Schema Schema { get; set; }
     [Parameter]
-    public Schema? Schema { get; set; }
+    [EditorRequired]
+    public string SchemaName { get; set; }
     [Parameter]
-    public string? SchemaName { get; set; }
-    [CascadingParameter]
-    public Components Components { get; set; }
-    [Parameter]
-    public bool? IsOpen { get; set; }
-
-    string? schemaName;
-    string? schemaDescription;
-
-    Dictionary<string, Property>? properties;
-    List<string>? required;
-    Dictionary<string, bool> arrayPropertiesIsOpen = new();
-
-    protected override void OnInitialized()
-    {
-        if (!string.IsNullOrEmpty(SchemaRef))
-        {
-            string schemaPath = SchemaRef[21..];
-            schemaName = schemaPath;
-
-            if (Components.Schemas is not null && Components.Schemas.ContainsKey(schemaPath))
-            {
-                var schema = Components.Schemas[schemaPath];
-
-                if (!string.IsNullOrEmpty(schema.Description))
-                    schemaDescription = schema.Description;
-
-                if (schema.Properties is not null)
-                    properties = schema.Properties;
-
-                if (schema.Required is not null)
-                    required = schema.Required;
-            }
-        }
-
-        if (Schema is not null)
-        {
-            schemaName = SchemaName;
-
-            if (!string.IsNullOrEmpty(Schema.Description))
-                schemaDescription = Schema.Description;
-
-            if (Schema.Properties is not null)
-                properties = Schema.Properties;
-
-            if (Schema.Required is not null)
-                required = Schema.Required;
-        }
-
-        if (IsOpen is not null && (bool)IsOpen)
-            isOpen = true;
-        else
-            isOpen = false;
-    }
-
-    bool isOpen { get; set; }
-
-    void PropertyClick()
-    {
-        isOpen = !isOpen;
-    }
+    public bool IsOpen { get; set; }
 }

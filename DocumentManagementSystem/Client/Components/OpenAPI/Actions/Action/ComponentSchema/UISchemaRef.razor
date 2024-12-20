@@ -1,5 +1,5 @@
 ﻿
-<ExampleSchema Schema="@schema" SpaceCount="@SpaceCount" />
+<UISchema Schema="@schema" SchemaName="@schemaName" IsOpen="@IsOpen"/>
 
 @code {
     [Parameter]
@@ -8,13 +8,14 @@
     [CascadingParameter]
     public Components Components { get; set; }
     [Parameter]
-    public uint SpaceCount { get; set; } = 0;
+    public bool IsOpen { get; set; } = false;
 
     Schema? schema;
+    string? schemaName;
 
     protected override void OnInitialized()
     {
-        var schemaName = SchemaRef[21..];
+        schemaName = SchemaRef[21..];
 
         if (string.IsNullOrEmpty(schemaName))
             return;
