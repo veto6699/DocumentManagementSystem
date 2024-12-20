@@ -30,13 +30,15 @@
                                     </div>
                                 </div>
                             }
-                            @if (selectedMediaTypes.ContainsKey(response.Key) && response.Value.Content is not null)
+                            @if (mediaTypes.ContainsKey(response.Key) && response.Value.Content is not null)
                             {
+                                string selectedMediaType = mediaTypes[response.Key];
+
                                 <section class="response-controls">
                                     <div class="response-control-media-type response-control-media-type--accept-controller">
                                         <small class="response-control-media-type__title">Медиа тип</small>
-                                        <div class="content-type-wrapper ">
-                                            <select class="content-type" @bind="@selectMediaTypes">
+                                        <div class="content-type-wrapper">
+                                            <select class="content-type" @bind="@selectedMediaType">
                                                 @foreach (string mediaType in response.Value.Content.Keys)
                                                 {
                                                     <option value="@mediaType">@mediaType</option>
@@ -48,7 +50,9 @@
                                         </small>
                                     </div>
                                 </section>
-                                <UIResponseBody HttpCode="@response.Key" Response="@response.Value" MediaType="@selectMediaTypes" Components="@Components" />
+                                <CascadingValue Value="@selectedMediaType" Name="MediaType">
+                                    <UIResponseBody HttpCode="@response.Key" Response="@response.Value" />
+                                </CascadingValue>
                             }
                         </td>
                         <td class="response-col_links"><i>Нет ссылок</i></td>
@@ -63,26 +67,28 @@
     [Parameter]
     [EditorRequired]
     public Dictionary<string, Response>? Responses { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
 
     bool exampleValueActivate = true;
-    Dictionary<string, string> selectedMediaTypes = new();
-    string? selectMediaTypes;
+    Dictionary<string, string?> mediaTypes = new();
 
     protected override void OnInitialized()
     {
         foreach (var response in Responses)
         {
             if (response.Value.Content is not null && response.Value.Content.Count > 0)
-                selectedMediaTypes.Add(response.Key, response.Value.Content.Keys.First());
-            else
-                selectedMediaTypes.Add(response.Key, null);
+            {
+                var types = response.Value.Content.Keys.ToList();
 
-            var type = selectedMediaTypes.First();
-            if (type.Value is not null)
-                selectMediaTypes = type.Value;
+                if (types.Contains("application/json"))
+                    mediaTypes.Add(response.Key, "application/json");
+                else
+                    mediaTypes.Add(response.Key, response.Value.Content.Keys.First());
+            }
+            else
+                mediaTypes.Add(response.Key, null);
         }
     }
 

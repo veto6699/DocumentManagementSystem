@@ -20,7 +20,7 @@
             </div>
             @if (isOpen)
             {
-                <Body Operation="@Operation" Components="@Components" />
+                <Body Operation="@Operation"/>
             }
         </div>
     </span>
@@ -30,7 +30,7 @@
     [Parameter]
     [EditorRequired]
     public Operation? Operation { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]

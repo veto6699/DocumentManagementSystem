@@ -19,16 +19,7 @@ namespace DocumentManagementSystem.Server.Models
 
         public SummaryResponse GetDTOResponse()
         {
-            var content = new SummaryResponse()
-            {
-                Code = Code,
-                Name = Name,
-            };
-
-            if(Description is not null)
-                content.Description = Description;
-
-            return content;
+            return new(Code, Name, Description);
         }
     }
 }

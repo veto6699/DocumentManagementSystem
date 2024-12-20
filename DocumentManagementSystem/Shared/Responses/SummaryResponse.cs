@@ -8,6 +8,14 @@ namespace DocumentManagementSystem.Shared.Responses
 {
     public class SummaryResponse
     {
+        public SummaryResponse(string code, string name, string? description = null)
+        {
+            Code = code;
+            Name = name;
+
+            if(description is not null)
+                Description = description;
+        }
         /// <summary>
         /// Код
         /// </summary>

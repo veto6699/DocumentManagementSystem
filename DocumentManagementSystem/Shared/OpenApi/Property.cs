@@ -33,7 +33,7 @@ namespace DocumentManagementSystem.Shared.OpenApi
         [BsonIgnoreIfNull]
         public Item? Items { get; set; }
         /// <summary>
-        /// Дефолтное значение
+        /// Значение по умолчанию
         /// </summary>
         [BsonIgnoreIfNull]
         public string? Default { get; set; }
@@ -57,5 +57,26 @@ namespace DocumentManagementSystem.Shared.OpenApi
         /// </summary>
         [BsonIgnoreIfNull]
         public List<string>? @Enum { get; set; }
+        /// <summary>
+        /// Расширенные парааметры, только для xml
+        /// </summary>
+        [JsonPropertyName("xml")]
+        [BsonIgnoreIfNull]
+        public XML? XML { get; set; }
+        /// <summary>
+        /// Только для чтения
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public bool? ReadOnly { get; set; }
+        /// <summary>
+        /// Максимальный размер
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public int? MaxLength { get; set; }
+        /// <summary>
+        /// Минимальный размер
+        /// </summary>
+        [BsonIgnoreIfNull]
+        public int? MinLength { get; set; }
     }
 }

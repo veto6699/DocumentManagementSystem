@@ -65,16 +65,28 @@
                                                     <span class="prop-format">($@property.Value.Format)</span>
                                                 }
                                             }
-                                            @if (property.Value.Nullable is not null)
+                                            @if (property.Value.MaxLength is not null)
                                             {
                                                 <span class="property primitive">
-                                                    <br>nullable: @property.Value.Nullable?.ToString().ToLower()
+                                                    <br>maxLength: @property.Value.MaxLength
+                                                </span>
+                                            }
+                                            @if (property.Value.MinLength is not null)
+                                            {
+                                                <span class="property primitive">
+                                                    <br>minLength: @property.Value.MinLength
                                                 </span>
                                             }
                                             @if (!string.IsNullOrEmpty(property.Value.Default))
                                             {
                                                 <span class="property primitive">
                                                     <br>default: @property.Value.Default
+                                                </span>
+                                            }
+                                            @if (property.Value.Nullable is not null)
+                                            {
+                                                <span class="property primitive">
+                                                    <br>nullable: @property.Value.Nullable?.ToString().ToLower()
                                                 </span>
                                             }
                                             @if (!string.IsNullOrEmpty(property.Value.Description))
@@ -113,17 +125,17 @@
                                 @if (!arrayPropertiesIsOpen.ContainsKey(property.Key))
                                     arrayPropertiesIsOpen.Add(property.Key, false);
 
-                                <ModelArray Property="@property.Value" Components="@Components" IsOpen="arrayPropertiesIsOpen[property.Key]" />
+                                <ModelArray Property="@property.Value" IsOpen="arrayPropertiesIsOpen[property.Key]" />
                             }
                             else if (property.Value.AdditionalProperties is not null)
                             {
-                                <ModelAdditionalProperties Property="@property.Value" IsOpen="@false" Components="@Components" />
+                                <ModelAdditionalProperties Property="@property.Value" IsOpen="@false"/>
                             }
                             else
                             {
                                 <span class="model">
                                     <span>
-                                        <UISchema SchemaRef="@property.Value.Ref" Components="@Components" />
+                                        <UISchema SchemaRef="@property.Value.Ref"/>
                                     </span>
                                     @if (property.Value.Nullable is not null)
                                     {
@@ -150,7 +162,7 @@
     public Schema? Schema { get; set; }
     [Parameter]
     public string? SchemaName { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
     [Parameter]

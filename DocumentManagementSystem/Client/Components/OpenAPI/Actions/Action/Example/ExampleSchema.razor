@@ -1,0 +1,32 @@
+﻿@using DocumentManagementSystem.Client.Constants
+@using System.Text
+
+@if (Schema.Type is not null)
+{
+    @switch (Schema.Type)
+    {
+        case PropertyTypes.Object:
+            <ExampleTypeObject Schema="@Schema" SpaceCount="@SpaceCount" />
+            break;
+        case PropertyTypes.Array:
+            @if (Schema.Items is not null)
+            {
+                <ExampleTypeArray Items="@Schema.Items" SpaceCount="@SpaceCount" />
+            }
+            break;
+    }
+}
+else if (Schema.Ref is not null)
+{
+    <ExampleSchemaRef SchemaRef="@Schema.Ref" SpaceCount="@SpaceCount" />
+}
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Schema Schema { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public uint SpaceCount { get; set; }
+}

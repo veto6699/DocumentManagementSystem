@@ -1,0 +1,60 @@
+﻿@using DocumentManagementSystem.Client.Constants
+@using System.Text
+
+<span>[</span>@Environment.NewLine
+@if (!string.IsNullOrEmpty(Items.Type))
+{
+    switch (Items.Type)
+    {
+        case PropertyTypes.Object:
+            @internalSpace<ExampleTypeObjectAdditionalProperties AdditionalProperty="@Items.AdditionalProperties" SpaceCount="@spaceCount" />
+            break;
+        case PropertyTypes.Array:
+            @internalSpace<ExampleTypeArray Items="@Items.Items" SpaceCount="@spaceCount" />
+            break;
+        default:
+            @internalSpace<ExampleTypePrimitive Type="@Items.Type" />
+            break;
+    }
+}
+else
+{
+    @internalSpace<ExampleSchemaRef SchemaRef="@Items.Ref" SpaceCount="@spaceCount" />
+}
+@Environment.NewLine@externalSpace<span>]</span>
+
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Item Items { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public uint SpaceCount { get; set; }
+
+    uint spaceCount = 0;
+    string? internalSpace, externalSpace;
+
+    protected override void OnInitialized()
+    {
+        spaceCount = SpaceCount;
+        spaceCount++;
+        SpaceAdd();
+    }
+
+    void SpaceAdd()
+    {
+        StringBuilder _ = new();
+        uint externalSpaceCount = spaceCount - 1;
+
+        for (uint i = 0; i < spaceCount; i++)
+        {
+            if (i == externalSpaceCount)
+                externalSpace = _.ToString();
+
+            _.Append(SystemConstants.PropertySpace);
+        }
+
+        internalSpace = _.ToString();
+    }
+}

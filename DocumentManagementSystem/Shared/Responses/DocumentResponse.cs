@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.Responses
 {
-    public class DocumentResponse
+    public class DocumentResponse(string code, OpenAPIRoot document)
     {
         /// <summary>
         /// Код
         /// </summary>
-        public string Code { get; set; }
+        public string Code { get; set; } = code;
         /// <summary>
         /// Описание в формате OpenAPI
         /// </summary>
-        public OpenAPIRoot Document { get; set; }
+        public OpenAPIRoot Document { get; set; } = document;
     }
 }

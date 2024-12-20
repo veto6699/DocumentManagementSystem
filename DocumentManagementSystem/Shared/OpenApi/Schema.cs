@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using DocumentManagementSystem.Shared.JsonConverters;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Shared.OpenApi
 {
+    [JsonConverter(typeof(SchemaJsonConverter))]
     public class Schema
     {
         /// <summary>
@@ -31,18 +33,27 @@ namespace DocumentManagementSystem.Shared.OpenApi
         [BsonIgnoreIfNull]
         public List<string>? Required { get; set; }
         /// <summary>
-        /// Параметры компонента
+        /// Параметры
         /// </summary>
         [BsonIgnoreIfNull]
         public Dictionary<string, Property>? Properties { get; set; }
         [BsonIgnoreIfNull]
         public Dictionary<string, string>? Discriminator { get; set; }
+        /// <summary>
+        /// Описание
+        /// </summary>
         [BsonIgnoreIfNull]
         public string? Description { get; set; }
         /// <summary>
-        /// Параметры
+        /// Расширенные параметры
         /// </summary>
         [BsonIgnoreIfNull]
-        public bool? AdditionalProperties { get; set; }
+        public AdditionalProperty? AdditionalProperties { get; set; }
+        /// <summary>
+        /// Расширенные парааметры, только для xml
+        /// </summary>
+        [JsonPropertyName("xml")]
+        [BsonIgnoreIfNull]
+        public XML? XML { get; set; }
     }
 }

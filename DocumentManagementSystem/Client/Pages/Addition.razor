@@ -82,13 +82,12 @@
 
     string? message { get; set; }
     List<string>? errors { get; set; }
-    HttpStatusCode? statusCode;
     HttpClient client;
 
     async Task Add()
     {
         message = null;
-        List<string>? error = new();
+        List<string> error = new();
 
         if (string.IsNullOrWhiteSpace(documentCode))
             error.Add("Код не указан");
@@ -113,7 +112,7 @@
 
         var docCode = documentCode.Trim().ToLower();
 
-        var documentJson = JsonContent.Create(new DocumentRequest(docCode, JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.serializerOptions)));
+        var documentJson = JsonContent.Create(new DocumentRequest(docCode, JsonSerializer.Deserialize<OpenAPIRoot>(document, SystemConstants.JSONSerializerOptions)), null, SystemConstants.JSONSerializerOptions);
 
         var response = await client.PostAsync(client.BaseAddress + "Document", documentJson);
 

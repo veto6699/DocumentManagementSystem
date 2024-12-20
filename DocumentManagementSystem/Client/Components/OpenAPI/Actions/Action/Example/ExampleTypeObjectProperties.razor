@@ -1,0 +1,93 @@
+﻿@using DocumentManagementSystem.Client.Constants
+@using System.Text
+
+<span>{</span>
+@if (Properties is not null)
+{
+    @Environment.NewLine
+    @foreach (var propertyPair in Properties)
+    {
+        var property = propertyPair.Value;
+        bool isLastProperty = false;
+
+        @internalSpace<ExampleTypeName Name="@propertyPair.Key"/>
+
+        @if (lastProperty.Equals(propertyPair))
+        {
+            isLastProperty = true;
+        }
+
+        @if (property.Type is not null)
+        {
+            @switch (property.Type)
+            {
+                case PropertyTypes.Object:
+                    @if (property.AdditionalProperties is not null)
+                    {
+                        <ExampleTypeObjectAdditionalProperties AdditionalProperty="@property.AdditionalProperties" SpaceCount="@spaceCount" />
+                    }
+                    break;
+                case PropertyTypes.Array:
+                    @if (property.Items is not null)
+                    {
+                        <ExampleTypeArray Items="@property.Items" SpaceCount="@spaceCount" />
+                    }
+                    break;
+                default:
+                    <ExampleTypePrimitive Type="@property.Type" DefaultValue="@property.Default" MinLength="@property.MinLength" Format="@property.Format" />
+                    break;
+            }
+        }
+        else if (property.Ref is not null)
+        {
+            <ExampleSchemaRef SchemaRef="@property.Ref" SpaceCount="@spaceCount" />
+        }
+
+        @if (!isLastProperty)
+        {
+            <span>,</span>
+        }
+        @Environment.NewLine
+    }
+    @externalSpace
+}
+<span>}</span>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Dictionary<string, Property>? Properties { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public uint SpaceCount { get; set; }
+
+    uint spaceCount = 0;
+    string? externalSpace, internalSpace;
+
+    KeyValuePair<string, Property> lastProperty;
+
+    protected override void OnInitialized()
+    {
+        spaceCount = SpaceCount;
+        spaceCount++;
+        SpaceAdd();
+
+        lastProperty = Properties.Last();
+    }
+
+    void SpaceAdd()
+    {
+        StringBuilder _ = new();
+        uint externalSpaceCount = spaceCount - 1;
+
+        for (uint i = 0; i < spaceCount; i++)
+        {
+            if (i == externalSpaceCount)
+                externalSpace = _.ToString();
+
+            _.Append(SystemConstants.PropertySpace);
+        }
+
+        internalSpace = _.ToString();
+    }
+}

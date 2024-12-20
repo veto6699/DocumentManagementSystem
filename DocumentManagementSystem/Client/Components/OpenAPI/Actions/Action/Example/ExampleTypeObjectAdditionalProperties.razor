@@ -1,0 +1,83 @@
+﻿@using DocumentManagementSystem.Client.Constants
+@using System.Text
+
+<span>{</span>
+@if (AdditionalProperty is not null)
+{
+    @Environment.NewLine
+    @if (!string.IsNullOrEmpty(AdditionalProperty.Type))
+    {
+        switch (AdditionalProperty.Type)
+        {
+            case PropertyTypes.Array:
+                @internalSpace<ExampleTypeName Name="additionalProp1" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExampleTypeName Name="additionalProp2" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExampleTypeName Name="additionalProp3" /><ExampleTypeArray Items="@AdditionalProperty.Items" SpaceCount="@spaceCount" />@Environment.NewLine
+                break;
+            default:            
+                @internalSpace<ExampleTypeName Name="additionalProp1" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExampleTypeName Name="additionalProp2" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" /><span>,</span>@Environment.NewLine
+                @internalSpace<ExampleTypeName Name="additionalProp3" /><ExampleTypePrimitive Type="@AdditionalProperty.Type" />@Environment.NewLine
+                break;
+        }
+    }
+    else if (AdditionalProperty.Items is not null && !string.IsNullOrEmpty(AdditionalProperty.Items.Type))
+    {
+        @externalSpace<ExampleTypeName Name="additionalProp1" /><span>[</span>@Environment.NewLine
+            @internalSpace<ExampleTypePrimitive Type="@AdditionalProperty.Items.Type"/>
+        @externalSpace<span>]</span><span>,</span>@Environment.NewLine
+
+        @externalSpace<ExampleTypeName Name="additionalProp2" /><span>[</span>@Environment.NewLine
+            @internalSpace<ExampleTypePrimitive Type="@AdditionalProperty.Items.Type"/>
+        @externalSpace<span>]</span><span>,</span>@Environment.NewLine
+
+        @externalSpace<ExampleTypeName Name="additionalProp3" /><span>[</span>@Environment.NewLine
+            @internalSpace<ExampleTypePrimitive Type="@AdditionalProperty.Items.Type"/>
+        @externalSpace<span>]</span>@Environment.NewLine
+    }
+    else if (!string.IsNullOrEmpty(AdditionalProperty.Ref))
+    {
+        @internalSpace<ExampleTypeName Name="additionalProp1" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount" /><span>,</span>@Environment.NewLine
+
+        @internalSpace<ExampleTypeName Name="additionalProp2" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount"  /><span>,</span>@Environment.NewLine
+
+        @internalSpace<ExampleTypeName Name="additionalProp3" /><ExampleSchemaRef SchemaRef="@AdditionalProperty.Ref" SpaceCount="@spaceCount" />@Environment.NewLine
+    }
+    @externalSpace
+}
+<span>}</span>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public AdditionalProperty AdditionalProperty { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public uint SpaceCount { get; set; }
+
+    uint spaceCount = 0;
+    string? externalSpace, internalSpace;
+
+    protected override void OnInitialized()
+    {
+        spaceCount = SpaceCount;
+        spaceCount++;
+        SpaceAdd();
+    }
+
+    void SpaceAdd()
+    {
+        StringBuilder _ = new();
+        uint externalSpaceCount = spaceCount - 1;
+
+        for (uint i = 0; i < spaceCount; i++)
+        {
+            if (i == externalSpaceCount)
+                externalSpace = _.ToString();
+
+            _.Append(SystemConstants.PropertySpace);
+        }
+
+        internalSpace = _.ToString();
+    }
+}

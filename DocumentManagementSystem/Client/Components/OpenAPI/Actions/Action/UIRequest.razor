@@ -14,7 +14,7 @@
             @if (mediaTypes is not null && mediaTypes.Count > 0)
             {
                 <div class="content-type-wrapper body-param-content-type">
-                    <select class="content-type" @bind="requestMediaType">
+                    <select class="content-type" @bind="selectedMediaType">
                         @foreach (var mediaType in mediaTypes)
                         {
                             <option value="@mediaType">@mediaType</option>
@@ -25,7 +25,9 @@
         </label>
     </div>
     <div class="opblock-description-wrapper">
-        <UIRequestBody RequestBody="@RequestBody" Components="@Components" MediaType="@requestMediaType" />
+        <CascadingValue Value="@selectedMediaType" Name="MediaType">
+            <UIRequestBody RequestBody="@RequestBody" />
+        </CascadingValue>
     </div>
 </div>
 
@@ -33,16 +35,23 @@
     [Parameter]
     [EditorRequired]
     public RequestBody? RequestBody { get; set; }
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
 
     List<string>? mediaTypes;
-    string? requestMediaType;
+    string? selectedMediaType;
 
     protected override void OnInitialized()
     {
         mediaTypes = RequestBody.Content.Keys.ToList();
-        requestMediaType = mediaTypes.First();
+
+        if (mediaTypes.Contains("application/json"))
+            selectedMediaType = "application/json";
+        else
+        {
+            mediaTypes.Sort();
+            selectedMediaType = mediaTypes.First();
+        }
     }
 }

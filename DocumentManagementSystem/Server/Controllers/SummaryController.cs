@@ -29,15 +29,6 @@ namespace DocumentManagementSystem.Server.Controllers
 
             foreach (var summary in summaries)
             {
-                SummaryResponse content = new()
-                {
-                    Code = summary.Code,
-                    Name = summary.Name
-                };
-
-                if(summary.Description is not null)
-                    content.Description = summary.Description;
-
                 summaryResponse.Add(summary.GetDTOResponse());
             }
 
@@ -52,7 +43,7 @@ namespace DocumentManagementSystem.Server.Controllers
             {
                 await _db.Add(new(args));
             }
-            catch(ArgumentException ex)
+            catch(ArgumentException)
             {
                 HttpContext.Response.StatusCode = 409;
                 return;

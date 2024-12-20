@@ -1,0 +1,28 @@
+﻿
+<ExampleSchema Schema="@schema" SpaceCount="@SpaceCount" />
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string SchemaRef { get; set; }
+    [CascadingParameter]
+    [EditorRequired]
+    public Components Components { get; set; }
+    [Parameter]
+    public uint SpaceCount { get; set; } = 0;
+
+    Schema schema;
+
+    protected override void OnInitialized()
+    {
+        var schemaName = SchemaRef[21..];
+
+        if (string.IsNullOrEmpty(schemaName))
+            return;
+
+        if (!Components.Schemas.ContainsKey(schemaName))
+            return;
+
+        schema = Components.Schemas[schemaName];
+    }
+}

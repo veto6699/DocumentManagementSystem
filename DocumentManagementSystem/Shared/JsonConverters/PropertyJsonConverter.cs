@@ -11,18 +11,22 @@ namespace DocumentManagementSystem.Shared.JsonConverters
 {
     internal class PropertyJsonConverter : JsonConverter<Property?>
     {
+        private readonly static Type _additionalPropertyType = typeof(AdditionalProperty);
+        private readonly static JsonConverter<AdditionalProperty?> _defaultAdditionalPropertyConverter = (JsonConverter<AdditionalProperty?>)JsonSerializerOptions.Default.GetConverter(_additionalPropertyType);
+
+        private readonly static Type _itemType = typeof(Item);
+        private readonly static JsonConverter<Item?> _defaultItemConverter = (JsonConverter<Item?>)JsonSerializerOptions.Default.GetConverter(_itemType);
+
+        private readonly static Type _enumType = typeof(List<string>);
+        private readonly static JsonConverter<List<string>?> _defaultEnumConverter = (JsonConverter<List<string>?>)JsonSerializerOptions.Default.GetConverter(_enumType);
+
+        private readonly static Type _xmlType = typeof(XML);
+        private readonly static JsonConverter<XML> _defaultXMLConverter = (JsonConverter<XML>)JsonSerializerOptions.Default.GetConverter(_xmlType);
+
         public override Property? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
-            {
                 return null;
-            }
-
-            reader.Read();
-            if (reader.TokenType != JsonTokenType.PropertyName)
-            {
-                return null;
-            }
 
             Property property = new();
 
@@ -54,15 +58,7 @@ namespace DocumentManagementSystem.Shared.JsonConverters
                             property.Description = reader.GetString();
                             break;
                         case "items":
-                            var items = JsonElement.ParseValue(ref reader).ToString();
-                            var tmpItems = JsonSerializer.Deserialize<Item?>(items);
-
-                            if(tmpItems is not null &&
-                                tmpItems.Type is not null &&
-                                tmpItems.Items is not null &&
-                                tmpItems.Ref is not null)
-                                    property.Items = tmpItems;
-
+                            property.Items = _defaultItemConverter.Read(ref reader, _itemType, options);
                             break;
                         case "format":
                             property.Format = reader.GetString();
@@ -71,32 +67,35 @@ namespace DocumentManagementSystem.Shared.JsonConverters
                             property.Nullable = reader.GetBoolean();
                             break;
                         case "additionalProperties":
-                            var additionalProperties = JsonElement.ParseValue(ref reader).ToString();
-                            var tmpAdditionalProperties = JsonSerializer.Deserialize<AdditionalProperty?>(additionalProperties);
-
-                            if (tmpAdditionalProperties is not null &&
-                                tmpAdditionalProperties.Type is not null &&
-                                tmpAdditionalProperties.Items is not null &&
-                                tmpAdditionalProperties.Nullable is not null &&
-                                tmpAdditionalProperties.Ref is not null &&
-                                tmpAdditionalProperties.Format is not null)
-                                    property.AdditionalProperties = tmpAdditionalProperties;
-
+                            property.AdditionalProperties = _defaultAdditionalPropertyConverter.Read(ref reader, _additionalPropertyType, options);
                             break;
                         case "enum":
-                            var myEnum = JsonElement.ParseValue(ref reader);
-                            property.@Enum = JsonSerializer.Deserialize<List<string>?>(myEnum);
+                            property.Enum = _defaultEnumConverter.Read(ref reader, _enumType, options);
+                            break;
+                        case "xml":
+                            property.XML = _defaultXMLConverter.Read(ref reader, _xmlType, options);
+                            break;
+                        case "readOnly":
+                            property.ReadOnly = reader.GetBoolean();
+                            break;
+                        case "maxLength":
+                            property.MaxLength = reader.GetInt32();
+                            break;
+                        case "minLength":
+                            property.MinLength = reader.GetInt32();
                             break;
                     }
                 }
-
             }
 
             throw new JsonException();
         }
 
-        public override void Write(Utf8JsonWriter writer, Property property, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, Property? property, JsonSerializerOptions options)
         {
+            if (property is null)
+                return;
+
             writer.WriteStartObject();
 
             if (property.Ref is not null)
@@ -124,7 +123,10 @@ namespace DocumentManagementSystem.Shared.JsonConverters
             }
 
             if (property.Items is not null)
-                writer.WriteString("items", JsonSerializer.Serialize(property.Items));
+            {
+                writer.WritePropertyName("items");
+                _defaultItemConverter.Write(writer, property.Items, options);
+            }
 
             if (property.Format is not null)
             {
@@ -139,10 +141,40 @@ namespace DocumentManagementSystem.Shared.JsonConverters
             }
 
             if (property.AdditionalProperties is not null)
-                writer.WriteString("additionalProperties", JsonSerializer.Serialize(property.AdditionalProperties));
+            {
+                writer.WritePropertyName("additionalProperties");
+                _defaultAdditionalPropertyConverter.Write(writer, property.AdditionalProperties, options);
+            }
 
             if (property.Enum is not null)
-                writer.WriteString("enum", JsonSerializer.Serialize(property.Enum));
+            {
+                writer.WritePropertyName("enum");
+                _defaultEnumConverter.Write(writer, property.Enum, options);
+            }
+
+            if (property.XML is not null)
+            {
+                writer.WritePropertyName("xml");
+                _defaultXMLConverter.Write(writer, property.XML, options);
+            }
+
+            if (property.ReadOnly is not null)
+            {
+                writer.WritePropertyName("readOnly");
+                writer.WriteBooleanValue((bool)property.ReadOnly);
+            }
+
+            if (property.MaxLength is not null)
+            {
+                writer.WritePropertyName("maxLength");
+                writer.WriteNumberValue((int)property.MaxLength);
+            }
+
+            if (property.MinLength is not null)
+            {
+                writer.WritePropertyName("minLength");
+                writer.WriteNumberValue((int)property.MinLength);
+            }
 
             writer.WriteEndObject();
             writer.Flush();

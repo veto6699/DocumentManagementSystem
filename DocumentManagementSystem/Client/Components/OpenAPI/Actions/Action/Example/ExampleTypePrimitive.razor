@@ -1,0 +1,91 @@
+﻿@using DocumentManagementSystem.Client.Constants;
+
+@switch (Type)
+{
+    case PropertyTypes.Integer:
+    case PropertyTypes.Number:
+        @if (!string.IsNullOrEmpty(DefaultValue))
+        {
+            <span style="color: rgb(211, 99, 99);">@DefaultValue</span>
+        }
+        else
+        {
+
+            <span style="color: rgb(211, 99, 99);">0</span>
+        }
+        break;
+    case PropertyTypes.Boolean:
+        @if (!string.IsNullOrEmpty(DefaultValue))
+        {
+            <span style="color: rgb(252, 194, 140);">@DefaultValue</span>
+        }
+        else
+        {
+            <span style="color: rgb(252, 194, 140);">true</span>
+        }
+        break;
+    default:
+        @if (!string.IsNullOrEmpty(stringValue))
+        {
+            <span style="color: rgb(162, 252, 162);">"@stringValue"</span>
+        }
+        else
+        {
+            <span style="color: rgb(162, 252, 162);">"@Type"</span>
+        }
+        break;
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string? Type { get; set; }
+    [Parameter]
+    public string? DefaultValue { get; set; }
+    [Parameter]
+    public int? MinLength { get; set; }
+    [Parameter]
+    public string? Format { get; set; }
+
+    string? stringValue;
+
+    protected override void OnInitialized()
+    {
+        if (Type == PropertyTypes.String)
+        {
+            if (!string.IsNullOrEmpty(DefaultValue))
+            {
+                stringValue = DefaultValue;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(Format) && Format == "email")
+            {
+                stringValue = "user@example.com";
+                return;
+            }
+
+            if (MinLength is not null)
+            {
+                int minLength = (int)MinLength;
+
+                if (minLength < Type.Length)
+                    minLength = Type.Length;
+
+                stringValue = string.Empty;
+
+                for (int i = 0; stringValue.Length < minLength; i++)
+                {
+                    stringValue += @Type;
+
+                    if (stringValue.Length > minLength)
+                        stringValue = stringValue.Substring(0, minLength);
+                }
+
+                return;
+            }
+
+            stringValue = Type;
+        }
+    }
+}

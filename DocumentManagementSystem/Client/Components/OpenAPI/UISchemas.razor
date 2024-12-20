@@ -19,7 +19,7 @@
                                     <div class="model-box">
                                         <span class="model">
                                             <span>
-                                                <UISchema Components="@Components" Schema="@component.Value" SchemaName="@component.Key" IsOpen="@componentsIsOpen[component.Key]" />
+                                                <UISchema Schema="@component.Value" SchemaName="@component.Key" IsOpen="@componentsIsOpen[component.Key]" />
                                             </span>
                                         </span>
                                     </div>
@@ -45,7 +45,7 @@
 </div>
 
 @code {
-    [Parameter]
+    [CascadingParameter]
     [EditorRequired]
     public Components? Components { get; set; }
 

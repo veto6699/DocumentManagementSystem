@@ -1,0 +1,19 @@
+﻿
+@if (Schema.Properties is not null)
+{
+    <ExampleTypeObjectProperties Properties="@Schema.Properties" SpaceCount="@SpaceCount" />
+}
+else if (Schema.AdditionalProperties is not null)
+{
+    <ExampleTypeObjectAdditionalProperties AdditionalProperty="Schema.AdditionalProperties" SpaceCount="@SpaceCount" />
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Schema Schema { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public uint SpaceCount { get; set; }
+
+}
