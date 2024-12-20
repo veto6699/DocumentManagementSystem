@@ -7,10 +7,7 @@
             {
                 @foreach (var tag in Tags)
                 {
-                    @if (!string.IsNullOrEmpty(tag.Name))
-                    {
-                        <UIController Tag="@tag" Paths="@controllers[tag.Name]"/>
-                    }
+                    <UIController Tag="@tag" Paths="@controllers[tag.Name]" />
                 }
             }
         </div>
@@ -23,10 +20,7 @@
     public Dictionary<string, PathItem>? Paths { get; set; }
     [Parameter]
     [EditorRequired]
-    public IList<Tag>? Tags { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
+    public List<Tag>? Tags { get; set; }
 
     Dictionary<string, Dictionary<string, PathItem>>? controllers;
 

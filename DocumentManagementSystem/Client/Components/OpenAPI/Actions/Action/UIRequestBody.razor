@@ -77,12 +77,8 @@
     [Parameter]
     [EditorRequired]
     public RequestBody? RequestBody { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
     [CascadingParameter(Name = "MediaType")]
-    [EditorRequired]
-    public string? MediaType { get; set; }
+    public string MediaType { get; set; }
 
     bool exampleValueActivate = true;
     string? schemaRef;

@@ -1,12 +1,12 @@
 ﻿namespace DocumentManagementSystem.Client.Constants
 {
-    public class PropertyTypes
+    internal class PropertyTypes
     {
-        public const string @Object = "object";
-        public const string @String = "string";
-        public const string Integer = "integer";
-        public const string Array = "array";
-        public const string Boolean = "boolean";
-        public const string Number = "number";
+        internal const string @Object = "object";
+        internal const string @String = "string";
+        internal const string Integer = "integer";
+        internal const string Array = "array";
+        internal const string Boolean = "boolean";
+        internal const string Number = "number";
     }
 }

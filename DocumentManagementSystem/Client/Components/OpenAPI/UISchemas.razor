@@ -10,26 +10,26 @@
             @if (isOpen)
             {
                 <div class="no-margin">
-                    @foreach (var component in Components.Schemas)
+                    @foreach (var schema in Components.Schemas)
                     {
                         <div class="model-container">
                             <span class="model-box">
-                                @if (componentsIsOpen[component.Key])
+                                @if (schemaIsOpen[schema.Key])
                                 {
                                     <div class="model-box">
                                         <span class="model">
                                             <span>
-                                                <UISchema Schema="@component.Value" SchemaName="@component.Key" IsOpen="@componentsIsOpen[component.Key]" />
+                                                <UISchema Schema="@schema.Value" SchemaName="@schema.Key" IsOpen="@schemaIsOpen[schema.Key]" />
                                             </span>
                                         </span>
                                     </div>
                                 }
                                 else
                                 {
-                                    <button class="model-box-control" @onclick="@(e => componentsIsOpen[component.Key] = true)">
+                                    <button class="model-box-control" @onclick="@(e => schemaIsOpen[schema.Key] = true)">
                                         <span class="pointer">
                                             <span class="model-box">
-                                                <span class="model model-title">@component.Key</span>
+                                                <span class="model model-title">@schema.Key</span>
                                             </span>
                                         </span>
                                         <span class="model-toggle collapsed" />
@@ -46,17 +46,16 @@
 
 @code {
     [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
+    public Components Components { get; set; }
 
-    Dictionary<string, bool> componentsIsOpen = new();
+    Dictionary<string, bool> schemaIsOpen = new();
 
     protected override void OnInitialized()
     {
         if (Components is not null && Components.Schemas is not null)
         {
-            foreach (var component in Components.Schemas)
-                componentsIsOpen.Add(component.Key, false);
+            foreach (var schema in Components.Schemas)
+                schemaIsOpen.Add(schema.Key, false);
         }
     }
 

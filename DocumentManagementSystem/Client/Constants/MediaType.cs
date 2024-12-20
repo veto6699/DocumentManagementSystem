@@ -1,11 +1,10 @@
 ﻿namespace DocumentManagementSystem.Client.Constants
 {
-    public class MediaType
+    internal class MediaType
     {
-        public const string ApplicationJSON = "application/json";
-        public const string ApplicationXML = "application/xml";
-        public const string ApplicationXWWWForm = "application/x-www-form-urlencoded";
-        public const string ApplicationStream = "application/octet-stream";
-
+        internal const string ApplicationJSON = "application/json";
+        internal const string ApplicationXML = "application/xml";
+        internal const string ApplicationXWWWForm = "application/x-www-form-urlencoded";
+        internal const string ApplicationStream = "application/octet-stream";
     }
 }

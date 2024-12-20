@@ -8,8 +8,6 @@
                     <UISchema SchemaRef="@SchemaRef" IsOpen="true" />
                     break;
                 case Constants.MediaType.ApplicationXML:
-                    <p>"Это пока не готово"</p>
-                    break;
                 default:
                     <p>"Это не работает"</p>
                     break;
@@ -22,10 +20,6 @@
     [Parameter]
     [EditorRequired]
     public string? SchemaRef { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
     [CascadingParameter(Name = "MediaType")]
-    [EditorRequired]
-    public string? MediaType { get; set; }
+    public string MediaType { get; set; }
 }

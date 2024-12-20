@@ -22,7 +22,7 @@
                 {
                     <div class="info__externaldocs">
                         <small>
-                            <a href="@Tag.ExternalDocs.URL" target="_blank" rel="noopener noreferrer" class="link">@(((MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description)).ToString()[3..^5])</a>
+                            <a href="@Tag.ExternalDocs.URL" target="_blank" class="link">@(((MarkupString)Markdig.Markdown.ToHtml(Tag.ExternalDocs.Description)).ToString()[3..^5])</a>
                         </small>
                     </div>
                 }
@@ -67,9 +67,6 @@
     [Parameter]
     [EditorRequired]
     public Tag? Tag { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
 
     bool isOpen { get; set; } = true;
     short rotate { get; set; } = 180;

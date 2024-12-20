@@ -34,10 +34,7 @@
 @code {
     [Parameter]
     [EditorRequired]
-    public RequestBody? RequestBody { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
+    public RequestBody RequestBody { get; set; }
 
     List<string>? mediaTypes;
     string? selectedMediaType;

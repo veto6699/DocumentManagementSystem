@@ -1,17 +1,15 @@
-﻿@using DocumentManagementSystem.Client
+﻿@using Cons = DocumentManagementSystem.Client.Constants
 
 <div class="highlight-code">
     <pre class="body-param__example microlight" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(51, 51, 51); color: white;">
         @switch (MediaType)
         {
-            case Constants.MediaType.ApplicationJSON:
+            case Cons.MediaType.ApplicationJSON:
                 <code class="language-json" style="white-space: pre;">
                     <ExampleSchemaRef SchemaRef="@SchemaRef"/>
                 </code>
                 break;
-            case Constants.MediaType.ApplicationXML:
-                <p>"Это пока не готово"</p>
-                break;
+            case Cons.MediaType.ApplicationXML:
             default:
             <p>"Это не работает"</p>
                 break;
@@ -22,11 +20,7 @@
 @code {
     [Parameter]
     [EditorRequired]
-    public string? SchemaRef { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
+    public string SchemaRef { get; set; }
     [CascadingParameter(Name = "MediaType")]
-    [EditorRequired]
-    public string? MediaType { get; set; }
+    public string MediaType { get; set; }
 }

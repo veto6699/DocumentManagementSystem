@@ -51,7 +51,7 @@
                                     </div>
                                 </section>
                                 <CascadingValue Value="@selectedMediaType" Name="MediaType">
-                                    <UIResponseBody HttpCode="@response.Key" Response="@response.Value" />
+                                    <UIResponseBody Response="@response.Value" />
                                 </CascadingValue>
                             }
                         </td>
@@ -67,9 +67,6 @@
     [Parameter]
     [EditorRequired]
     public Dictionary<string, Response>? Responses { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
 
     bool exampleValueActivate = true;
     Dictionary<string, string?> mediaTypes = new();

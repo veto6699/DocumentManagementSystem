@@ -31,20 +31,23 @@
                                 </td>
                             </tr>
                         }
-                        @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Ref) || !string.IsNullOrWhiteSpace(Property.AdditionalProperties.Type))
+                        @if (Property.AdditionalProperties is not null)
                         {
-                            <tr class="property-row">
-                                <td>&lt; * &gt;:</td>
-                                @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Ref))
-                                {
+                            @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Ref))
+                            {
+                                <tr class="property-row">
+                                    <td>&lt; * &gt;:</td>
                                     <td>
                                         <span>
-                                            <UISchema SchemaRef="@Property.AdditionalProperties.Ref"/>
+                                            <UISchema SchemaRef="@Property.AdditionalProperties.Ref" />
                                         </span>
                                     </td>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Type))
-                                {
+                                </tr>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Property.AdditionalProperties.Type))
+                            {
+                                <tr class="property-row">
+                                    <td>&lt; * &gt;:</td>
                                     <td>
                                         <span>[</span>
                                         <span class="prop">
@@ -52,8 +55,8 @@
                                         </span>
                                         <span>]</span>
                                     </td>
-                                }
-                            </tr>
+                                </tr>
+                            }
                         }
                     </tbody>
                 </table>
@@ -72,10 +75,7 @@
 @code {
     [Parameter]
     [EditorRequired]
-    public Property? Property { get; set; }
-    [CascadingParameter]
-    [EditorRequired]
-    public Components? Components { get; set; }
+    public Property Property { get; set; }
     [Parameter]
     [EditorRequired]
     public bool IsOpen { get; set; }
